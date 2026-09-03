@@ -1,0 +1,3 @@
+PENDIENTE - Aqui va 03_modelo.py y las metricas de cada modelo entrenado.
+Ver 03_preparacion_datos/NOTA_PARA_EL_MODELADOR.md antes de empezar.
+Objetivo: RMSE <= 0,90 en test (referencia SVD medida: 0,873).

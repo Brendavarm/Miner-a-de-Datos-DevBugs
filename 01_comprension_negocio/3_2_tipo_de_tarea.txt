@@ -1,0 +1,109 @@
+================================================================================
+3.2  TIPO DE TAREA DE MINERIA DE DATOS
+     Proyecto: Sistema de recomendacion de peliculas por filtrado colaborativo
+     Dataset:  MovieLens 1M (1.000.209 calificaciones, 6.040 usuarios, 3.706 peliculas)
+================================================================================
+
+
+COMO QUEDA MARCADO
+--------------------------------------------------------------------------------
+
+  [ ]  Clasificacion Supervisada
+  [X]  Regresion / Prediccion Numerica          <-- TAREA PRINCIPAL
+  [ ]  Agrupamiento / Clustering                <-- se usa solo como apoyo
+  [ ]  Reglas de Asociacion
+  [ ]  Deteccion de Anomalias
+  [X]  Otra: Sistemas de Recomendacion (Filtrado Colaborativo)
+
+
+RESPUESTA BREVE
+--------------------------------------------------------------------------------
+
+Es una tarea de REGRESION / PREDICCION NUMERICA, dentro de la categoria de
+SISTEMAS DE RECOMENDACION por filtrado colaborativo.
+
+El modelo predice la calificacion (un numero de 1 a 5 estrellas) que un usuario
+daria a una pelicula que todavia no ha visto. Como la salida es un valor
+numerico y no una categoria, la tarea es de regresion, y por eso se evalua con
+RMSE y MAE.
+
+
+POR QUE REGRESION
+--------------------------------------------------------------------------------
+
+1. La variable objetivo es numerica: el rating va de 1 a 5 estrellas.
+   Media real del dataset: 3,58.
+
+2. La salida del modelo es un valor continuo (por ejemplo 4,2 estrellas),
+   no una etiqueta.
+
+3. Las metricas de evaluacion son RMSE y MAE, que son metricas de regresion.
+   (Referencia medida sobre estos datos con SVD: RMSE 0,873 / MAE 0,685.)
+
+4. El problema se plantea como rellenar las celdas vacias de una matriz
+   usuario x pelicula de 6.040 x 3.706, que esta vacia en un 95,53%.
+
+
+POR QUE NO LAS OTRAS
+--------------------------------------------------------------------------------
+
+Clasificacion Supervisada
+  Predeciria una etiqueta ("le gusta" / "no le gusta"). Se podria forzar
+  binarizando (por ejemplo, 4 o mas = le gusta), pero se perderia informacion:
+  no es lo mismo un 4 que un 5, y esa diferencia importa al ordenar las
+  recomendaciones. No es nuestro planteamiento.
+
+Agrupamiento / Clustering  (APOYO, no objetivo)
+  Si aparece dentro del metodo: para recomendar hay que agrupar usuarios o
+  peliculas parecidas y formar "vecindarios". Pero es un medio para llegar a la
+  prediccion, no el fin del proyecto. Como tarea principal se descarta.
+
+Reglas de Asociacion
+  Responderia a "quien vio A tambien vio B". Solo usa si el usuario vio o no la
+  pelicula, y desperdicia la calificacion de 1 a 5, que es justamente nuestra
+  informacion mas valiosa.
+
+Deteccion de Anomalias
+  Serviria para detectar votos falsos o cuentas fraudulentas. Es un problema
+  real en plataformas de recomendacion, pero no es el objetivo de este proyecto.
+
+
+ENUNCIADO FORMAL DE LA TAREA
+--------------------------------------------------------------------------------
+
+Dada una matriz usuario x pelicula R (6.040 x 3.706) con el 4,47% de sus celdas
+observadas, estimar el valor de las celdas no observadas r(u,i) pertenecientes
+al intervalo [1, 5], minimizando el error de prediccion medido con RMSE.
+
+
+DATOS QUE RESPALDAN LA ELECCION  (medidos, no estimados)
+--------------------------------------------------------------------------------
+
+  Calificaciones totales .................. 1.000.209
+  Usuarios ................................ 6.040
+  Peliculas ............................... 3.706
+  Escala de la variable objetivo .......... 1 a 5 (numerica, enteros)
+  Media de las calificaciones ............. 3,58
+  Celdas de la matriz ..................... 22.384.240
+  Celdas con valor ........................ 1.000.209  (4,47%)
+  Celdas vacias (a predecir) .............. 21.384.031  (95,53%)
+
+  Distribucion de la variable objetivo:
+      1 estrella  .....  56.174   ( 5,6%)
+      2 estrellas ..... 107.557   (10,8%)
+      3 estrellas ..... 261.197   (26,1%)
+      4 estrellas ..... 348.971   (34,9%)
+      5 estrellas ..... 226.310   (22,6%)
+
+
+IMAGENES DE APOYO
+--------------------------------------------------------------------------------
+
+  3_2_tipo_de_tarea.png       Las seis opciones, cual se marca y por que se
+                              descartan las demas.
+
+  3_2_por_que_regresion.png   Que predice exactamente el modelo (la celda vacia
+                              a rellenar) y la distribucion real de la variable
+                              objetivo.
+
+================================================================================

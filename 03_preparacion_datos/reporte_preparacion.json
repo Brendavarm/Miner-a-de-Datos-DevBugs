@@ -1,0 +1,107 @@
+{
+  "ejecutado": "2026-08-18T23:13:29",
+  "dataset": "/home/jasser/Documentos/ MINERIA/ml-1m",
+  "formato": "MovieLens 1M/10M (separador '::', sin encabezado)",
+  "inspeccion": {
+    "n_usuarios": 6040,
+    "n_peliculas_calificadas": 3706,
+    "n_peliculas_catalogo": 3883,
+    "n_ratings": 1000209,
+    "rating_min": 1.0,
+    "rating_max": 5.0,
+    "rating_media": 3.581564426422119,
+    "escala_media_estrella": false,
+    "rango_valido": [
+      1.0,
+      5.0
+    ],
+    "fecha_min": "2000-04-25 23:05:32",
+    "fecha_max": "2003-02-28 17:49:50",
+    "distribucion": {
+      "1.0": 56174,
+      "2.0": 107557,
+      "3.0": 261197,
+      "4.0": 348971,
+      "5.0": 226310
+    }
+  },
+  "calidad": {
+    "nulos_ratings": {
+      "userId": 0,
+      "movieId": 0,
+      "rating": 0,
+      "timestamp": 0
+    },
+    "nulos_movies": {
+      "movieId": 0,
+      "title": 0,
+      "genres": 0
+    },
+    "nulos_users": {
+      "userId": 0,
+      "gender": 0,
+      "age": 0,
+      "occupation": 0,
+      "zip": 0
+    },
+    "nulos_ratings_total": 0,
+    "filas_con_nulos": 0,
+    "duplicados_exactos": 0,
+    "duplicados_par_usuario_pelicula": 0,
+    "duplicados_movies": 0,
+    "fuera_de_rango": 0,
+    "ratings_nulos": 0,
+    "peliculas_huerfanas": 0,
+    "filas_huerfanas": 0,
+    "peliculas_sin_votos": 177
+  },
+  "limpieza": {
+    "filas_inicio": 1000209,
+    "quitadas_nulos": 0,
+    "timestamps_nulos_conservados": 0,
+    "quitadas_rango": 0,
+    "quitadas_dup_exactos": 0,
+    "quitadas_dup_par": 0,
+    "quitadas_huerfanas": 0,
+    "filas_fin": 1000209,
+    "total_eliminadas": 0,
+    "porcentaje_conservado": 100.0
+  },
+  "matriz": {
+    "n_usuarios": 6040,
+    "n_peliculas": 3706,
+    "celdas_totales": 22384240,
+    "celdas_ocupadas": 1000209,
+    "sparsity": 95.53163743776871,
+    "densidad": 4.468362562231292,
+    "mem_densa_bytes": 89536960,
+    "mem_sparse_bytes": 8025836
+  },
+  "archivos": {
+    "datos_limpios_csv": "/home/jasser/Documentos/ MINERIA/datos_procesados/datos_limpios.csv",
+    "datos_limpios_parquet": "/home/jasser/Documentos/ MINERIA/datos_procesados/datos_limpios.parquet",
+    "matriz_npz": "/home/jasser/Documentos/ MINERIA/datos_procesados/matriz_usuario_pelicula.npz",
+    "mapa_usuarios": "/home/jasser/Documentos/ MINERIA/datos_procesados/mapa_usuarios.csv",
+    "mapa_peliculas": "/home/jasser/Documentos/ MINERIA/datos_procesados/mapa_peliculas.csv",
+    "matriz_parquet": "/home/jasser/Documentos/ MINERIA/datos_procesados/matriz_usuario_pelicula.parquet",
+    "peliculas": "/home/jasser/Documentos/ MINERIA/datos_procesados/peliculas_limpias.csv",
+    "usuarios": "/home/jasser/Documentos/ MINERIA/datos_procesados/usuarios.csv",
+    "antes_despues": "/home/jasser/Documentos/ MINERIA/graficos/preparacion_antes_despues.png",
+    "distribucion": "/home/jasser/Documentos/ MINERIA/graficos/distribucion_ratings.png",
+    "top_peliculas": "/home/jasser/Documentos/ MINERIA/graficos/top20_peliculas.png",
+    "actividad": "/home/jasser/Documentos/ MINERIA/graficos/actividad_usuarios.png",
+    "temporal": "/home/jasser/Documentos/ MINERIA/graficos/ratings_por_anio.png",
+    "generos": "/home/jasser/Documentos/ MINERIA/graficos/generos_frecuentes.png",
+    "dispersion": "/home/jasser/Documentos/ MINERIA/graficos/dispersion_matriz.png"
+  },
+  "tiempos_segundos": {
+    "carga": 0.36514723599998433,
+    "inspección": 0.4988684980000926,
+    "control de calidad": 0.6634998389999964,
+    "limpieza": 0.8668281539999043,
+    "unión": 0.9302061220000724,
+    "matriz": 1.0831535820000227,
+    "exportación": 4.115751442999908,
+    "gráficos": 6.876875644999927
+  }
+}

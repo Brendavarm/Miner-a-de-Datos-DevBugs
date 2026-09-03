@@ -1,0 +1,654 @@
+<title>Escalera de Baselines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+:root{
+  --ground:#e9edf2;
+  --surface:#ffffff;
+  --surface-2:#f3f6f9;
+  --ink:#151d28;
+  --ink-2:#3c4756;
+  --muted:#68748a;
+  --line:#d3dae3;
+  --line-soft:#e4e9ef;
+  --accent:#7c2d55;
+  --accent-soft:#f6e9f0;
+
+  --e1:#b04338;   /* peor  */
+  --e2:#bd7a33;
+  --e3:#7c8c3a;
+  --e4:#2d7a6c;   /* mejor */
+  --e5:#1f6f8b;   /* objetivo */
+
+  --shadow:0 1px 2px rgba(21,29,40,.05), 0 8px 24px -12px rgba(21,29,40,.18);
+  --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --sans:"Libre Franklin", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#101519;
+    --surface:#182029;
+    --surface-2:#1e2731;
+    --ink:#e7ecf2;
+    --ink-2:#c0cad6;
+    --muted:#8695a8;
+    --line:#2c3844;
+    --line-soft:#232e39;
+    --accent:#e58ab8;
+    --accent-soft:#33202b;
+    --e1:#e0796d;
+    --e2:#e0aa63;
+    --e3:#b3c66c;
+    --e4:#5cc0ac;
+    --e5:#63b6d4;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101519;
+  --surface:#182029;
+  --surface-2:#1e2731;
+  --ink:#e7ecf2;
+  --ink-2:#c0cad6;
+  --muted:#8695a8;
+  --line:#2c3844;
+  --line-soft:#232e39;
+  --accent:#e58ab8;
+  --accent-soft:#33202b;
+  --e1:#e0796d;
+  --e2:#e0aa63;
+  --e3:#b3c66c;
+  --e4:#5cc0ac;
+  --e5:#63b6d4;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 96px}
+h1,h2,h3,h4,.sans{font-family:var(--sans)}
+h2,h3{text-wrap:balance}
+code,.mono{font-family:var(--mono)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+
+/* ---------- cabecera ---------- */
+header{
+  padding:64px 0 40px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:56px;
+}
+.eyebrow{
+  font-family:var(--sans);font-size:12px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+  display:flex;align-items:center;gap:12px;margin-bottom:18px;
+}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+h1{
+  font-size:clamp(2.1rem,5.2vw,3.4rem);font-weight:800;
+  letter-spacing:-.024em;line-height:1.04;margin:0 0 20px;
+}
+.lede{
+  font-size:1.16rem;color:var(--ink-2);max-width:62ch;margin:0 0 28px;
+}
+.lede strong{color:var(--ink);font-weight:600}
+
+.specs{
+  display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--line);
+  border-radius:6px;overflow:hidden;background:var(--surface);
+}
+.spec{
+  flex:1 1 150px;padding:13px 18px;border-right:1px solid var(--line-soft);
+}
+.spec:last-child{border-right:0}
+.spec dt{
+  font-family:var(--sans);font-size:10.5px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 4px;
+}
+.spec dd{
+  margin:0;font-family:var(--mono);font-size:14.5px;font-weight:500;
+  color:var(--ink);font-variant-numeric:tabular-nums;
+}
+
+/* ---------- secciones ---------- */
+section{margin-bottom:64px}
+h2{
+  font-size:1.62rem;font-weight:700;letter-spacing:-.016em;
+  margin:0 0 10px;padding-bottom:0;
+}
+.sub{color:var(--muted);margin:0 0 28px;font-size:1.02rem;max-width:64ch}
+
+/* ---------- escalera ---------- */
+.rung{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  box-shadow:var(--shadow);margin-bottom:18px;overflow:hidden;
+  display:grid;grid-template-columns:64px 1fr;
+}
+.rung-n{
+  display:flex;align-items:flex-start;justify-content:center;padding-top:24px;
+  font-family:var(--sans);font-size:26px;font-weight:800;
+  color:var(--surface);background:var(--step);
+  font-variant-numeric:tabular-nums;
+}
+.rung-body{padding:22px 26px 24px;min-width:0}
+.rung-head{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 14px;margin-bottom:6px;
+}
+.rung-head h3{font-size:1.24rem;font-weight:700;margin:0;letter-spacing:-.012em}
+.tag{
+  font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;padding:3px 9px;border-radius:3px;
+  background:var(--accent-soft);color:var(--accent);
+}
+.rung-what{color:var(--ink-2);margin:0 0 18px;max-width:66ch;font-size:.98rem}
+.adds{
+  font-family:var(--sans);font-size:12.5px;color:var(--muted);
+  margin:0 0 18px;padding-left:13px;border-left:2px solid var(--step);
+}
+.adds b{color:var(--ink);font-weight:600}
+
+/* ---------- formulas ---------- */
+.formula{
+  background:var(--surface-2);border:1px solid var(--line-soft);border-radius:6px;
+  padding:20px 22px;margin:0 0 18px;overflow-x:auto;
+}
+.eq{
+  font-family:var(--mono);font-size:15.5px;color:var(--ink);
+  display:flex;align-items:center;gap:9px;flex-wrap:nowrap;
+  white-space:nowrap;line-height:1.35;
+}
+.eq + .eq{margin-top:14px}
+.frac{
+  display:inline-flex;flex-direction:column;align-items:center;
+  vertical-align:middle;margin:0 2px;
+}
+.frac .num{padding:0 8px 3px}
+.frac .den{padding:3px 8px 0;border-top:1.4px solid currentColor}
+.sqrt{display:inline-flex;align-items:stretch;gap:1px}
+.sqrt .sign{font-size:1.9em;line-height:.9;font-weight:400}
+.sqrt .body{border-top:1.4px solid currentColor;padding:4px 8px 0;display:flex;align-items:center}
+.sum{display:inline-flex;flex-direction:column;align-items:center;font-size:.95em}
+.sum .big{font-size:1.75em;line-height:.82;font-weight:400}
+.sum .lim{font-size:.6em;color:var(--muted);white-space:nowrap}
+.where{
+  font-family:var(--sans);font-size:12.5px;color:var(--muted);
+  margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:5px 22px;
+}
+.where b{color:var(--ink-2);font-family:var(--mono);font-weight:500}
+
+/* ---------- resultado del escalon ---------- */
+.score{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding-top:16px;border-top:1px solid var(--line-soft);
+}
+.score-n{
+  font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:1.5rem;font-weight:700;color:var(--step);letter-spacing:-.02em;
+}
+.score-n small{font-family:var(--sans);font-size:10.5px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  display:block;margin-bottom:1px;letter-spacing:.1em}
+.score-mae{font-family:var(--mono);font-size:.86rem;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.track{
+  flex:1 1 200px;min-width:160px;height:9px;border-radius:5px;
+  background:var(--line-soft);overflow:hidden;position:relative;
+}
+.track i{display:block;height:100%;background:var(--step);border-radius:5px}
+
+/* ---------- tablas ---------- */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;
+  background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:14.5px}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line-soft);
+  white-space:nowrap}
+thead th{
+  font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);background:var(--surface-2);border-bottom:1px solid var(--line);
+}
+tbody tr:last-child td{border-bottom:0}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500}
+td.name{font-weight:500;white-space:normal;min-width:190px}
+tr.hl td{background:var(--accent-soft)}
+tr.hl td.name{font-weight:700}
+.chip{
+  display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;
+  border-radius:3px;letter-spacing:.04em;
+}
+
+/* ---------- caso real ---------- */
+.case{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  box-shadow:var(--shadow);padding:24px 26px;
+}
+.case-top{
+  display:flex;flex-wrap:wrap;gap:20px 34px;align-items:baseline;
+  padding-bottom:18px;margin-bottom:20px;border-bottom:1px solid var(--line-soft);
+}
+.case-top div{display:flex;flex-direction:column;gap:2px}
+.case-top dt{font-family:var(--sans);font-size:10.5px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.case-top dd{margin:0;font-size:1.02rem;font-weight:600;font-family:var(--sans)}
+.stars{color:var(--e1);font-size:1.3rem;letter-spacing:2px}
+
+/* ---------- callout ---------- */
+.note{
+  border:1px solid var(--line);border-left:3px solid var(--accent);
+  background:var(--surface);border-radius:6px;padding:20px 24px;
+  box-shadow:var(--shadow);
+}
+.note.warn{border-left-color:var(--e1)}
+.note h4{
+  font-size:1.02rem;font-weight:700;margin:0 0 8px;
+  display:flex;align-items:center;gap:9px;
+}
+.note h4 .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
+.note.warn h4 .dot{background:var(--e1)}
+.note p{margin:0 0 10px;color:var(--ink-2);font-size:.97rem}
+.note p:last-child{margin-bottom:0}
+.note ul{margin:10px 0 0;padding-left:20px;color:var(--ink-2);font-size:.97rem}
+.note li{margin-bottom:6px}
+
+.quote{
+  font-family:var(--serif);font-size:1.1rem;line-height:1.62;color:var(--ink);
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:26px 30px;box-shadow:var(--shadow);margin:0;
+}
+.quote p{margin:0 0 12px}
+.quote p:last-child{margin-bottom:0}
+.quote b{font-weight:600}
+.quote cite{
+  display:block;margin-top:16px;font-family:var(--sans);font-size:12px;
+  font-style:normal;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+}
+
+footer{
+  border-top:1px solid var(--line);padding-top:24px;margin-top:14px;
+  font-family:var(--sans);font-size:12.5px;color:var(--muted);
+  display:flex;flex-wrap:wrap;gap:8px 26px;justify-content:space-between;
+}
+footer code{font-size:12px;color:var(--ink-2)}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  .wrap{padding:0 16px 64px}
+  .rung{grid-template-columns:44px 1fr}
+  .rung-n{font-size:20px;padding-top:20px}
+  .rung-body{padding:18px 18px 20px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Fase 4 · Modelado · MovieLens 1M</div>
+  <h1>La escalera de baselines</h1>
+  <p class="lede">Cuatro modelos de referencia, cada uno con <strong>una sola pieza de información más</strong> que el anterior. Sirven para responder la única pregunta que importa al evaluar: <strong>¿el modelo aporta algo, o el mismo resultado se consigue con una media?</strong></p>
+  <dl class="specs">
+    <div class="spec"><dt>Calificaciones</dt><dd>1.000.209</dd></div>
+    <div class="spec"><dt>Entrenamiento</dt><dd>800.167</dd></div>
+    <div class="spec"><dt>Prueba</dt><dd>200.042</dd></div>
+    <div class="spec"><dt>Semilla</dt><dd>42</dd></div>
+    <div class="spec"><dt>Escala</dt><dd>1 – 5 ★</dd></div>
+    <div class="spec"><dt>Media global μ</dt><dd>3,5821</dd></div>
+  </dl>
+</header>
+
+<section>
+  <h2>Antes de las fórmulas: el montaje</h2>
+  <p class="sub">Todos los escalones se miden exactamente igual. Si el montaje cambia entre modelos, la comparación no vale nada.</p>
+  <div class="note">
+    <h4><span class="dot"></span>Reglas del experimento</h4>
+    <ul>
+      <li><b>Partición 80 / 20</b> — 800.167 calificaciones para estimar, 200.042 reservadas para medir.</li>
+      <li><b>El test no se toca jamás.</b> Todas las medias y sesgos se calculan <em>solo</em> con entrenamiento. Calcular la media de un usuario incluyendo notas del test es fuga de datos, e infla el resultado.</li>
+      <li><b>Semilla fija (42).</b> Sin ella los números no se reproducen y no se pueden defender.</li>
+      <li><b>Recorte a [1, 5].</b> Las fórmulas pueden devolver 5,4 o 0,7; un rating no puede. Se recorta antes de medir el error.</li>
+      <li><b>Caso desconocido → se cae a μ.</b> Si en el test aparece una película sin votos en entrenamiento, se predice la media global. Nunca se descarta la fila: eso sería medir solo lo fácil.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Los cuatro escalones</h2>
+  <p class="sub">El orden no es decorativo: cada peldaño añade exactamente un tipo de información, y la bajada del error dice cuánto valía esa información.</p>
+
+  <!-- 1 -->
+  <article class="rung" style="--step:var(--e1)">
+    <div class="rung-n">1</div>
+    <div class="rung-body">
+      <div class="rung-head"><h3>Media global</h3><span class="tag">El suelo</span></div>
+      <p class="rung-what">Predice el mismo número para todo el mundo y para toda película: la media de todas las calificaciones del entrenamiento. No mira quién eres ni qué película es.</p>
+      <p class="adds">Información que usa: <b>ninguna</b>. Es la referencia mínima — cualquier modelo que no la supere está roto.</p>
+
+      <div class="formula">
+        <div class="eq">
+          <span>μ =</span>
+          <span class="frac"><span class="num">1</span><span class="den">|R|</span></span>
+          <span class="sum"><span class="lim">&nbsp;</span><span class="big">∑</span><span class="lim">(u,i) ∈ R</span></span>
+          <span>r(u,i)</span>
+          <span style="color:var(--muted);padding-left:14px">= 3,5821</span>
+        </div>
+        <div class="eq" style="margin-top:16px">
+          <span>r̂(u,i) = μ</span>
+          <span style="color:var(--muted);padding-left:14px">para todo par (u, i)</span>
+        </div>
+        <div class="where">
+          <span><b>R</b> = calificaciones de entrenamiento</span>
+          <span><b>|R|</b> = 800.167</span>
+          <span><b>r̂</b> = valor predicho</span>
+        </div>
+      </div>
+
+      <div class="score">
+        <div class="score-n"><small>RMSE</small>1,1167</div>
+        <div class="score-mae">MAE 0,9328</div>
+        <div class="track"><i style="width:88.9%"></i></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 2 -->
+  <article class="rung" style="--step:var(--e2)">
+    <div class="rung-n">2</div>
+    <div class="rung-body">
+      <div class="rung-head"><h3>Media por usuario</h3><span class="tag">Quién califica</span></div>
+      <p class="rung-what">A cada usuario se le predice su propia media histórica. Reconoce que hay gente exigente y gente generosa, pero le da la misma nota a todas las películas.</p>
+      <p class="adds">Añade: <b>el nivel de exigencia del usuario</b>. Baja el error un 7,4 % — o sea, saber <em>quién</em> puntúa vale bastante.</p>
+
+      <div class="formula">
+        <div class="eq">
+          <span>r̂(u,i) = μ<sub>u</sub> =</span>
+          <span class="frac"><span class="num">1</span><span class="den">|I<sub>u</sub>|</span></span>
+          <span class="sum"><span class="lim">&nbsp;</span><span class="big">∑</span><span class="lim">i ∈ I<sub>u</sub></span></span>
+          <span>r(u,i)</span>
+        </div>
+        <div class="where">
+          <span><b>I<sub>u</sub></b> = películas que u calificó en entrenamiento</span>
+          <span><b>6.040</b> medias, una por usuario</span>
+          <span>usuario sin historial → <b>μ</b></span>
+        </div>
+      </div>
+
+      <div class="score">
+        <div class="score-n"><small>RMSE</small>1,0344</div>
+        <div class="score-mae">MAE 0,8273</div>
+        <div class="track"><i style="width:61.5%"></i></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 3 -->
+  <article class="rung" style="--step:var(--e3)">
+    <div class="rung-n">3</div>
+    <div class="rung-body">
+      <div class="rung-head"><h3>Media por película</h3><span class="tag">La práctica actual</span></div>
+      <p class="rung-what">A cada película se le predice su nota media. Es, literalmente, <em>recomendar por popularidad</em>: el mismo ranking para los 6.040 usuarios. <strong>Este es el rival a batir</strong>, porque es lo que la plataforma hace hoy.</p>
+      <p class="adds">Añade: <b>la calidad de la película</b>. Y resulta que importa más que el usuario — saber <em>qué</em> se puntúa vale más que saber <em>quién</em> puntúa.</p>
+
+      <div class="formula">
+        <div class="eq">
+          <span>r̂(u,i) = μ<sub>i</sub> =</span>
+          <span class="frac"><span class="num">1</span><span class="den">|U<sub>i</sub>|</span></span>
+          <span class="sum"><span class="lim">&nbsp;</span><span class="big">∑</span><span class="lim">u ∈ U<sub>i</sub></span></span>
+          <span>r(u,i)</span>
+        </div>
+        <div class="where">
+          <span><b>U<sub>i</sub></b> = usuarios que calificaron i en entrenamiento</span>
+          <span><b>3.669</b> medias, una por película</span>
+          <span>película sin votos → <b>μ</b></span>
+        </div>
+      </div>
+
+      <div class="score">
+        <div class="score-n"><small>RMSE</small>0,9765</div>
+        <div class="score-mae">MAE 0,7800</div>
+        <div class="track"><i style="width:42.2%"></i></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- 4 -->
+  <article class="rung" style="--step:var(--e4)">
+    <div class="rung-n">4</div>
+    <div class="rung-body">
+      <div class="rung-head"><h3>Media + sesgos</h3><span class="tag">El listón real</span></div>
+      <p class="rung-what">Junta las dos cosas anteriores, pero sin sumarlas ingenuamente. Primero calcula cuánto se desvía cada <em>película</em> de la media global; después, sobre lo que queda sin explicar, cuánto se desvía cada <em>usuario</em>. El orden importa.</p>
+      <p class="adds">Añade: <b>las dos señales a la vez, sin contarlas dos veces</b>. Es el modelo más fuerte que existe sin personalizar de verdad — y por tanto el listón que el filtrado colaborativo tiene que superar para justificarse.</p>
+
+      <div class="formula">
+        <div class="eq">
+          <span style="color:var(--muted);font-size:12px;font-family:var(--sans);letter-spacing:.08em">PASO 1 — SESGO DE LA PELÍCULA</span>
+        </div>
+        <div class="eq">
+          <span>b<sub>i</sub> =</span>
+          <span class="frac">
+            <span class="num"><span class="sum" style="display:inline"><span style="font-size:1.35em">∑</span></span><sub style="font-size:.75em">u ∈ U<sub>i</sub></sub> ( r(u,i) − μ )</span>
+            <span class="den">λ + |U<sub>i</sub>|</span>
+          </span>
+        </div>
+        <div class="eq" style="margin-top:20px">
+          <span style="color:var(--muted);font-size:12px;font-family:var(--sans);letter-spacing:.08em">PASO 2 — SESGO DEL USUARIO, SOBRE EL RESIDUO</span>
+        </div>
+        <div class="eq">
+          <span>b<sub>u</sub> =</span>
+          <span class="frac">
+            <span class="num"><span style="font-size:1.35em">∑</span><sub style="font-size:.75em">i ∈ I<sub>u</sub></sub> ( r(u,i) − μ − b<sub>i</sub> )</span>
+            <span class="den">λ + |I<sub>u</sub>|</span>
+          </span>
+        </div>
+        <div class="eq" style="margin-top:20px">
+          <span style="color:var(--muted);font-size:12px;font-family:var(--sans);letter-spacing:.08em">PASO 3 — PREDICCIÓN</span>
+        </div>
+        <div class="eq">
+          <span>r̂(u,i) = μ + b<sub>u</sub> + b<sub>i</sub></span>
+        </div>
+        <div class="where">
+          <span><b>λ</b> = 2 &nbsp;(regularización)</span>
+          <span><b>b<sub>i</sub></b> = cuánto sube o baja esa película</span>
+          <span><b>b<sub>u</sub></b> = cuánto sube o baja ese usuario</span>
+        </div>
+      </div>
+
+      <div class="note" style="margin-bottom:18px;box-shadow:none">
+        <h4><span class="dot"></span>Qué pinta ahí la λ</h4>
+        <p>Sin λ, una película con <b>un solo voto de 5★</b> recibe el sesgo máximo y el modelo se fía ciegamente de ella. Al sumar λ al denominador, los sesgos calculados con pocos datos se encogen hacia cero: el modelo desconfía de lo que ha visto poco. Con 1.192 películas por debajo de 50 votos, aquí eso no es un detalle.</p>
+      </div>
+
+      <div class="score">
+        <div class="score-n"><small>RMSE</small>0,9051</div>
+        <div class="score-mae">MAE 0,7150</div>
+        <div class="track"><i style="width:18.4%"></i></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- objetivo -->
+  <article class="rung" style="--step:var(--e5);border-style:dashed;opacity:.9">
+    <div class="rung-n" style="background:transparent;color:var(--e5)">→</div>
+    <div class="rung-body">
+      <div class="rung-head"><h3>SVD — el modelo propuesto</h3><span class="tag" style="background:transparent;border:1px solid var(--line);color:var(--muted)">Sin verificar</span></div>
+      <p class="rung-what">Ya no usa medias: descompone la matriz en factores latentes y aprende <em>gustos</em>, no niveles. Es el escalón que justifica el proyecto — y el único que todavía no está medido en este equipo.</p>
+      <div class="score">
+        <div class="score-n"><small>RMSE de referencia</small>0,873</div>
+        <div class="score-mae">MAE 0,685 · pendiente de reproducir</div>
+        <div class="track"><i style="width:7.7%;opacity:.55"></i></div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<section>
+  <h2>Los cuatro, sobre un caso real</h2>
+  <p class="sub">Un solo par (usuario, película) del conjunto de prueba enseña mejor que cualquier explicación por qué hacen falta los cuatro escalones.</p>
+
+  <div class="case">
+    <div class="case-top">
+      <div><dt>Usuario</dt><dd>1150 <span style="color:var(--muted);font-weight:400">· 1.042 pelis vistas</span></dd></div>
+      <div><dt>Película</dt><dd>Forrest Gump (1994) <span style="color:var(--muted);font-weight:400">· 1.758 votos</span></dd></div>
+      <div><dt>Nota real que puso</dt><dd class="stars">★<span style="color:var(--line)">★★★★</span> <span style="font-family:var(--mono);font-size:1rem;color:var(--ink)">1,0</span></dd></div>
+    </div>
+
+    <div class="scroll" style="box-shadow:none;border-radius:6px">
+      <table>
+        <thead>
+          <tr><th>Escalón</th><th>Cómo lo calcula</th><th style="text-align:right">Predice</th><th style="text-align:right">Se equivoca en</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="name">1 · Media global</td>
+            <td class="num" style="color:var(--muted)">μ = 3,5821</td>
+            <td class="num" style="text-align:right">3,58</td>
+            <td class="num" style="text-align:right;color:var(--e2)">2,58 ★</td>
+          </tr>
+          <tr>
+            <td class="name">2 · Media por usuario</td>
+            <td class="num" style="color:var(--muted)">μ<sub>u</sub> = 2,6104</td>
+            <td class="num" style="text-align:right">2,61</td>
+            <td class="num" style="text-align:right;color:var(--e4)"><b>1,61 ★</b></td>
+          </tr>
+          <tr class="hl">
+            <td class="name">3 · Media por película <span class="chip" style="background:var(--e1);color:#fff">peor</span></td>
+            <td class="num" style="color:var(--muted)">μ<sub>i</sub> = 4,1166</td>
+            <td class="num" style="text-align:right">4,12</td>
+            <td class="num" style="text-align:right;color:var(--e1)"><b>3,12 ★</b></td>
+          </tr>
+          <tr>
+            <td class="name">4 · Media + sesgos</td>
+            <td class="num" style="color:var(--muted)">3,5821 − 0,9606 + 0,5339</td>
+            <td class="num" style="text-align:right">3,16</td>
+            <td class="num" style="text-align:right;color:var(--e2)">2,16 ★</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note warn" style="margin-top:20px;box-shadow:none">
+      <h4><span class="dot"></span>Lo que revela este caso</h4>
+      <p>El usuario 1150 es <b>muy exigente</b>: su media es 2,61 frente al 3,58 global. Forrest Gump es <b>muy querida</b>: 4,12 de media. Recomendar por popularidad le predice 4,12 y él le puso <b>1</b> — un error de más de 3 estrellas, <em>peor que no personalizar nada</em>.</p>
+      <p>Aquí el escalón 4 tampoco acierta (3,16), y esa es justamente la lección: <b>sumar medias no basta</b>. Sabe que este usuario es duro y que esta película gusta, pero no sabe que a él <em>este tipo de película</em> no le va. Eso — el gusto, no el nivel — es lo único que el filtrado colaborativo aporta, y es la razón de ser del proyecto.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Resultados medidos</h2>
+  <p class="sub">Calculado sobre las 200.042 calificaciones de prueba con <code>03a_baselines.py</code>. La columna de la derecha es la que se lleva a la defensa.</p>
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Modelo</th><th style="text-align:right">RMSE</th><th style="text-align:right">MAE</th>
+          <th style="text-align:right">vs. popularidad</th><th>Qué demuestra superarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name">1 · Media global</td>
+          <td class="num" style="text-align:right">1,1167</td><td class="num" style="text-align:right">0,9328</td>
+          <td class="num" style="text-align:right;color:var(--e1)">−14,4 %</td>
+          <td style="white-space:normal;color:var(--muted)">Que el modelo hace algo</td>
+        </tr>
+        <tr>
+          <td class="name">2 · Media por usuario</td>
+          <td class="num" style="text-align:right">1,0344</td><td class="num" style="text-align:right">0,8273</td>
+          <td class="num" style="text-align:right;color:var(--e1)">−5,9 %</td>
+          <td style="white-space:normal;color:var(--muted)">Que usa información de la película</td>
+        </tr>
+        <tr>
+          <td class="name">3 · Media por película <span class="chip" style="background:var(--accent-soft);color:var(--accent)">práctica actual</span></td>
+          <td class="num" style="text-align:right">0,9765</td><td class="num" style="text-align:right">0,7800</td>
+          <td class="num" style="text-align:right;color:var(--muted)">—</td>
+          <td style="white-space:normal;color:var(--muted)">Que gana a lo que se hace hoy</td>
+        </tr>
+        <tr class="hl">
+          <td class="name">4 · Media + sesgos (λ=2)</td>
+          <td class="num" style="text-align:right">0,9051</td><td class="num" style="text-align:right">0,7150</td>
+          <td class="num" style="text-align:right;color:var(--e4)">+7,3 %</td>
+          <td style="white-space:normal"><b>Que el filtrado colaborativo aporta algo</b></td>
+        </tr>
+        <tr>
+          <td class="name" style="color:var(--muted)">→ SVD (referencia, sin verificar)</td>
+          <td class="num" style="text-align:right;color:var(--muted)">0,873</td><td class="num" style="text-align:right;color:var(--muted)">0,685</td>
+          <td class="num" style="text-align:right;color:var(--muted)">+10,6 %</td>
+          <td style="white-space:normal;color:var(--muted)">Objetivo del proyecto</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Un hallazgo que cambia el listón</h2>
+  <p class="sub">Al reproducir el escalón 4 apareció una diferencia con el valor documentado en el objetivo del proyecto.</p>
+  <div class="note warn">
+    <h4><span class="dot"></span>El baseline de sesgos no es 0,930 — es 0,905</h4>
+    <p>El documento de comprensión del negocio fija <code>RMSE 0,930</code> para <code>μ+b<sub>u</sub>+b<sub>i</sub></code>. Ese número sale de calcular los dos sesgos <b>por separado</b>, cada uno como desviación de la media global:</p>
+    <div class="formula" style="margin:14px 0">
+      <div class="eq"><span style="color:var(--e1)">b<sub>u</sub> = μ<sub>u</sub> − μ&nbsp;&nbsp;&nbsp;y&nbsp;&nbsp;&nbsp;b<sub>i</sub> = μ<sub>i</sub> − μ</span><span style="color:var(--muted);padding-left:16px">→ RMSE 0,9315</span></div>
+    </div>
+    <p>Eso <b>cuenta dos veces</b> parte de la misma desviación. La formulación estándar calcula <code>b<sub>i</sub></code> primero y <code>b<sub>u</sub></code> sobre el residuo que queda, y da <code>0,9057</code>; con λ=2, <code>0,9051</code>.</p>
+    <p><b>Consecuencia práctica:</b> la regla de descarte del proyecto («si no bajas de 0,930, el filtrado colaborativo no aporta») está puesta demasiado baja. El listón honesto es <b>0,9051</b>. El SVD sigue superándolo, pero el margen real cae del 6,1 % al <b>3,5 %</b> — y ese es el número que hay que defender, no el otro.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Con qué se miden</h2>
+  <p class="sub">Las dos métricas se calculan sobre el mismo conjunto de prueba, después de recortar las predicciones a [1, 5].</p>
+  <div class="formula">
+    <div class="eq">
+      <span>RMSE =</span>
+      <span class="sqrt">
+        <span class="sign">√</span>
+        <span class="body">
+          <span class="frac"><span class="num">1</span><span class="den">|T|</span></span>
+          <span style="padding:0 6px"><span style="font-size:1.35em">∑</span><sub style="font-size:.75em">(u,i) ∈ T</sub></span>
+          <span>( r(u,i) − r̂(u,i) )²</span>
+        </span>
+      </span>
+      <span style="color:var(--muted);padding-left:16px">castiga los errores grandes</span>
+    </div>
+    <div class="eq" style="margin-top:22px">
+      <span>MAE =</span>
+      <span class="frac"><span class="num">1</span><span class="den">|T|</span></span>
+      <span style="padding:0 4px"><span style="font-size:1.35em">∑</span><sub style="font-size:.75em">(u,i) ∈ T</sub></span>
+      <span>| r(u,i) − r̂(u,i) |</span>
+      <span style="color:var(--muted);padding-left:16px">error medio, sin castigo extra</span>
+    </div>
+    <div class="where">
+      <span><b>T</b> = conjunto de prueba, <b>|T|</b> = 200.042</span>
+      <span>ambas se leen <b>en estrellas</b></span>
+      <span>la decisión se toma con <b>RMSE</b></span>
+    </div>
+  </div>
+  <p style="margin-top:18px;color:var(--ink-2);max-width:66ch">Por qué el RMSE manda: elevar al cuadrado hace que confundir un 5 con un 2 pese <b>nueve veces</b> más que confundir un 5 con un 4. En un recomendador eso es lo correcto — el fallo grave no es afinar mal, es poner delante algo que la persona va a detestar.</p>
+</section>
+
+<section>
+  <h2>Cómo se defiende</h2>
+  <blockquote class="quote">
+    <p>«Fijamos el umbral <b>RMSE ≤ 0,90</b> antes de modelar. Construimos cuatro modelos de referencia sobre la misma partición 80/20, con semilla fija y sin tocar el conjunto de prueba. La media global da 1,1167; recomendar por popularidad, que es la práctica actual, da <b>0,9765</b>; y el mejor modelo sin personalizar —media más sesgos de usuario y de película— da <b>0,9051</b>.</p>
+    <p>Ese 0,9051 es nuestro criterio de descarte: si el filtrado colaborativo no baja de ahí, no aporta nada sobre dos medias bien calculadas y no se justifica ponerlo en producción.»</p>
+    <cite>Punto 3.3 · Métrica principal del proyecto</cite>
+  </blockquote>
+</section>
+
+<footer>
+  <span>Reproducible con <code>./.venv/bin/python 04_modelado/scripts/03a_baselines.py</code></span>
+  <span>MovieLens 1M · GroupLens, Universidad de Minnesota</span>
+</footer>
+
+</div>

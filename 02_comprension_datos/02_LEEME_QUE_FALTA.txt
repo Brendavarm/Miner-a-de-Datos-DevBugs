@@ -1,0 +1,74 @@
+================================================================================
+02  COMPRENSION DE LOS DATOS (EDA)  -  QUE FALTA TRAER DE DRIVE
+================================================================================
+
+Esta carpeta esta vacia a proposito. El EDA lo hizo el rol de Analista y esta
+en Google Drive, en:
+
+    Entregables listos > Analista / EDA
+
+HAY QUE DESCARGAR ESTOS 14 ARCHIVOS A  02_comprension_datos/graficos/ :
+
+    explicacion_graficas.pdf      (este va en la raiz de 02_, no en graficos/)
+    genre_distribution.png
+    movies_by_year.png
+    rating_by_genre.png
+    rating_distribution.png
+    ratings_over_month.png
+    ratings_over_time.png
+    ratings_vs_tags.png           <-- ver AVISO
+    top_movies_popular.png
+    top_rated_movies.png
+    top_tagged_movies.png         <-- ver AVISO
+    top_tags.png                  <-- ver AVISO
+    top_users_activity.png
+    worst_rated_movies.png
+
+
+--------------------------------------------------------------------------------
+AVISO DE CONSISTENCIA  -  RESOLVER ANTES DE ENTREGAR
+--------------------------------------------------------------------------------
+
+Tres graficos usan TAGS (etiquetas de usuario):
+
+    top_tags.png
+    ratings_vs_tags.png
+    top_tagged_movies.png
+
+MovieLens 1M NO TIENE fichero de tags. Solo trae:
+    ratings.dat  /  movies.dat  /  users.dat
+
+Los tags existen en ml-latest-small y ml-25m, que son datasets DISTINTOS.
+
+Esto significa que el EDA se hizo probablemente sobre otro dataset que el de la
+preparacion (que si es ML-1M: 1.000.209 ratings, 6.040 usuarios, 3.706 pelis).
+
+DOS SALIDAS POSIBLES:
+  a) Rehacer esos tres graficos sobre ML-1M -> no se puede, no hay tags.
+  b) Retirar esos tres graficos del entregable y dejar los otros 11, que si
+     son compatibles con ML-1M.
+
+Recomendado: opcion (b), y confirmar con quien hizo el EDA sobre que fichero
+trabajo. Si el docente cruza los numeros y no cuadran, resta bastante.
+
+
+--------------------------------------------------------------------------------
+PARA QUE SIRVE CADA GRAFICO EN EL INFORME
+--------------------------------------------------------------------------------
+
+  rating_distribution.png .... la variable objetivo es numerica 1-5 y esta
+                               sesgada al alza (57,5% son 4 o 5)
+                               -> justifica REGRESION y el baseline "3,58"
+  top_movies_popular.png ..... cola larga: Top-100 (2,7% del catalogo) =
+                               18,3% de los votos -> justifica CN-3 (cobertura)
+  top_users_activity.png ..... dispersion del 95,53% -> el reto del modelo
+  rating_by_genre.png ........ los gustos no son iguales -> hay que personalizar
+  worst_rated_movies.png ..... dispersion real de las medias por pelicula
+  ratings_over_time.png ...... permite split temporal sin fuga de datos
+  ratings_over_month.png ..... estacionalidad de la actividad
+  genre_distribution.png ..... contexto del catalogo
+  movies_by_year.png ......... contexto del catalogo
+  top_rated_movies.png ....... cuidado: peliculas con pocos votos inflan la
+                               media -> justifica filtrar por minimo de votos
+
+================================================================================

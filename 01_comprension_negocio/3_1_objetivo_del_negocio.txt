@@ -1,0 +1,143 @@
+================================================================================
+3.1  OBJETIVO DEL NEGOCIO
+     Proyecto: Sistema de recomendacion de peliculas por filtrado colaborativo
+     Dataset:  MovieLens 1M (1.000.209 calificaciones, 6.040 usuarios,
+               3.706 peliculas calificadas de un catalogo de 3.883)
+================================================================================
+
+
+ENUNCIADO DEL OBJETIVO DEL NEGOCIO
+--------------------------------------------------------------------------------
+
+Aumentar el consumo y la satisfaccion de los usuarios de la plataforma
+personalizando que pelicula se le muestra a cada uno, en lugar de mostrar a
+todos el mismo catalogo ordenado por popularidad.
+
+En concreto: dado que el usuario mediano solo ha visto el 2,6% del catalogo
+(96 de 3.706 peliculas), el negocio necesita un mecanismo que le ponga delante,
+del 97,4% restante, las pocas peliculas que si le van a gustar; y que al hacerlo
+saque tambien a la superficie el 68,1% del catalogo que hoy practicamente nadie
+descubre.
+
+
+EL PROBLEMA EN NUMEROS  (medidos sobre los datos, no estimados)
+--------------------------------------------------------------------------------
+
+1. EL USUARIO NO PUEDE VER EL CATALOGO ENTERO
+   Peliculas vistas por usuario:  mediana 96,  media 165,6,  minimo 20
+   Eso es el 2,6% del catalogo (mediana). El 97,4% le es desconocido.
+   El 25% de los usuarios ha visto 44 peliculas o menos.
+   -> Sin recomendacion, la decision de que ver se toma sobre una fraccion
+      minima de lo disponible.
+
+2. EL CATALOGO ESTA DESAPROVECHADO (efecto cola larga)
+   Las 100 peliculas mas vistas (2,7% del catalogo) concentran el 18,3%
+   de todas las calificaciones.
+   Las 500 mas vistas (13,5% del catalogo) concentran el 53,0%.
+   El 80% de la actividad cae sobre solo el 31,9% del catalogo.
+   1.192 peliculas (32,2%) tienen menos de 50 votos; 446 (12,0%) menos de 10;
+   y 177 peliculas del catalogo no tienen ni un solo voto.
+   -> Hay inventario pagado que no genera consumo. Recomendar por popularidad
+      agrava el problema; personalizar es lo que lo corrige.
+
+3. LA POPULARIDAD NO SIRVE PARA TODOS: LOS GUSTOS SON DISTINTOS
+   Media de calificacion por usuario: de 1,02 a 4,96 estrellas
+   (desviacion tipica entre usuarios: 0,430).
+   Media por pelicula: desviacion tipica 0,673.
+   -> Un unico ranking "para todos" es matematicamente incapaz de acertar:
+      hay usuarios exigentes y usuarios generosos, y ordenan distinto.
+
+4. LA INFORMACION EXISTE Y ES SUFICIENTE
+   1.000.209 calificaciones reales, 0 nulos, 0 duplicados, 0 fuera de rango,
+   100% de las filas conservadas tras la limpieza.
+   Matriz usuario x pelicula de 6.040 x 3.706 = 22.384.240 celdas,
+   con 1.000.209 observadas (4,47%) y 21.384.031 por predecir (95,53%).
+   -> El activo ya esta en casa; lo que falta es explotarlo.
+
+
+CRITERIOS DE EXITO DEL NEGOCIO  (como sabremos que funciono)
+--------------------------------------------------------------------------------
+
+  CN-1  Acierto percibido: que la nota que el sistema predice se desvie menos
+        de 0,70 estrellas de la nota real del usuario (MAE), es decir menos del
+        17,5% del rango de la escala. Traducido: si el sistema dice "4 estrellas",
+        al usuario le gusta de verdad.
+
+  CN-2  Utilidad frente a lo que ya se hace hoy: mejorar en al menos un 10% el
+        error del ranking por popularidad, que es la practica actual
+        (referencia medida: RMSE 0,977 con popularidad).
+
+  CN-3  Aprovechamiento del catalogo: que las recomendaciones no se concentren
+        en el 2,7% de peliculas de siempre, sino que alcancen peliculas de la
+        cola larga (objetivo: que el Top-N recomendado cubra mas del 31,9% del
+        catalogo que hoy acapara el 80% de la actividad).
+
+  CN-4  Cobertura de usuarios: dar recomendaciones a los 6.040 usuarios,
+        incluidos los 1.743 (28,9%) que han visto menos de 50 peliculas.
+
+
+TRADUCCION A OBJETIVO DE MINERIA DE DATOS
+--------------------------------------------------------------------------------
+
+Objetivo tecnico:
+  Estimar el valor de las 21.384.031 celdas no observadas r(u,i) del intervalo
+  [1, 5] de la matriz usuario x pelicula, minimizando el RMSE, y usar esas
+  estimaciones para construir un Top-N personalizado por usuario.
+
+Criterios de exito tecnicos, con la linea base medida (hold-out 80/20,
+200.042 calificaciones de prueba):
+
+      Modelo                          RMSE     MAE
+      ------------------------------  -----   -----
+      Media global (3,58)             1,117   0,933   <- suelo, no personaliza
+      Media por usuario               1,034   0,827
+      Media por pelicula (popularidad) 0,977   0,780   <- practica actual
+      Media + sesgos (mu+bu+bi)       0,930   0,731
+      SVD (referencia medida)         0,873   0,685   <- objetivo a batir o igualar
+
+  CT-1  RMSE <= 0,90 en test  (mejora >= 7,9% sobre popularidad)
+  CT-2  MAE  <= 0,70 en test  (mejora >= 10,3% sobre popularidad)
+  CT-3  El modelo debe superar al baseline mu+bu+bi (RMSE 0,930); si no lo
+        supera, el filtrado colaborativo no aporta nada y no se justifica.
+
+  Referencia alcanzada con SVD: RMSE 0,873 y MAE 0,685, que supone
+    -21,8% de error frente a la media global,
+    -10,6% frente al ranking por popularidad,
+    - 6,1% frente al baseline de sesgos.
+
+
+COMO SE DEFIENDE EN UNA FRASE
+--------------------------------------------------------------------------------
+
+"El usuario mediano conoce el 2,6% del catalogo y el 68% de las peliculas apenas
+recibe votos; con 1.000.209 calificaciones ya disponibles podemos predecir lo
+que cada usuario puntuaria con un error de 0,685 estrellas, un 10,6% mejor que
+recomendar lo mas popular, que es lo que se hace hoy."
+
+
+NUMEROS FUENTE  (para citar en la diapositiva)
+--------------------------------------------------------------------------------
+
+  Calificaciones .......................... 1.000.209
+  Usuarios ................................ 6.040
+  Peliculas calificadas / catalogo ........ 3.706 / 3.883
+  Peliculas sin ningun voto ............... 177
+  Periodo ................................. abr-2000 a feb-2003
+  Escala .................................. 1 a 5 estrellas enteras
+  Media global ............................ 3,58   (desv. 1,117)
+  Calificaciones >= 4 ..................... 57,5%
+  Calificaciones <= 2 ..................... 16,4%
+  Vistas por usuario ...................... mediana 96 / media 165,6 / min 20 / max 2.314
+  Cuartiles de vistas ..................... Q1 44 | Q2 96 | Q3 208 | P90 400
+  Usuarios con < 50 vistas ................ 1.743  (28,9%)
+  Top 100 peliculas ....................... 18,3% de las calificaciones
+  Top 500 peliculas ....................... 53,0% de las calificaciones
+  Catalogo que acumula el 80% ............. 1.182 peliculas (31,9%)
+  Peliculas con < 50 votos ................ 1.192  (32,2%)
+  Peliculas con < 10 votos ................ 446    (12,0%)
+  Celdas de la matriz ..................... 22.384.240
+  Celdas observadas ....................... 1.000.209  (4,47%)
+  Celdas a predecir ....................... 21.384.031 (95,53%)
+  Calidad: nulos / duplicados / fuera de rango ..... 0 / 0 / 0
+
+================================================================================

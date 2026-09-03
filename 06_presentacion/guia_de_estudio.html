@@ -1,0 +1,614 @@
+<title>Guía de Estudio del Recomendador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ground:#e7ecec;
+  --surface:#ffffff;
+  --surface-2:#f1f5f5;
+  --ink:#101c1e;
+  --ink-2:#37484b;
+  --muted:#66787c;
+  --line:#cfdadb;
+  --line-soft:#e2eaea;
+  --accent:#0d5c68;
+  --accent-soft:#e0eef0;
+  --gold:#8a5f12;
+  --gold-soft:#f7efdd;
+  --red:#a8412f;
+  --red-soft:#f8e7e3;
+  --green:#2c6e4a;
+  --shadow:0 1px 2px rgba(16,28,30,.05), 0 10px 26px -14px rgba(16,28,30,.24);
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --sans:"Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif:"Literata", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0e1516;--surface:#16201f;--surface-2:#1c2827;
+    --ink:#e6ecec;--ink-2:#bcc9c9;--muted:#84979a;
+    --line:#2a3838;--line-soft:#212e2e;
+    --accent:#63c3d0;--accent-soft:#16302f;
+    --gold:#d7a848;--gold-soft:#2c2617;
+    --red:#e08472;--red-soft:#2f1e1a;
+    --green:#6bc191;
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 26px -14px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0e1516;--surface:#16201f;--surface-2:#1c2827;
+  --ink:#e6ecec;--ink-2:#bcc9c9;--muted:#84979a;
+  --line:#2a3838;--line-soft:#212e2e;
+  --accent:#63c3d0;--accent-soft:#16302f;
+  --gold:#d7a848;--gold-soft:#2c2617;
+  --red:#e08472;--red-soft:#2f1e1a;
+  --green:#6bc191;
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 26px -14px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--serif);font-size:17px;line-height:1.68;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px 100px}
+h1,h2,h3,h4,.sans{font-family:var(--sans);text-wrap:balance}
+code,.mono{font-family:var(--mono);font-size:.92em}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+p{margin:0 0 15px}
+p:last-child{margin-bottom:0}
+
+/* ---------- portada ---------- */
+header{padding:60px 0 36px}
+.kicker{
+  font-family:var(--sans);font-size:11.5px;font-weight:700;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:16px;
+}
+h1{font-size:clamp(2rem,5vw,3.15rem);font-weight:800;letter-spacing:-.026em;
+  line-height:1.05;margin:0 0 18px}
+.lede{font-size:1.14rem;color:var(--ink-2);max-width:60ch;margin:0}
+
+/* ---------- indice ---------- */
+.toc{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  box-shadow:var(--shadow);padding:22px 26px;margin:36px 0 60px;
+}
+.toc h4{
+  font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 14px;
+}
+.toc ol{margin:0;padding:0;list-style:none;counter-reset:t;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2px 26px}
+.toc li{counter-increment:t;border-bottom:1px solid var(--line-soft)}
+.toc li:last-child{border-bottom:0}
+.toc a{
+  display:flex;gap:12px;padding:9px 2px;text-decoration:none;color:var(--ink);
+  font-family:var(--sans);font-size:14.5px;font-weight:500;
+}
+.toc a:hover{color:var(--accent)}
+.toc a::before{
+  content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:12px;
+  color:var(--muted);font-weight:400;padding-top:2px;
+}
+
+/* ---------- modulos ---------- */
+.mod{margin-bottom:64px;scroll-margin-top:24px}
+.mod-head{
+  display:flex;align-items:baseline;gap:14px;
+  padding-bottom:12px;margin-bottom:22px;border-bottom:2px solid var(--accent);
+}
+.mod-n{
+  font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent);
+  background:var(--accent-soft);padding:3px 9px;border-radius:3px;flex:none;
+}
+.mod h2{font-size:1.55rem;font-weight:700;letter-spacing:-.018em;margin:0}
+.mod > p{max-width:66ch}
+
+h3{font-size:1.1rem;font-weight:700;margin:28px 0 10px;letter-spacing:-.008em}
+.mod ul,.mod ol.plain{max-width:66ch;padding-left:22px;margin:0 0 15px}
+.mod li{margin-bottom:8px}
+
+/* ---------- tarjetas de cifras ---------- */
+.figs{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
+  gap:12px;margin:22px 0;
+}
+.fig{
+  background:var(--surface);border:1px solid var(--line);border-radius:7px;
+  padding:15px 17px;box-shadow:var(--shadow);
+}
+.fig b{
+  display:block;font-family:var(--mono);font-size:1.42rem;font-weight:600;
+  color:var(--accent);letter-spacing:-.02em;font-variant-numeric:tabular-nums;
+  line-height:1.15;margin-bottom:5px;
+}
+.fig span{
+  display:block;font-family:var(--sans);font-size:12.5px;color:var(--muted);
+  line-height:1.4;
+}
+.fig.gold b{color:var(--gold)}
+.fig.red b{color:var(--red)}
+
+/* ---------- bloques ---------- */
+.box{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:20px 24px;box-shadow:var(--shadow);margin:20px 0;
+}
+.box.tint{background:var(--accent-soft);border-color:transparent;box-shadow:none}
+.box.warn{border-left:3px solid var(--red)}
+.box.key{border-left:3px solid var(--gold);background:var(--gold-soft);box-shadow:none;border-color:transparent}
+.box h4{
+  font-size:.98rem;font-weight:700;margin:0 0 10px;
+  display:flex;align-items:center;gap:9px;
+}
+.box h4::before{
+  content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none;
+}
+.box.warn h4::before{background:var(--red)}
+.box.key h4::before{background:var(--gold)}
+.box p,.box li{font-size:.98rem;color:var(--ink-2)}
+.box.key p,.box.key li{color:var(--ink)}
+.box ul{margin:10px 0 0;padding-left:20px}
+
+/* ---------- formula suelta ---------- */
+.f{
+  font-family:var(--mono);font-size:14.5px;background:var(--surface-2);
+  border:1px solid var(--line-soft);border-radius:6px;padding:15px 18px;
+  margin:15px 0;overflow-x:auto;white-space:nowrap;color:var(--ink);
+}
+.f em{font-style:normal;color:var(--muted);padding-left:14px}
+
+/* ---------- tabla ---------- */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;
+  background:var(--surface);box-shadow:var(--shadow);margin:20px 0}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:14px}
+th,td{padding:11px 15px;text-align:left;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+thead th{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);background:var(--surface-2);border-bottom:1px solid var(--line)}
+tbody tr:last-child td{border-bottom:0}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+td.w{white-space:normal;min-width:180px}
+tr.hi td{background:var(--gold-soft);font-weight:600}
+
+/* ---------- flashcards ---------- */
+.cards{display:grid;gap:12px;margin-top:20px}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.card summary{
+  cursor:pointer;padding:16px 20px;font-family:var(--sans);font-weight:600;
+  font-size:1rem;list-style:none;display:flex;gap:12px;align-items:flex-start;
+}
+.card summary::-webkit-details-marker{display:none}
+.card summary::before{
+  content:"?";font-family:var(--mono);font-weight:600;color:var(--accent);
+  background:var(--accent-soft);width:22px;height:22px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;flex:none;font-size:13px;
+  margin-top:1px;
+}
+.card summary:hover{color:var(--accent)}
+.card[open] summary{border-bottom:1px solid var(--line-soft);padding-bottom:14px}
+.card .ans{padding:16px 20px 20px 52px;font-size:.98rem;color:var(--ink-2)}
+.card .ans b{color:var(--ink)}
+
+/* ---------- checklist ---------- */
+.check{list-style:none;padding:0;margin:18px 0 0;max-width:70ch}
+.check li{
+  display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-soft);
+  font-size:.99rem;margin:0;
+}
+.check li:last-child{border-bottom:0}
+.check .mk{
+  font-family:var(--mono);font-size:12px;font-weight:600;flex:none;
+  width:64px;padding-top:3px;
+}
+.ok{color:var(--green)}
+.pend{color:var(--red)}
+
+/* ---------- glosario ---------- */
+.gloss{display:grid;gap:0;margin-top:18px;border-top:1px solid var(--line-soft)}
+.gloss div{
+  display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:20px;
+  padding:12px 0;border-bottom:1px solid var(--line-soft);align-items:baseline;
+}
+.gloss dt{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--accent)}
+.gloss dd{margin:0;font-size:.97rem;color:var(--ink-2)}
+
+footer{
+  border-top:1px solid var(--line);margin-top:20px;padding-top:22px;
+  font-family:var(--sans);font-size:12.5px;color:var(--muted);
+  display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;
+}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  .wrap{padding:0 16px 70px}
+  .gloss div{grid-template-columns:1fr;gap:2px}
+  .card .ans{padding-left:20px}
+  .check .mk{width:56px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">Minería de datos · Sistema de recomendación · MovieLens 1M</div>
+  <h1>Guía de estudio</h1>
+  <p class="lede">Todo lo que hemos aclarado sobre el proyecto, ordenado para leer de corrido: qué se predice, con qué se mide, cómo se demuestra que funciona y qué contestar cuando pregunten.</p>
+</header>
+
+<nav class="toc">
+  <h4>Contenido</h4>
+  <ol>
+    <li><a href="#m1">De qué va el proyecto</a></li>
+    <li><a href="#m2">La variable a optimizar</a></li>
+    <li><a href="#m3">La métrica principal</a></li>
+    <li><a href="#m4">La escalera de baselines</a></li>
+    <li><a href="#m5">Cómo se prueba que está optimizado</a></li>
+    <li><a href="#m6">¿No es copiar a Netflix?</a></li>
+    <li><a href="#m7">Cifras que hay que saber de memoria</a></li>
+    <li><a href="#m8">Errores que hunden la defensa</a></li>
+    <li><a href="#m9">Preguntas y respuestas</a></li>
+    <li><a href="#m10">Estado del proyecto</a></li>
+    <li><a href="#m11">Glosario</a></li>
+  </ol>
+</nav>
+
+<!-- ============ 1 ============ -->
+<section class="mod" id="m1">
+  <div class="mod-head"><span class="mod-n">01</span><h2>De qué va el proyecto</h2></div>
+
+  <p>La plataforma enseña a los 6.040 usuarios <b>la misma estantería</b>: un ranking ordenado por popularidad. El proyecto consiste en darle a cada uno la suya.</p>
+
+  <h3>El problema, con un usuario real</h3>
+  <p>El usuario 1150 ha visto 1.302 películas. Sus cinco estrellas son <i>Duck Soup</i> (1933), <i>Roger &amp; Me</i>, <i>Night on Earth</i>: cine clásico, documental, indie europeo. Lo que la plataforma le muestra hoy son <i>American Beauty</i>, <i>Star Wars</i>, <i>Jurassic Park</i>, <i>Matrix</i>.</p>
+
+  <div class="box warn">
+    <h4>Dos fallos simultáneos</h4>
+    <ul>
+      <li><b>Ya vio 7 de esos 8 títulos.</b> Recomendárselos no le sirve de nada.</li>
+      <li><b>Ni siquiera le gustaron:</b> les puso 3,0 de media, por debajo de su propia media (2,61 es su nivel, y esas están en su zona baja).</li>
+    </ul>
+    <p style="margin-top:12px">Le quedan <b>2.404 películas sin ver</b>. Entre ellas están las que le encantarían. Hoy no tiene forma de encontrarlas.</p>
+  </div>
+
+  <h3>La cadena completa</h3>
+  <div class="f">
+    r(u,i) conocido → el modelo aprende → r̂(u,i) predicho → se ordena → <b>el usuario ve un Top-10</b>
+  </div>
+
+  <div class="box key">
+    <h4>El concepto que más se confunde</h4>
+    <p>El usuario <b>nunca ve un rating predicho, y jamás ve un RMSE</b>. Ve una lista de 10 películas.</p>
+    <p>Predecir el rating es el <b>medio</b>; la lista ordenada es el <b>fin</b>. El RMSE mide si el paso intermedio está bien hecho, porque si predices mal las notas, ordenas mal la lista y recomiendas basura.</p>
+  </div>
+
+  <h3>Por qué lo paga el negocio</h3>
+  <ul>
+    <li><b>Para la persona:</b> deja de perder veinte minutos decidiendo qué ver.</li>
+    <li><b>Para la plataforma:</b> hay <b>177 películas con cero votos</b> y 1.192 por debajo de 50. Eso es catálogo pagado que nadie consume. Recomendar por popularidad lo agrava; personalizar lo rescata.</li>
+  </ul>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="mod" id="m2">
+  <div class="mod-head"><span class="mod-n">02</span><h2>La variable a optimizar</h2></div>
+
+  <p>Es una sola, y es la columna <code>rating</code> del fichero <code>datos_limpios.parquet</code>.</p>
+
+  <div class="f">r(u,i) ∈ [1, 5] <em>la nota que el usuario u daría a la película i que aún no ha visto</em></div>
+
+  <h3>Dónde está, físicamente</h3>
+  <p>La misma información existe en dos formatos, y esa es la parte que confunde:</p>
+  <ul>
+    <li><b>Forma larga</b> (<code>datos_limpios.parquet</code>): una fila por calificación. <code>userId</code> es la <i>u</i>, <code>movieId</code> es la <i>i</i>, <code>rating</code> es <i>r(u,i)</i>. Ejemplo real: <code>r(1, 1193) = 5</code>.</li>
+    <li><b>Forma matriz</b> (<code>matriz_usuario_pelicula.npz</code>): 6.040 × 3.706. Aquí <i>r(u,i)</i> es la celda del cruce.</li>
+  </ul>
+
+  <div class="figs">
+    <div class="fig"><b>22.384.240</b><span>celdas de la matriz</span></div>
+    <div class="fig"><b>1.000.209</b><span>observadas · 4,47 %<br>sirven para entrenar</span></div>
+    <div class="fig red"><b>21.384.031</b><span>vacías · 95,53 %<br>hay que predecirlas</span></div>
+  </div>
+
+  <div class="box warn">
+    <h4>Se minimiza, no se maximiza</h4>
+    <p>No se optimiza «que el rating sea alto». Predecir <b>5 a todo el mundo</b> sería el peor modelo posible. Lo que se minimiza es el <b>error</b> entre lo predicho y lo real.</p>
+  </div>
+
+  <div class="box warn">
+    <h4>Cuidado con la palabra «optimizada»</h4>
+    <p>El <code>rating</code> observado es <b>la variable <i>a</i> optimizar</b>: la materia prima que ya tienes. La <b>variable optimizada</b> es <code>r̂(u,i)</code>, la salida del modelo, y <b>todavía no existe</b> — sale en la fase 4. Si en la defensa señalas el parquet y dices «esta es la variable optimizada», te corrigen.</p>
+  </div>
+
+  <div class="box warn">
+    <h4>El 0 de la matriz dispersa no es un cero de estrellas</h4>
+    <p>En el <code>.npz</code>, las celdas vacías se leen como <b>0</b> porque el formato CSR solo guarda lo que tiene valor. Pero la escala <b>empieza en 1</b>: ese 0 significa «no la ha visto». Si promedias sin enmascarar, te sale 0,16 en vez de 3,58. En el <code>.parquet</code> son <code>NaN</code> de verdad y pandas los ignora solo.</p>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="mod" id="m3">
+  <div class="mod-head"><span class="mod-n">03</span><h2>La métrica principal</h2></div>
+
+  <p>Es el <b>RMSE</b>, la raíz del error cuadrático medio. Se mide sobre las 200.042 calificaciones de prueba, después de recortar las predicciones a [1, 5].</p>
+
+  <div class="f">RMSE = √( (1/|T|) · Σ ( r(u,i) − r̂(u,i) )² ) <em>en estrellas</em></div>
+  <div class="f">MAE&nbsp;&nbsp;= (1/|T|) · Σ | r(u,i) − r̂(u,i) | <em>secundaria</em></div>
+
+  <h3>Cómo se lee</h3>
+  <p>El RMSE está <b>en la misma unidad que el rating</b>. Un RMSE de 0,873 significa: «de media, el sistema se equivoca en 0,87 estrellas». Sobre un recorrido de 4 puntos (de 1 a 5), es un 21,8 % del rango.</p>
+
+  <h3>Por qué RMSE y no MAE</h3>
+  <p>Al elevar al cuadrado, confundir un 5 con un 2 (error 3) pesa <b>nueve veces</b> más que confundir un 5 con un 4 (error 1). En un recomendador eso es lo correcto: el fallo grave no es afinar mal, es poner delante algo que la persona va a detestar. El MAE se reporta porque es más fácil de explicar, pero <b>la decisión se toma con el RMSE</b>.</p>
+
+  <div class="box tint">
+    <h4>Métricas de apoyo que casi nadie mide</h4>
+    <ul>
+      <li><b>Cobertura de catálogo:</b> qué porcentaje de las 3.706 películas aparece en algún Top-10. Un modelo puede tener buen RMSE y recomendar siempre las mismas 50.</li>
+      <li><b>Precisión@10:</b> de 10 recomendadas, cuántas tenían de verdad 4 estrellas o más. Mide el <i>ranking</i>, que es lo que el usuario ve.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="mod" id="m4">
+  <div class="mod-head"><span class="mod-n">04</span><h2>La escalera de baselines</h2></div>
+
+  <p>Cuatro modelos de referencia, cada uno con <b>una pieza de información más</b> que el anterior. Sirven para responder la única pregunta que importa: <i>¿el modelo aporta algo, o lo mismo se consigue con una media?</i></p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>#</th><th>Modelo</th><th>Fórmula</th><th class="n">RMSE</th><th class="w">Qué añade</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Media global</td><td class="mono">μ</td><td class="n">1,1167</td><td class="w">Nada. Es el suelo.</td></tr>
+        <tr><td>2</td><td>Media por usuario</td><td class="mono">μ<sub>u</sub></td><td class="n">1,0344</td><td class="w">El nivel de exigencia del usuario</td></tr>
+        <tr><td>3</td><td>Media por película</td><td class="mono">μ<sub>i</sub></td><td class="n">0,9765</td><td class="w">La calidad de la película. <b>Es la práctica actual.</b></td></tr>
+        <tr class="hi"><td>4</td><td>Media + sesgos</td><td class="mono">μ + b<sub>u</sub> + b<sub>i</sub></td><td class="n">0,9051</td><td class="w">Las dos señales sin contarlas dos veces. <b>El listón real.</b></td></tr>
+        <tr><td>→</td><td style="color:var(--muted)">SVD (sin verificar)</td><td class="mono" style="color:var(--muted)">factores latentes</td><td class="n" style="color:var(--muted)">0,873</td><td class="w" style="color:var(--muted)">Gustos, no niveles. El objetivo.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>El detalle del escalón 4</h3>
+  <p>El orden importa. Primero se calcula cuánto se desvía cada <b>película</b> de la media global; después, sobre <b>el residuo que queda</b>, cuánto se desvía cada usuario:</p>
+  <div class="f">b<sub>i</sub> = Σ<sub>u</sub> ( r − μ ) / ( λ + |U<sub>i</sub>| )</div>
+  <div class="f">b<sub>u</sub> = Σ<sub>i</sub> ( r − μ − b<sub>i</sub> ) / ( λ + |I<sub>u</sub>| ) <em>ojo: sobre el residuo</em></div>
+  <p>La <b>λ</b> (= 2) evita que una película con un solo voto de 5★ reciba el sesgo máximo: los sesgos calculados con pocos datos se encogen hacia cero.</p>
+
+  <div class="box warn">
+    <h4>Corrección importante respecto a lo documentado</h4>
+    <p>El documento del objetivo fija <code>0,930</code> para este escalón. Ese número sale de calcular los sesgos <b>por separado</b> (<code>b<sub>u</sub> = μ<sub>u</sub> − μ</code> y <code>b<sub>i</sub> = μ<sub>i</sub> − μ</code>), lo que <b>cuenta dos veces</b> parte de la misma desviación. Verificado: esa variante da 0,9315.</p>
+      <p>La formulación estándar da <b>0,9051</b>. Consecuencia: la regla de descarte está puesta demasiado baja. El listón honesto es 0,9051, y el margen del SVD baja del 6,1 % al <b>3,5 %</b>.</p>
+    <p>Los otros tres escalones sí coinciden con lo documentado (1,117 / 1,034 / 0,977).</p>
+  </div>
+
+  <h3>El caso que lo explica todo</h3>
+  <p>Usuario 1150 y <i>Forrest Gump</i>. Él le puso <b>1 estrella</b>.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Escalón</th><th class="n">Predice</th><th class="n">Se equivoca en</th></tr></thead>
+      <tbody>
+        <tr><td>Media global</td><td class="n">3,58</td><td class="n">2,58 ★</td></tr>
+        <tr><td>Media por usuario</td><td class="n">2,61</td><td class="n" style="color:var(--green)">1,61 ★</td></tr>
+        <tr><td>Media por película <i>(popularidad)</i></td><td class="n">4,12</td><td class="n" style="color:var(--red)"><b>3,12 ★</b></td></tr>
+        <tr><td>Media + sesgos</td><td class="n">3,16</td><td class="n">2,16 ★</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>El usuario es exigente (media 2,61 frente a 3,58) y la película es muy querida (4,12). Recomendar por popularidad le predice 4,12 y él le puso 1: <b>peor que no personalizar nada</b>. Y el escalón 4 tampoco acierta — sabe que él es duro y que la película gusta, pero no sabe que a él <i>ese tipo de película</i> no le va. <b>Eso es exactamente lo que aporta el filtrado colaborativo</b>, y la razón de ser del proyecto.</p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="mod" id="m5">
+  <div class="mod-head"><span class="mod-n">05</span><h2>Cómo se prueba que está optimizado</h2></div>
+
+  <div class="box key">
+    <h4>Punto de partida</h4>
+    <p>«Optimizado» <b>no significa RMSE = 0</b>. Hay ruido irreducible: el mismo usuario, el mismo día, puntúa igual película con 4 o con 5 según el ánimo. En MovieLens 1M el estado del arte ronda 0,84. Optimizado es una <b>demostración por comparación</b>, no un valor absoluto.</p>
+  </div>
+
+  <h3>Las cinco pruebas</h3>
+  <ol class="plain">
+    <li><b>Escalera de baselines</b> — demuestra que el modelo aporta. Con regla de descarte explícita: si no baja de 0,9051, el filtrado colaborativo no aporta nada sobre dos medias bien calculadas, y hay que escribirlo.</li>
+    <li><b>Umbral fijado antes de modelar</b> — RMSE ≤ 0,90 y MAE ≤ 0,70, declarados en el punto 3.1 <i>antes</i> de entrenar. Fijarlo después es acomodar la vara al resultado.</li>
+    <li><b>Curva de hiperparámetros</b> — <b>esta es la respuesta literal a «¿cómo sabemos que ya está optimizado?»</b>. Se varía un parámetro y se grafica el error: si al subirlo empeora <i>y</i> al bajarlo también empeora, estás en el fondo del valle. Ese es el criterio de parada. Sin este gráfico solo puedes decir «no probé más configuraciones».</li>
+    <li><b>Validación cruzada 5-fold</b> — demuestra que no fue suerte del split. Se reporta media y desviación: <code>0,873 ± 0,004</code> es fiable; <code>± 0,050</code> no lo es.</li>
+    <li><b>Ausencia de fuga de datos</b> — el test no se toca al entrenar, ni para normalizar, ni para filtrar. Un RMSE bajo con fuga es un número falso, y es lo primero que se revisa.</li>
+  </ol>
+
+  <div class="box tint">
+    <h4>Ya tienes un ejemplo real de la prueba 3</h4>
+    <p>El barrido de λ en el escalón 4 es exactamente una curva de hiperparámetros: λ=0 → 0,9057; λ=2 → <b>0,9051</b> (mínimo); λ=10 → 0,9058; λ=50 → 0,9164. Sube por los dos lados del mínimo. Sirve de ejemplo antes de tener el del SVD.</p>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="mod" id="m6">
+  <div class="mod-head"><span class="mod-n">06</span><h2>¿No es copiar a Netflix?</h2></div>
+
+  <p>Te lo van a preguntar. La respuesta es <b>sí y no</b>, y las dos mitades importan.</p>
+
+  <h3>Sí: el problema es el mismo — y eso es una ventaja</h3>
+  <ul>
+    <li>El <b>Netflix Prize (2006–2009)</b> es literalmente este proyecto: predecir ratings de 1 a 5 minimizando RMSE. Netflix pagó un millón de dólares al equipo que bajara un 10 % su algoritmo interno (Cinematch, RMSE 0,9525). Ganó BellKor's Pragmatic Chaos con 0,8567.</li>
+    <li><b>MovieLens no es un dataset comercial</b>: lo publica GroupLens, de la Universidad de Minnesota, precisamente para investigación y docencia.</li>
+  </ul>
+  <p>Que el problema esté resuelto por otros es lo que lo hace <b>buen ejercicio académico</b>: existe un benchmark público contra el que medirte. Con un problema inventado no sabrías si tu 0,873 está bien o mal.</p>
+
+  <h3>No: Netflix ya no hace esto</h3>
+  <div class="scroll">
+    <table>
+      <thead><tr><th></th><th class="w">Netflix / HBO hoy</th><th class="w">Este proyecto</th></tr></thead>
+      <tbody>
+        <tr><td>Señal</td><td class="w">Implícita: qué viste, cuántos minutos, dónde abandonaste</td><td class="w">Explícita: la nota de 1 a 5</td></tr>
+        <tr><td>Escala</td><td class="w">Eliminó las 5 estrellas en 2017 — ahora 👍/👎</td><td class="w">1 a 5 estrellas</td></tr>
+        <tr><td>Optimiza</td><td class="w">Horas de visionado y retención</td><td class="w">Precisión de la predicción (RMSE)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Lo que sí es vuestro</h3>
+  <p>No el algoritmo — el SVD lo publicó Simon Funk en 2006. Lo vuestro es <b>el estudio</b>: la medición sobre estos datos con vuestro split, la comparación honesta contra cuatro baselines, el criterio de descarte declarado de antemano y la traducción a negocio. Y ahora, además, <b>la corrección del baseline mal calculado</b> — eso es método, y es lo que valora un tribunal.</p>
+
+  <div class="box tint">
+    <h4>Tres formas de diferenciarlo aún más, sin datos nuevos</h4>
+    <ul>
+      <li><b>Cold-start:</b> evaluar aparte los 1.743 usuarios (28,9 %) con menos de 50 vistas. ¿Funciona igual con ellos? Casi seguro que no, y demostrarlo es un hallazgo.</li>
+      <li><b>Cobertura de cola larga:</b> casi todo el mundo reporta solo RMSE.</li>
+      <li><b>Sesgo demográfico:</b> tenéis <code>usuarios.csv</code> con sexo, edad y ocupación. ¿Acierta igual con mujeres que con hombres? ¿Con mayores de 50? Es <i>fairness</i>, es actual, y los datos ya están ahí. Esta es la que más despunta.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="mod" id="m7">
+  <div class="mod-head"><span class="mod-n">07</span><h2>Cifras que hay que saber de memoria</h2></div>
+
+  <h3>El dataset</h3>
+  <div class="figs">
+    <div class="fig"><b>1.000.209</b><span>calificaciones</span></div>
+    <div class="fig"><b>6.040</b><span>usuarios</span></div>
+    <div class="fig"><b>3.706</b><span>películas calificadas<br>(catálogo: 3.883)</span></div>
+    <div class="fig"><b>3,58</b><span>media global de rating</span></div>
+    <div class="fig red"><b>95,53 %</b><span>de la matriz está vacía</span></div>
+    <div class="fig"><b>57,5 %</b><span>de los votos son 4★ o 5★</span></div>
+  </div>
+
+  <h3>El problema de negocio</h3>
+  <div class="figs">
+    <div class="fig gold"><b>2,6 %</b><span>del catálogo ve el usuario mediano (96 de 3.706)</span></div>
+    <div class="fig gold"><b>18,3 %</b><span>de los votos se los llevan 100 películas (2,7 % del catálogo)</span></div>
+    <div class="fig red"><b>177</b><span>películas con cero votos</span></div>
+    <div class="fig red"><b>1.743</b><span>usuarios con menos de 50 vistas (28,9 %)</span></div>
+  </div>
+
+  <h3>Los resultados</h3>
+  <div class="figs">
+    <div class="fig"><b>0,9765</b><span>RMSE de la práctica actual (popularidad)</span></div>
+    <div class="fig gold"><b>0,9051</b><span>el listón real a superar</span></div>
+    <div class="fig"><b>0,90</b><span>umbral de éxito comprometido</span></div>
+    <div class="fig"><b>0,873</b><span>SVD de referencia — <i>sin verificar</i></span></div>
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="mod" id="m8">
+  <div class="mod-head"><span class="mod-n">08</span><h2>Errores que hunden la defensa</h2></div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th class="w">No digas / no hagas</th><th class="w">Lo correcto</th></tr></thead>
+      <tbody>
+        <tr><td class="w">«Esta es la variable optimizada» señalando el parquet</td><td class="w">Es la variable <b>a</b> optimizar. La optimizada es <code>r̂</code>, y sale en la fase 4</td></tr>
+        <tr><td class="w">«El usuario ve la nota que predice el sistema»</td><td class="w">El usuario ve <b>una lista de 10</b>. Nunca ve un rating predicho ni un RMSE</td></tr>
+        <tr><td class="w">«Nuestro RMSE es 0,873, que está muy bien»</td><td class="w">0,873 solo no significa nada. Di <b>«un 10,6 % mejor que la práctica actual»</b></td></tr>
+        <tr><td class="w">Usar 0,930 como listón del filtrado colaborativo</td><td class="w">El listón honesto es <b>0,9051</b></td></tr>
+        <tr><td class="w">Calcular medias o normalizar usando todo el dataset</td><td class="w">Solo con entrenamiento. Lo contrario es <b>fuga de datos</b></td></tr>
+        <tr><td class="w">Hacer <code>M.mean()</code> sobre la matriz dispersa</td><td class="w">Enmascarar los huecos, o usar el parquet donde son <code>NaN</code></td></tr>
+        <tr><td class="w">Presentar solo el RMSE</td><td class="w">Añadir cobertura de catálogo: mide el criterio de negocio CN-3</td></tr>
+        <tr><td class="w">Mostrar los 6.040 usuarios en el mapa de calor</td><td class="w">Muestra de 100–300. 36 millones de celdas no se ven</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="mod" id="m9">
+  <div class="mod-head"><span class="mod-n">09</span><h2>Preguntas y respuestas</h2></div>
+  <p>Abre cada una e intenta contestarla antes de leer la respuesta.</p>
+
+  <div class="cards">
+    <details class="card"><summary>¿Cuál es la variable a optimizar y por qué esa?</summary>
+      <div class="ans"><p>El <code>rating</code> r(u,i), de 1 a 5. Es la <b>única variable del dataset que expresa preferencia</b> — el resto (género, año, ocupación, sexo) son atributos. Además es numérica, así que conserva el orden: un 5 no es igual que un 4, y esa diferencia es la que permite ordenar el Top-N.</p></div>
+    </details>
+
+    <details class="card"><summary>¿Por qué regresión y no clasificación?</summary>
+      <div class="ans"><p>Porque la salida es un valor continuo en [1,5], no una etiqueta. Se podría binarizar («le gusta / no le gusta» con 4 o más), pero <b>se perdería información</b>: no es lo mismo un 4 que un 5, y esa diferencia importa al ordenar. Por eso se evalúa con RMSE y MAE, que son métricas de regresión.</p></div>
+    </details>
+
+    <details class="card"><summary>¿Por qué RMSE y no MAE?</summary>
+      <div class="ans"><p>Porque penaliza al cuadrado: confundir un 5 con un 2 pesa <b>nueve veces</b> más que confundir un 5 con un 4. En un recomendador el error grave es poner delante algo que la persona va a detestar. Además es el estándar de la literatura (fue la métrica del Netflix Prize), lo que hace nuestros resultados comparables. El MAE se reporta porque se explica mejor, pero la decisión se toma con RMSE.</p></div>
+    </details>
+
+    <details class="card"><summary>¿Cómo sabéis que ya está optimizado?</summary>
+      <div class="ans"><p>Por la <b>curva de hiperparámetros</b>: al variar el parámetro por encima y por debajo del valor elegido, el error empeora en ambos sentidos. Eso demuestra que estamos en el mínimo y que seguir buscando no mejora. Y además: supera los cuatro baselines, cumple un umbral fijado antes de modelar, y es estable en validación cruzada.</p></div>
+    </details>
+
+    <details class="card"><summary>¿Y si el modelo no supera al baseline?</summary>
+      <div class="ans"><p>Entonces <b>lo escribimos en el informe</b>. Si no baja de 0,9051, el filtrado colaborativo no aporta nada sobre dos medias bien calculadas y no se justifica ponerlo en producción. Un resultado negativo bien argumentado vale más que un número adornado.</p></div>
+    </details>
+
+    <details class="card"><summary>¿No es esto lo mismo que hace Netflix?</summary>
+      <div class="ans"><p>Es el problema del Netflix Prize, y lo es a propósito: tiene benchmark público, lo que permite validar si el resultado es bueno. Pero no replicamos Netflix: <b>Netflix eliminó el rating de 5 estrellas en 2017</b> y hoy optimiza horas de visionado con señal implícita. Lo original no es el algoritmo, es la validación.</p></div>
+    </details>
+
+    <details class="card"><summary>¿Qué es la fuga de datos y cómo la evitasteis?</summary>
+      <div class="ans"><p>Es usar información del conjunto de prueba al entrenar. Si calculas la media de un usuario incluyendo notas que están en el test, inflas el resultado. Lo evitamos calculando <b>todas</b> las medias, sesgos y filtros solo con entrenamiento, con partición 80/20 y semilla fija (42) para que sea reproducible.</p></div>
+    </details>
+
+    <details class="card"><summary>¿Qué pasa con un usuario o una película nuevos?</summary>
+      <div class="ans"><p>Se cae a la media global μ = 3,5821. Nunca se descarta la fila del test: eso sería medir solo lo fácil. Es el problema del <b>cold-start</b>, y afecta a los 1.743 usuarios con menos de 50 vistas.</p></div>
+    </details>
+
+    <details class="card"><summary>¿Por qué un 0 en la matriz no es un cero de estrellas?</summary>
+      <div class="ans"><p>Porque el formato disperso CSR solo guarda las celdas con valor y devuelve 0 para el resto. Pero <b>la escala empieza en 1</b>: ese 0 significa «no la ha visto». Como el 95,53 % son huecos, promediar sin enmascarar da 0,16 en vez de 3,58.</p></div>
+    </details>
+
+    <details class="card"><summary>¿Para qué sirve la λ en los sesgos?</summary>
+      <div class="ans"><p>Es regularización. Sin ella, una película con <b>un solo voto de 5★</b> recibe el sesgo máximo y el modelo se fía ciegamente. Al sumar λ al denominador, los sesgos estimados con pocos datos se encogen hacia cero. Con 1.192 películas por debajo de 50 votos, no es un detalle.</p></div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="mod" id="m10">
+  <div class="mod-head"><span class="mod-n">10</span><h2>Estado del proyecto</h2></div>
+  <ul class="check">
+    <li><span class="mk ok">HECHO</span><span><b>01 · Comprensión del negocio</b> — objetivo, tipo de tarea, variable y métrica (3.1, 3.2, 3.3)</span></li>
+    <li><span class="mk pend">FALTA</span><span><b>02 · Comprensión de los datos</b> — los 14 archivos del EDA siguen en Drive, sin descargar. Y hay que resolver los tres gráficos de <i>tags</i>: MovieLens 1M no tiene fichero de tags, así que o vienen de otro dataset o se retiran</span></li>
+    <li><span class="mk ok">HECHO</span><span><b>03 · Preparación</b> — 1.000.209 filas limpias, 0 nulos, 0 duplicados, 100 % conservado</span></li>
+    <li><span class="mk pend">EN CURSO</span><span><b>04 · Modelado</b> — los 4 baselines ya están medidos. Falta el SVD: el <code>.venv</code> <b>no tiene instalado</b> <code>scikit-surprise</code> ni <code>scikit-learn</code></span></li>
+    <li><span class="mk pend">FALTA</span><span><b>05 · Evaluación</b> — comparación de RMSE, curva precisión@K, mapa de calor de similitud, Top-N</span></li>
+    <li><span class="mk pend">FALTA</span><span><b>06 · Presentación</b> — informe y diapositivas</span></li>
+  </ul>
+
+  <div class="box warn">
+    <h4>Lo siguiente que desbloquea todo</h4>
+    <div class="f" style="margin:10px 0 0;white-space:normal">./.venv/bin/pip install scikit-surprise scikit-learn</div>
+    <p style="margin-top:12px">Sin eso no se puede entrenar el SVD ni verificar el 0,873, que hoy es un número heredado, no medido por vosotros.</p>
+  </div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section class="mod" id="m11">
+  <div class="mod-head"><span class="mod-n">11</span><h2>Glosario</h2></div>
+  <dl class="gloss">
+    <div><dt>r(u,i)</dt><dd>La nota real que el usuario <i>u</i> dio a la película <i>i</i>. Es la columna <code>rating</code>.</dd></div>
+    <div><dt>r̂(u,i)</dt><dd>La nota <b>predicha</b> por el modelo. El «gorrito» significa estimado.</dd></div>
+    <div><dt>μ (mu)</dt><dd>Media global de todas las calificaciones de entrenamiento: 3,5821.</dd></div>
+    <div><dt>b<sub>u</sub> / b<sub>i</sub></dt><dd>Sesgo del usuario / de la película: cuánto se desvía de la media global.</dd></div>
+    <div><dt>λ (lambda)</dt><dd>Regularización. Hace que el modelo desconfíe de lo estimado con pocos datos.</dd></div>
+    <div><dt>Baseline</dt><dd>Modelo de referencia deliberadamente simple, contra el que se compara el modelo real.</dd></div>
+    <div><dt>Hold-out</dt><dd>Apartar un trozo de datos (aquí el 20 %) que el modelo no ve al entrenar, para medir con él.</dd></div>
+    <div><dt>Fuga de datos</dt><dd>Usar sin querer información del test al entrenar. Infla los resultados y los invalida.</dd></div>
+    <div><dt>Cold-start</dt><dd>El problema de recomendar a un usuario o una película de los que apenas se sabe nada.</dd></div>
+    <div><dt>Cola larga</dt><dd>La mayoría del catálogo que casi nadie consume. Aquí: 1.192 películas con menos de 50 votos.</dd></div>
+    <div><dt>Dispersión</dt><dd>Porcentaje de la matriz que está vacío. Aquí, 95,53 %.</dd></div>
+    <div><dt>Filtrado colaborativo</dt><dd>Recomendar usando lo que hicieron usuarios parecidos, sin mirar el contenido de la película.</dd></div>
+    <div><dt>SVD</dt><dd>Descomposición en factores latentes. Aprende «gustos» en vez de niveles medios.</dd></div>
+    <div><dt>Top-N</dt><dd>Las N películas mejor puntuadas por el modelo para un usuario. Es lo que la persona ve.</dd></div>
+  </dl>
+</section>
+
+<footer>
+  <span>MovieLens 1M · GroupLens, Universidad de Minnesota</span>
+  <span>Baselines reproducibles con <code>04_modelado/scripts/03a_baselines.py</code></span>
+</footer>
+
+</div>

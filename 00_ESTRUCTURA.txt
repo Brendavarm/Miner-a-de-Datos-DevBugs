@@ -1,0 +1,19 @@
+================================================================================
+ESTRUCTURA DEL PROYECTO
+Sistema de recomendacion de peliculas por filtrado colaborativo
+Dataset: MovieLens 1M (1.000.209 calificaciones / 6.040 usuarios / 3.706 peliculas)
+================================================================================
+
+Las carpetas siguen las fases de CRISP-DM y estan numeradas en el orden en que
+se ejecuta el proyecto. El numero delante hace que se ordenen solas, tanto en el
+explorador como en Google Drive.
+
+
+  01_comprension_negocio/     FASE 1 y 2 - Objetivo y tipo de tarea   [HECHO]
+      3_1_objetivo_del_negocio.txt ......... objetivo, problema en numeros,
+                                             criterios de exito CN-1 a CN-4
+      3_2_tipo_de_tarea.txt ................ por que es regresion y no otra cosa
+      3_3_variable_y_metrica_principal.txt . VARIABLE A OPTIMIZAR (rating) y
+                                             METRICA PRINCIPAL (RMSE, formula)
+      graficos/ ............................ imagenes de apoyo del punto 3.2
+      scripts/ ............................. generar_3_2.py

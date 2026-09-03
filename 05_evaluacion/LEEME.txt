@@ -1,0 +1,4 @@
+PENDIENTE - Aqui va 04_evaluacion.py y los graficos de evaluacion:
+comparacion de RMSE entre metodos, curva precision@K, mapa de calor de
+similitud (usar 03_preparacion_datos/datos/matriz_usuario_pelicula.npz,
+muestra de 100-300 usuarios) y el Top-N recomendado a un usuario.
