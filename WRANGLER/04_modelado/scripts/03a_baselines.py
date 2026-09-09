@@ -6,9 +6,12 @@ con hold-out 80/20 y SIN fuga de datos: todo se estima solo con entrenamiento.
 
 Uso: ./.venv/bin/python 04_modelado/scripts/03a_baselines.py
 """
+# --- funciona desde cualquier carpeta: se situa en la raiz del proyecto ---
+import os
+os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 import numpy as np, pandas as pd, json, time
 
-SEED, LAMBDA = 42, 10.0          # lambda = regularizacion de los sesgos
+SEED, LAMBDA = 42, 2.0          # lambda = 2 es el minimo medido en el barrido
 LO, HI = 1.0, 5.0
 
 df = pd.read_parquet("03_preparacion_datos/datos/datos_limpios.parquet")[
@@ -68,6 +71,7 @@ for k,(r,m,d) in res.items():
 
 json.dump({k: {"rmse": r, "mae": m, "detalle": d} for k,(r,m,d) in res.items()} |
           {"_config": {"seed": SEED, "lambda": LAMBDA,
-                       "n_train": len(tr), "n_test": len(te)}},
+                       "n_train": len(tr), "n_test": len(te)},
+           "generado": __import__("datetime").datetime.now().isoformat(timespec="seconds")},
           open("04_modelado/resultados/baselines.json","w"), indent=2)
 print("\n-> 04_modelado/resultados/baselines.json")

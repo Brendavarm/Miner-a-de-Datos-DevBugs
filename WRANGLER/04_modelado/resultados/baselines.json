@@ -15,14 +15,15 @@
     "detalle": "3,669 medias"
   },
   "4. Media + sesgos": {
-    "rmse": 0.9057929330273461,
-    "mae": 0.7171824903066638,
-    "detalle": "lambda = 10"
+    "rmse": 0.9051419459551745,
+    "mae": 0.7150329124561351,
+    "detalle": "lambda = 2"
   },
   "_config": {
     "seed": 42,
-    "lambda": 10.0,
+    "lambda": 2.0,
     "n_train": 800167,
     "n_test": 200042
-  }
+  },
+  "generado": "2026-09-09T14:21:47"
 }

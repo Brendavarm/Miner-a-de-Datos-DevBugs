@@ -1,0 +1,946 @@
+<title>Variable y Métrica del Recomendador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Karla:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap">
+
+<style>
+:root{
+  --ground:#e9ebee;
+  --surface:#ffffff;
+  --surface-2:#f4f6f8;
+  --ink:#13171d;
+  --ink-2:#39424e;
+  --muted:#6b7683;
+  --line:#d4d9de;
+  --line-soft:#e6eaee;
+
+  --si:#17518c;        /* correcto */
+  --si-soft:#e4edf7;
+  --no:#ab3527;        /* lo que no es */
+  --no-soft:#fae9e6;
+  --key:#8f5f06;       /* el 57,5% */
+  --key-soft:#fbf0dc;
+  --ok:#1f6b4e;
+
+  --shadow:0 1px 2px rgba(19,23,29,.06), 0 12px 28px -18px rgba(19,23,29,.3);
+  --mono:"Roboto Mono", ui-monospace, Menlo, monospace;
+  --sans:"Karla", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --disp:"Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#101318;--surface:#191e25;--surface-2:#1f252d;
+    --ink:#e8ecf1;--ink-2:#bcc5d0;--muted:#828d9b;
+    --line:#2b333d;--line-soft:#232a33;
+    --si:#77aae2;--si-soft:#16283c;
+    --no:#e08578;--no-soft:#331d1a;
+    --key:#dda945;--key-soft:#2f2714;
+    --ok:#5cbb92;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 12px 28px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101318;--surface:#191e25;--surface-2:#1f252d;
+  --ink:#e8ecf1;--ink-2:#bcc5d0;--muted:#828d9b;
+  --line:#2b333d;--line-soft:#232a33;
+  --si:#77aae2;--si-soft:#16283c;
+  --no:#e08578;--no-soft:#331d1a;
+  --key:#dda945;--key-soft:#2f2714;
+  --ok:#5cbb92;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 12px 28px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--sans);font-size:15.5px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.band{padding:0 clamp(18px,3.2vw,54px)}
+.band-in{max-width:1720px;margin:0 auto}
+h1,h2,h3,.disp{font-family:var(--disp);text-wrap:balance;letter-spacing:.004em}
+code,.mono{font-family:var(--mono)}
+p{margin:0 0 12px}p:last-child{margin:0}
+:focus-visible{outline:2px solid var(--si);outline-offset:3px;border-radius:3px}
+
+/* ============ CABECERA ============ */
+.top{
+  border-bottom:1px solid var(--line);background:var(--surface);
+  padding-top:26px;padding-bottom:22px;
+}
+.top .band-in{display:flex;flex-wrap:wrap;gap:18px 40px;align-items:flex-end;justify-content:space-between}
+.kick{
+  font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:8px;
+}
+h1{
+  font-size:clamp(2.2rem,4.4vw,3.6rem);font-weight:700;line-height:.98;
+  margin:0;text-transform:uppercase;
+}
+h1 em{font-style:normal;color:var(--si)}
+.top-meta{
+  display:flex;gap:26px;flex-wrap:wrap;font-family:var(--mono);font-size:12.5px;
+  color:var(--muted);
+}
+.top-meta b{display:block;color:var(--ink);font-size:15px;font-weight:500}
+
+/* ============ SECCIONES ============ */
+section{padding-top:clamp(44px,4.4vw,72px);padding-bottom:8px}
+
+/* --- cabecera de seccion: numeral calado + regla que llena el hueco --- */
+.sec-head{
+  display:grid;
+  grid-template-columns:auto auto minmax(30px,1fr) auto;
+  align-items:center;gap:0 22px;margin-bottom:26px;
+}
+.sec-n{
+  grid-column:1;font-family:var(--disp);font-weight:700;
+  font-size:clamp(2.3rem,3.6vw,3.25rem);line-height:.8;
+  letter-spacing:.005em;font-variant-numeric:tabular-nums;
+  color:var(--si);opacity:.92;user-select:none;
+}
+@supports(-webkit-text-stroke:1px red){
+  .sec-n{color:transparent;-webkit-text-stroke:1.7px var(--si);opacity:1}
+}
+h2{grid-column:2;font-size:clamp(1.5rem,2.4vw,2.05rem);font-weight:700;
+  margin:0;text-transform:uppercase;line-height:1}
+.sec-head::after{
+  content:"";grid-column:3;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,var(--line) 0%,var(--line) 55%,transparent 100%);
+}
+.sec-head p{
+  grid-column:4;color:var(--muted);font-size:14.5px;margin:0;
+  max-width:52ch;text-align:right;justify-self:end;
+}
+@media (max-width:900px){
+  .sec-head{grid-template-columns:auto 1fr;gap:0 16px}
+  .sec-head::after{display:none}
+  .sec-head p{grid-column:1/-1;text-align:left;justify-self:start;
+    margin-top:10px;max-width:none}
+}
+
+/* ============ REJILLAS ============ */
+.g2{display:grid;align-content:start;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:16px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.split{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+@media (max-width:1080px){.split{grid-template-columns:1fr}}
+
+.card{
+  display:flex;flex-direction:column;
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;
+  padding:22px 24px;box-shadow:var(--shadow);min-width:0;
+}
+.card h3{
+  font-family:var(--sans);font-size:.85rem;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 14px;
+}
+.card p,.card li{color:var(--ink-2);font-size:14.6px}
+.card > :last-child{margin-bottom:0}
+.card .scroll:last-child,.card .bars:last-child{margin-top:auto}
+.card ul{margin:0;padding-left:19px}
+.card li{margin-bottom:7px}
+.card li:last-child{margin-bottom:0}
+.card b{color:var(--ink)}
+
+/* ============ EL CONTRASTE ============ */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:960px){.vs{grid-template-columns:1fr}}
+.vs > div{border-radius:9px;padding:26px 28px;border:1px solid;box-shadow:var(--shadow)}
+.vs .bad{background:var(--no-soft);border-color:transparent}
+.vs .good{background:var(--si-soft);border-color:transparent}
+.vs-tag{
+  display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;
+  letter-spacing:.13em;text-transform:uppercase;margin-bottom:14px;
+}
+.bad .vs-tag{color:var(--no)}
+.good .vs-tag{color:var(--si)}
+.vs-tag span{
+  width:19px;height:19px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:12px;color:var(--surface);
+}
+.bad .vs-tag span{background:var(--no)}
+.good .vs-tag span{background:var(--si)}
+.vs-big{
+  font-family:var(--disp);font-size:clamp(1.75rem,3.1vw,2.6rem);font-weight:700;
+  line-height:1.04;margin:0 0 8px;
+}
+.bad .vs-big{color:var(--no);text-decoration:line-through;text-decoration-thickness:2px;
+  text-decoration-color:color-mix(in srgb,var(--no) 45%,transparent)}
+.good .vs-big{color:var(--si)}
+.vs-sub{font-family:var(--mono);font-size:13.5px;color:var(--ink-2);margin:0 0 16px}
+.vs ul{margin:0;padding-left:19px;font-size:14.5px;color:var(--ink-2)}
+.vs li{margin-bottom:7px}
+.vs li:last-child{margin-bottom:0}
+.vs li b{color:var(--ink)}
+
+/* ============ CIFRAS ============ */
+.fig{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:16px 18px;box-shadow:var(--shadow);
+}
+.fig b{
+  display:block;font-family:var(--mono);font-size:1.5rem;font-weight:500;
+  letter-spacing:-.02em;line-height:1.12;margin-bottom:5px;
+  font-variant-numeric:tabular-nums;color:var(--si);
+}
+.fig span{display:block;font-size:12.6px;color:var(--muted);line-height:1.38}
+.fig.k b{color:var(--key)} .fig.n b{color:var(--no)} .fig.o b{color:var(--ok)}
+
+/* ============ FORMULA ============ */
+.f{
+  font-family:var(--mono);font-size:clamp(13px,1.35vw,17px);
+  background:var(--surface-2);border:1px solid var(--line-soft);border-radius:7px;
+  padding:20px 22px;margin:0 0 14px;overflow-x:auto;white-space:nowrap;color:var(--ink);
+}
+.f em{font-style:normal;color:var(--muted);padding-left:16px;font-size:.85em}
+.f-big{font-size:clamp(15px,1.7vw,21px);font-weight:500}
+
+/* ============ BARRAS ============ */
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:minmax(150px,215px) 1fr 78px;gap:14px;align-items:center}
+.bar-l{font-size:14px;font-weight:500;color:var(--ink);min-width:0}
+.bar-l small{display:block;font-size:11.5px;color:var(--muted);font-weight:400}
+.bar-t{height:15px;background:var(--line-soft);border-radius:8px;overflow:hidden}
+.bar-t i{display:block;height:100%;border-radius:8px;background:var(--c)}
+.bar-v{font-family:var(--mono);font-size:14px;font-weight:500;text-align:right;
+  font-variant-numeric:tabular-nums;color:var(--c)}
+@media (max-width:640px){.bar{grid-template-columns:1fr 60px;gap:6px}.bar-t{grid-column:1/-1}}
+
+/* ============ TABLA ============ */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:9px;
+  background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+thead th{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);background:var(--surface-2);border-bottom:1px solid var(--line)}
+tbody tr:last-child td{border-bottom:0}
+td.n{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+td.w{white-space:normal;min-width:210px;color:var(--ink-2)}
+tr.hi td{background:var(--key-soft);font-weight:600}
+
+/* ============ AVISO ============ */
+.alert{
+  border-radius:9px;padding:20px 24px;border-left:4px solid var(--no);
+  background:var(--surface);border-top:1px solid var(--line);
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+  box-shadow:var(--shadow);
+}
+.alert.k{border-left-color:var(--key)}
+.alert.g{border-left-color:var(--si)}
+.alert h3{
+  font-family:var(--sans);font-size:.98rem;font-weight:700;margin:0 0 9px;
+  letter-spacing:0;text-transform:none;color:var(--ink);
+}
+.alert p,.alert li{color:var(--ink-2);font-size:14.6px}
+.alert b{color:var(--ink)}
+
+/* ============ GUION ============ */
+.script{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.beat{
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;
+  box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;
+}
+.beat-h{
+  display:flex;align-items:center;gap:11px;padding:14px 18px;
+  border-bottom:1px solid var(--line-soft);background:var(--surface-2);
+}
+.beat-n{
+  font-family:var(--mono);font-size:12px;font-weight:700;color:var(--surface);
+  background:var(--si);width:24px;height:24px;border-radius:4px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+}
+.beat-h h4{font-family:var(--sans);font-size:14.5px;font-weight:700;margin:0;flex:1;min-width:0}
+.beat-t{font-family:var(--mono);font-size:11.5px;color:var(--muted);flex:none}
+.beat-b{padding:16px 18px;flex:1}
+.say{
+  font-size:14.8px;line-height:1.62;color:var(--ink);
+  border-left:2px solid var(--key);padding-left:13px;margin:0 0 12px;
+}
+.say:last-child{margin-bottom:0}
+.hint{font-size:12.8px;color:var(--muted);margin:0}
+.hint b{color:var(--ink-2)}
+
+footer{
+  margin-top:56px;border-top:1px solid var(--line);background:var(--surface);
+  padding-top:20px;padding-bottom:26px;
+}
+footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-between;
+  font-size:12.5px;color:var(--muted)}
+/* ================= 02 · LA VARIABLE ================= */
+.var-hero{
+  display:grid;grid-template-columns:auto 1fr auto;gap:18px 36px;align-items:center;
+  background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--si);
+  border-radius:9px;padding:26px 30px;box-shadow:var(--shadow);margin-bottom:16px;
+}
+.var-eq{
+  font-family:var(--mono);font-size:clamp(1.55rem,3.1vw,2.75rem);font-weight:500;
+  color:var(--si);white-space:nowrap;letter-spacing:-.025em;line-height:1;
+}
+.var-say{font-size:clamp(14.6px,1.25vw,17px);color:var(--ink-2);max-width:50ch;margin:0}
+.var-say b{color:var(--ink)}
+.var-dir{
+  display:flex;flex-direction:column;gap:3px;padding:12px 18px;border-radius:7px;
+  background:var(--si-soft);white-space:nowrap;
+}
+.var-dir b{font-family:var(--disp);font-size:1.45rem;font-weight:700;color:var(--si);
+  text-transform:uppercase;line-height:1}
+.var-dir span{font-size:12px;color:var(--ink-2)}
+@media (max-width:1000px){
+  .var-hero{grid-template-columns:1fr;gap:16px}
+  .var-dir{align-self:start}
+}
+
+.var-grid{display:grid;grid-template-columns:1.32fr .68fr;gap:16px;align-items:start}
+@media (max-width:1120px){.var-grid{grid-template-columns:1fr}}
+.var-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+
+/* --- la matriz --- */
+.mx-wrap{display:grid;grid-template-columns:auto 1fr;gap:0 11px}
+.mx-y{
+  writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted);text-align:center;font-weight:600;
+}
+.mx{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:3px}
+@media (max-width:760px){.mx{grid-template-columns:repeat(14,minmax(0,1fr))}}
+.mx i{
+  aspect-ratio:1;border-radius:2.5px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:clamp(6.5px,.68vw,10.5px);font-style:normal;font-weight:500;
+  opacity:0;transform:scale(.55);
+  transition:opacity .3s ease, transform .3s cubic-bezier(.2,.85,.3,1),
+             background-color .55s ease, color .55s ease, outline-color .55s ease;
+}
+.mx.in i{opacity:1;transform:none}
+.mx i.o{background:var(--si-soft);color:var(--si)}
+.mx i.e{background:var(--no-soft);color:var(--no)}
+.mx i.t{outline:2px solid var(--key);outline-offset:1.5px;z-index:2;font-weight:700;
+  transform-origin:center}
+.mx i.t.done{background:var(--key-soft);color:var(--key);animation:pop .5s cubic-bezier(.2,.9,.3,1)}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.5)}100%{transform:scale(1)}}
+.mx-x{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+  text-align:center;margin-top:10px;font-weight:600;grid-column:2}
+.mx-leg{display:flex;flex-wrap:wrap;gap:9px 26px;margin-top:16px;padding-top:14px;
+  border-top:1px solid var(--line-soft)}
+.mx-leg > div{display:flex;gap:9px;align-items:baseline;font-size:13px;color:var(--muted)}
+.mx-leg s{width:12px;height:12px;border-radius:3px;flex:none;text-decoration:none;
+  position:relative;top:1px}
+.mx-leg b{font-family:var(--mono);color:var(--ink);font-weight:500;
+  font-variant-numeric:tabular-nums}
+.mx-note{font-size:12.3px;color:var(--muted);margin-top:12px;font-style:italic}
+
+/* --- ficha en filas --- */
+.spec-rows > div{
+  display:grid;grid-template-columns:minmax(88px,118px) 1fr;gap:18px;
+  padding:9px 0;border-bottom:1px solid var(--line-soft);align-items:baseline;
+}
+.spec-rows > div:last-child{border-bottom:0;padding-bottom:0}
+.spec-rows dt{font-size:11.5px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.08em;font-weight:700}
+.spec-rows dd{margin:0;font-size:14.3px;color:var(--ink)}
+
+/* ================= ANTES / DESPUÉS ================= */
+.delta{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:14px;margin-bottom:16px}
+.delta-c{background:var(--surface);border:1px solid var(--line);border-radius:9px;
+  padding:18px 22px;box-shadow:var(--shadow)}
+.delta-c h4{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+.delta-v{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.delta-v .from{font-family:var(--mono);font-size:1.16rem;color:var(--muted);
+  text-decoration:line-through;text-decoration-thickness:1.5px;font-variant-numeric:tabular-nums}
+.delta-v .ar{color:var(--muted);font-size:1.05rem}
+.delta-v .to{font-family:var(--mono);font-size:1.85rem;font-weight:700;color:var(--ok);
+  letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+.delta-g{margin-top:8px;font-size:12.8px;color:var(--ok);font-weight:600}
+.delta-g s{text-decoration:none;color:var(--muted);font-weight:400}
+
+.ab{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:1000px){.ab{grid-template-columns:1fr}}
+.ab-col{background:var(--surface);border:1px solid var(--line);border-radius:9px;
+  padding:20px 22px;box-shadow:var(--shadow);min-width:0}
+.ab-col.old{border-top:4px solid var(--no)}
+.ab-col.new{border-top:4px solid var(--ok)}
+.ab-h{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+  padding-bottom:12px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.ab-h b{font-family:var(--disp);font-size:1.3rem;font-weight:700;text-transform:uppercase;
+  line-height:1.05}
+.ab-h small{display:block;font-family:var(--sans);font-size:11.5px;font-weight:400;
+  text-transform:none;color:var(--muted);letter-spacing:0;margin-top:3px}
+.old .ab-h b{color:var(--no)} .new .ab-h b{color:var(--ok)}
+.ab-sc{font-family:var(--mono);font-size:1.32rem;font-weight:700;white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.old .ab-sc{color:var(--no)} .new .ab-sc{color:var(--ok)}
+.ab-hd{display:grid;grid-template-columns:20px 1fr 46px 34px;gap:9px;padding:9px 0 6px;
+  font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.ab-hd span:nth-child(3),.ab-hd span:nth-child(4){text-align:right}
+.ab-row{display:grid;grid-template-columns:20px 1fr 46px 34px;gap:9px;align-items:baseline;
+  padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:13.3px}
+.ab-row:last-child{border-bottom:0}
+.ab-mk{text-decoration:none;font-size:11px;font-weight:700;text-align:center;
+  color:var(--no);line-height:1.5}
+.ab-row.hit .ab-mk{color:var(--ok)}
+.ab-t{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ab-row.hit .ab-t{color:var(--ink);font-weight:500}
+.ab-p,.ab-r{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;
+  font-size:12.6px}
+.ab-p{color:var(--muted)}
+.ab-r{font-weight:700;color:var(--no)}
+.ab-row.hit .ab-r{color:var(--ok)}
+
+/* ================= ANIMACIONES ================= */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+
+.rv{opacity:0;transform:translateY(18px);
+  transition:opacity .6s cubic-bezier(.2,.7,.3,1), transform .6s cubic-bezier(.2,.7,.3,1)}
+.rv.in{opacity:1;transform:none}
+
+/* la regla de seccion se dibuja al entrar */
+.sec-head::after{transform:scaleX(0);transform-origin:left;
+  transition:transform .75s cubic-bezier(.2,.75,.3,1) .12s}
+.sec-head.in::after{transform:scaleX(1)}
+
+/* el numeral entra desde la izquierda */
+.sec-n{opacity:0;transform:translateX(-10px);
+  transition:opacity .5s ease, transform .5s cubic-bezier(.2,.7,.3,1)}
+.sec-head.in .sec-n{opacity:1;transform:none}
+@supports(-webkit-text-stroke:1px red){
+  .sec-head.in .sec-n{opacity:1}
+}
+
+/* las barras crecen al entrar en pantalla */
+.bar-t i{width:0;transition:width 1s cubic-bezier(.22,.8,.28,1)}
+.rv.in .bar-t i,.in .bar-t i{width:var(--w)}
+
+/* cabecera al cargar */
+.top .kick{animation:fadein .7s ease both}
+.top h1{animation:rise .75s cubic-bezier(.2,.7,.3,1) both .06s}
+.top-meta > div{animation:rise .6s cubic-bezier(.2,.7,.3,1) both}
+.top-meta > div:nth-child(1){animation-delay:.14s}
+.top-meta > div:nth-child(2){animation-delay:.2s}
+.top-meta > div:nth-child(3){animation-delay:.26s}
+.top-meta > div:nth-child(4){animation-delay:.32s}
+
+/* micro-interacciones */
+.card,.beat,.fig,.alert{transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease}
+.card:hover,.alert:hover{border-color:color-mix(in srgb,var(--si) 38%,var(--line))}
+.beat:hover{transform:translateY(-3px);
+  box-shadow:0 1px 2px rgba(19,23,29,.06), 0 18px 34px -20px rgba(19,23,29,.42)}
+.fig:hover{transform:translateY(-2px)}
+.vs > div{transition:transform .3s cubic-bezier(.2,.7,.3,1)}
+.vs > div:hover{transform:translateY(-2px)}
+
+@media (prefers-reduced-motion:reduce){
+  .rv,.rv.in{opacity:1!important;transform:none!important;transition:none!important}
+  .sec-n,.sec-head.in .sec-n{opacity:1!important;transform:none!important;transition:none!important}
+  .sec-head::after,.sec-head.in::after{transform:scaleX(1)!important;transition:none!important}
+  .bar-t i{width:var(--w)!important;transition:none!important}
+  .top .kick,.top h1,.top-meta > div{animation:none!important}
+  .card:hover,.alert:hover,.beat:hover,.fig:hover,.vs > div:hover{transform:none!important}
+}
+</style>
+
+<!-- ==================== CABECERA ==================== -->
+<div class="band top">
+  <div class="band-in">
+    <div>
+      <h1>Variable a optimizar <em>y</em> métrica principal</h1>
+    </div>
+    <div class="top-meta">
+      <div>calificaciones<b>1.000.209</b></div>
+      <div>usuarios<b>6.040</b></div>
+      <div>películas<b>3.706</b></div>
+      <div>matriz vacía<b>95,53 %</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 01 · LA CORRECCIÓN ==================== -->
+<div class="band">
+<section>
+  <div class="sec-head">
+    <span class="sec-n">01</span>
+    <h2>La corrección</h2>
+  </div>
+
+  <div class="vs rv">
+    <div class="bad">
+      <div class="vs-tag"><span>✕</span>No es la variable a optimizar</div>
+      <p class="vs-big">57,5 % de votos 4★ y 5★</p>
+      <p class="vs-sub">575.281 de 1.000.209 calificaciones</p>
+      <ul>
+        <li><b>No se puede mejorar.</b> Es un hecho histórico: la gente ya votó así entre 2000 y 2003. Ningún modelo lo cambia.</li>
+        <li><b>No es una variable, es un estadístico.</b> Resume la distribución; no es un valor que el modelo prediga celda a celda.</li>
+        <li><b>Subirlo no sería bueno.</b> Significaría conseguir que la gente puntúe más alto, no recomendar mejor.</li>
+      </ul>
+    </div>
+    <div class="good">
+      <div class="vs-tag"><span>✓</span>Esto sí</div>
+      <p class="vs-big">rating &nbsp;r(u,i)</p>
+      <p class="vs-sub">21.384.031 celdas vacías por predecir · métrica: RMSE</p>
+      <ul>
+        <li><b>Es una variable real:</b> la columna <code>rating</code> del dataset, numérica, de 1 a 5 estrellas.</li>
+        <li><b>Sí se optimiza:</b> minimizando el error entre lo predicho y lo real, medido en estrellas.</li>
+        <li><b>Tiene umbral comprobable:</b> RMSE ≤ 0,90 sobre 200.042 calificaciones de prueba.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert k rv" style="margin-top:16px">
+    <h3>El 57,5 % no se tira — cambia de papel</h3>
+    <p>Pasa de ser «la variable a mejorar» a ser el <b>umbral de relevancia</b>: es lo que define qué cuenta como acierto. Sin esa definición no se puede medir Precisión@10, que es el criterio de ranking del proyecto. Ver bloque <b>04</b>.</p>
+  </div>
+</section>
+</div>
+
+<!-- ==================== 02 · LA VARIABLE ==================== -->
+<div class="band">
+<section>
+  <div class="sec-head">
+    <span class="sec-n">02</span>
+    <h2>La variable a optimizar</h2>
+    <p>Qué es, dónde está físicamente y en qué dirección se optimiza.</p>
+  </div>
+
+  <div class="var-hero rv">
+    <div class="var-eq">r&#770;(u,i) &#8712; [1, 5]</div>
+    <p class="var-say">La nota que el usuario <b>u</b> le daría a la película <b>i</b> <b>que todavía no ha visto</b>. Es la columna <code>rating</code> del dataset, y hay que estimarla 21.384.031 veces.</p>
+    <div class="var-dir"><b>Minimizar</b><span>el error, no la nota</span></div>
+  </div>
+
+  <div class="var-grid rv">
+    <div class="card">
+      <h3>La matriz usuario &times; película &mdash; dónde vive la variable</h3>
+      <div class="mx-wrap">
+        <div class="mx-y">6.040 usuarios</div>
+        <div class="mx" id="mx"></div>
+        <div class="mx-x">3.706 películas</div>
+      </div>
+      <div class="mx-leg">
+        <div><s style="background:var(--si-soft)"></s>Con nota &mdash; sirven para entrenar &nbsp;<b>1.000.209 · 4,47 %</b></div>
+        <div><s style="background:var(--no-soft)"></s>Vacías &mdash; hay que predecirlas &nbsp;<b>21.384.031 · 95,53 %</b></div>
+        <div><s style="background:var(--key-soft);outline:1.5px solid var(--key)"></s>Una celda cualquiera &mdash; lo que hace el modelo</div>
+      </div>
+      <p class="mx-note">Esquema: se dibuja 1 de cada 4 celdas ocupada para que se lea. La densidad real es del 4,47 % &mdash; de cada 22 celdas, solo 1 tiene nota.</p>
+    </div>
+
+    <div class="var-col">
+      <div class="card">
+        <h3>Ficha técnica</h3>
+        <dl class="spec-rows">
+          <div><dt>Nombre</dt><dd class="mono">rating &middot; r(u,i)</dd></div>
+          <div><dt>Tipo</dt><dd>Numérica. Discreta en los datos (1&ndash;5 enteros), <b>continua en la predicción</b> (p. ej. 4,23)</dd></div>
+          <div><dt>Rango</dt><dd class="mono">[1, 5] estrellas</dd></div>
+          <div><dt>Fichero</dt><dd class="mono">datos_limpios.parquet</dd></div>
+          <div><dt>Columna</dt><dd class="mono">'rating' (3.ª)</dd></div>
+          <div><dt>Unidad</dt><dd>La celda (u, i): un par usuario&ndash;película</dd></div>
+          <div><dt>Métrica</dt><dd>RMSE, en estrellas &nbsp;<span style="color:var(--muted)">&rarr; bloque 03</span></dd></div>
+        </dl>
+      </div>
+      <div class="alert">
+        <h3>Se minimiza, no se maximiza</h3>
+        <p>No se optimiza «que el rating sea alto». Predecir <b>5 a todo el mundo</b> sería el peor modelo posible. Lo que se minimiza es el <b>error</b> entre lo predicho y lo real.</p>
+      </div>
+      <div class="alert">
+        <h3>Variable <i>a</i> optimizar &ne; variable optimizada</h3>
+        <p>El <code>rating</code> observado es la materia prima que ya tenemos. La variable <b>optimizada</b> es <code>r&#770;(u,i)</code>, la salida del modelo, y todavía no existe: sale en la Fase&nbsp;4.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ==================== 03 · LA MÉTRICA ==================== -->
+<div class="band">
+<section>
+  <div class="sec-head">
+    <span class="sec-n">03</span>
+    <h2>La métrica principal</h2>
+    <p>RMSE, medido en estrellas sobre las 200.042 calificaciones de prueba.</p>
+  </div>
+
+  <div class="split rv">
+    <div class="card">
+      <h3>Definición del cálculo</h3>
+      <div class="f f-big">RMSE = √( (1/|T|) · Σ ( r(u,i) − r̂(u,i) )² )<em>castiga los errores grandes</em></div>
+      <div class="f">MAE&nbsp; = (1/|T|) · Σ | r(u,i) − r̂(u,i) |<em>secundaria, más fácil de explicar</em></div>
+      <p style="color:var(--ink-2);font-size:14.6px;margin-top:14px">
+        <b>Se lee en estrellas.</b> Un RMSE de 0,873 significa que el sistema se equivoca, de media, en 0,87 estrellas. Sobre un recorrido de 4 puntos, un 21,8 % del rango.</p>
+      <p style="color:var(--ink-2);font-size:14.6px;margin-top:10px">
+        <b>Por qué RMSE y no MAE:</b> al elevar al cuadrado, confundir un 5 con un 2 pesa <b>nueve veces</b> más que confundir un 5 con un 4. El fallo grave no es afinar mal: es poner delante algo que la persona va a detestar.</p>
+    </div>
+
+    <div class="card">
+      <h3>Cómo se calcula, paso a paso</h3>
+      <ul style="counter-reset:s;list-style:none;padding:0">
+        <li style="display:flex;gap:11px"><span class="mono" style="color:var(--si);font-weight:700">1</span><span>Partir en <b>80 % entrenamiento / 20 % prueba</b> (800.167 / 200.042), con semilla fija 42.</span></li>
+        <li style="display:flex;gap:11px"><span class="mono" style="color:var(--si);font-weight:700">2</span><span>Entrenar <b>solo</b> con el 80 %. El test no se toca nunca.</span></li>
+        <li style="display:flex;gap:11px"><span class="mono" style="color:var(--si);font-weight:700">3</span><span>Predecir <code>r̂</code> para cada par del test y <b>recortar a [1, 5]</b>.</span></li>
+        <li style="display:flex;gap:11px"><span class="mono" style="color:var(--si);font-weight:700">4</span><span>Restar real − predicho, <b>elevar al cuadrado</b>, promediar.</span></li>
+        <li style="display:flex;gap:11px"><span class="mono" style="color:var(--si);font-weight:700">5</span><span>Raíz cuadrada, para volver a <b>estrellas</b>.</span></li>
+      </ul>
+      <div class="alert g" style="margin-top:16px;box-shadow:none">
+        <h3>Regla de oro</h3>
+        <p>Si calculas medias o normalizas usando datos del test, eso es <b>fuga de datos</b> y el número deja de valer. Todo se estima solo con entrenamiento.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card rv" style="margin-top:16px">
+    <h3>Contra qué se compara — la escalera de baselines <span style="color:var(--ok);font-weight:600;letter-spacing:0;text-transform:none">· todos medidos por nosotros</span></h3>
+    <div class="bars">
+      <div class="bar" style="--c:var(--no)">
+        <div class="bar-l">Media global<small>predice 3,58 a todo el mundo</small></div>
+        <div class="bar-t"><i style="--w:89.6%"></i></div><div class="bar-v">1,1167</div>
+      </div>
+      <div class="bar" style="--c:var(--no)">
+        <div class="bar-l">Media por usuario<small>reconoce quién es exigente</small></div>
+        <div class="bar-t"><i style="--w:63.9%"></i></div><div class="bar-v">1,0344</div>
+      </div>
+      <div class="bar" style="--c:var(--key)">
+        <div class="bar-l">Media por película<small>= recomendar por popularidad · <b>la práctica actual</b></small></div>
+        <div class="bar-t"><i style="--w:45.8%"></i></div><div class="bar-v">0,9765</div>
+      </div>
+      <div class="bar" style="--c:var(--ok)">
+        <div class="bar-l">Media + sesgos<small>μ + b<sub>u</sub> + b<sub>i</sub> · <b>el listón real a superar</b></small></div>
+        <div class="bar-t"><i style="--w:23.5%"></i></div><div class="bar-v">0,9051</div>
+      </div>
+      <div class="bar" style="--c:var(--si)">
+        <div class="bar-l">Factorización matricial<small><b>nuestro modelo, entrenado y medido</b> · 64 factores, parada en la época 22</small></div>
+        <div class="bar-t"><i style="--w:4.9%"></i></div><div class="bar-v">0,8456</div>
+      </div>
+    </div>
+    <div class="alert" style="margin-top:18px;box-shadow:none">
+      <h3>Corrección respecto al informe entregado</h3>
+      <p>El informe fija <b>0,930</b> para el baseline de sesgos. Ese número sale de calcular <code>b<sub>u</sub></code> y <code>b<sub>i</sub></code> por separado, lo que cuenta dos veces la misma desviación. La formulación estándar da <b>0,9051</b>. Consecuencia: la regla de descarte estaba puesta demasiado baja, y el margen del SVD baja del 6,1 % al <b>3,5 %</b>.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ==================== 04 · ANTES Y DESPUÉS ==================== -->
+<div class="band">
+<section>
+  <div class="sec-head">
+    <span class="sec-n">04</span>
+    <h2>Antes y después de optimizar</h2>
+    <p>Resultados reales, medidos por nosotros sobre las 200.042 calificaciones de prueba.</p>
+  </div>
+
+  <div class="delta rv">
+    <div class="delta-c">
+      <h4>RMSE &mdash; error de predicción</h4>
+      <div class="delta-v"><span class="from">0,9765</span><span class="ar">&rarr;</span><span class="to">0,8456</span></div>
+      <div class="delta-g">&minus;13,4 % de error &nbsp;<s>· 0,13 estrellas menos de desvío</s></div>
+    </div>
+    <div class="delta-c">
+      <h4>MAE &mdash; desviación media</h4>
+      <div class="delta-v"><span class="from">0,7800</span><span class="ar">&rarr;</span><span class="to">0,6648</span></div>
+      <div class="delta-g">&minus;14,8 % de error</div>
+    </div>
+    <div class="delta-c">
+      <h4>Precisión@10 &mdash; calidad del ranking</h4>
+      <div class="delta-v"><span class="from">77,19 %</span><span class="ar">&rarr;</span><span class="to">80,62 %</span></div>
+      <div class="delta-g">+3,4 puntos &nbsp;<s>· sobre 4.368 usuarios</s></div>
+    </div>
+  </div>
+
+  <div class="ab rv">
+    <div class="ab-col old">
+      <div class="ab-h">
+        <b>Antes<small>Top-10 por popularidad &mdash; la práctica actual</small></b>
+        <span class="ab-sc">3/10</span>
+      </div>
+      <div class="ab-hd"><span></span><span>Película recomendada</span><span>Pred.</span><span>Real</span></div>
+      <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Shawshank Redemption, The (1994)</span><span class="ab-p">4,56</span><span class="ab-r">2★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Schindler's List (1993)</span><span class="ab-p">4,51</span><span class="ab-r">2★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Maltese Falcon, The (1941)</span><span class="ab-p">4,39</span><span class="ab-r">4★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Bridge on the River Kwai, The (1957)</span><span class="ab-p">4,38</span><span class="ab-r">3★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Treasure of the Sierra Madre, The (1948)</span><span class="ab-p">4,33</span><span class="ab-r">3★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Life Is Beautiful (1997)</span><span class="ab-p">4,33</span><span class="ab-r">3★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Pulp Fiction (1994)</span><span class="ab-p">4,3</span><span class="ab-r">3★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">It Happened One Night (1934)</span><span class="ab-p">4,28</span><span class="ab-r">5★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Killing Fields, The (1984)</span><span class="ab-p">4,26</span><span class="ab-r">3★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Thin Blue Line, The (1988)</span><span class="ab-p">4,24</span><span class="ab-r">5★</span></div>
+    </div>
+    <div class="ab-col new">
+      <div class="ab-h">
+        <b>Después<small>Top-10 del modelo entrenado</small></b>
+        <span class="ab-sc">5/10</span>
+      </div>
+      <div class="ab-hd"><span></span><span>Película recomendada</span><span>Pred.</span><span>Real</span></div>
+      <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Touch of Evil (1958)</span><span class="ab-p">3,94</span><span class="ab-r">3★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">This Is Spinal Tap (1984)</span><span class="ab-p">3,86</span><span class="ab-r">4★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Treasure of the Sierra Madre, The (1948)</span><span class="ab-p">3,78</span><span class="ab-r">3★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Manhattan (1979)</span><span class="ab-p">3,74</span><span class="ab-r">4★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">It Happened One Night (1934)</span><span class="ab-p">3,73</span><span class="ab-r">5★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Who's Afraid of Virginia Woolf? (1966)</span><span class="ab-p">3,7</span><span class="ab-r">3★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Maltese Falcon, The (1941)</span><span class="ab-p">3,67</span><span class="ab-r">4★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Psycho (1960)</span><span class="ab-p">3,62</span><span class="ab-r">3★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Wings of Desire (1987)</span><span class="ab-p">3,6</span><span class="ab-r">4★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">My Life as a Dog (1985)</span><span class="ab-p">3,58</span><span class="ab-r">3★</span></div>
+    </div>
+  </div>
+
+  <div class="g3 rv" style="margin-top:16px">
+    <div class="alert g">
+      <h3>1 · El modelo aprende su escala</h3>
+      <p>El usuario 1150 puntúa bajo: su media es <b>2,61</b> frente al 3,58 global. La popularidad le predice 4,3&ndash;4,6 y él pone 2 y 3. El modelo predice <b>3,6&ndash;3,9</b>: sabe que es exigente y baja sus estimaciones.</p>
+    </div>
+    <div class="alert g">
+      <h3>2 · Y aprende su gusto</h3>
+      <p>El «después» cambia de títulos: <i>Touch of Evil</i>, <i>Manhattan</i>, <i>Wings of Desire</i>, <i>Spinal Tap</i>. Cine de autor y clásicos, que es justo lo que este usuario puntúa con 5 estrellas. Eso <b>no lo puede hacer ninguna media</b>.</p>
+    </div>
+    <div class="alert">
+      <h3>3 · Sigue fallando la mitad</h3>
+      <p>5 de 10 no es un triunfo: acierta 2 más que la popularidad. Es una <b>mejora medible, no magia</b>. Decirlo así en la defensa vale más que exagerar el resultado.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ==================== 05 · EL 57,5 % ==================== -->
+<div class="band">
+<section>
+  <div class="sec-head">
+    <span class="sec-n">05</span>
+    <h2>Para qué sirve el 57,5 %</h2>
+    <p>No es la variable a optimizar, pero es un dato crítico del proyecto. Aquí está su papel real.</p>
+  </div>
+
+  <div class="g3 rv">
+    <div class="card" style="border-left:4px solid var(--key)">
+      <h3>Qué es exactamente</h3>
+      <div class="f" style="font-size:15px;white-space:normal">575.281 / 1.000.209 = <b style="color:var(--key)">57,52 %</b></div>
+      <p>El 34,89 % son 4★ y el 22,63 % son 5★. La gente califica <b>lo que elige ver</b>, así que casi todo lo que puntúa le gusta.</p>
+    </div>
+    <div class="card" style="border-left:4px solid var(--key)">
+      <h3>Su papel: umbral de relevancia</h3>
+      <p>Define qué cuenta como <b>acierto</b>: una recomendación es buena si el usuario le habría puesto <b>4 o más</b>. Sin esta definición, Precisión@10 no se puede calcular.</p>
+    </div>
+    <div class="card" style="border-left:4px solid var(--key)">
+      <h3>Y avisa de un peligro</h3>
+      <p>Como más de la mitad de los votos son altos, <b>el suelo del ranking está altísimo</b>. Cualquier objetivo de precisión por debajo del 60 % lo cumple hasta un modelo roto.</p>
+    </div>
+  </div>
+
+  <div class="split rv" style="margin-top:16px">
+    <div class="card">
+      <h3>Precisión@10 medida sobre el test <span style="letter-spacing:0;text-transform:none;font-weight:400">· 4.368 usuarios con ≥ 10 calificaciones</span></h3>
+      <div class="bars">
+        <div class="bar" style="--c:var(--no)">
+          <div class="bar-l">Recomendar al azar<small>el suelo absoluto</small></div>
+          <div class="bar-t"><i style="--w:60.83%"></i></div><div class="bar-v">60,83 %</div>
+        </div>
+        <div class="bar" style="--c:var(--key)">
+          <div class="bar-l">Por popularidad<small>las más votadas</small></div>
+          <div class="bar-t"><i style="--w:71.70%"></i></div><div class="bar-v">71,70 %</div>
+        </div>
+        <div class="bar" style="--c:var(--ok)">
+          <div class="bar-l">Por media de la película<small><b>el listón real del ranking</b></small></div>
+          <div class="bar-t"><i style="--w:77.19%"></i></div><div class="bar-v">77,19 %</div>
+        </div>
+        <div class="bar" style="--c:var(--si)">
+          <div class="bar-l">Objetivo propuesto<small>lo que hay que comprometer</small></div>
+          <div class="bar-t"><i style="--w:80%"></i></div><div class="bar-v">≥ 80 %</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert">
+      <h3>Error grave en el informe entregado</h3>
+      <p>La sección 5.2 dice: <i>«alcanzar un nivel de predicción superior al <b>9.0 %</b>»</i>.</p>
+      <p style="margin-top:10px">Ese objetivo está <b>51 puntos por debajo del azar</b>. Recomendando aleatoriamente ya se acierta el 60,83 %. Tal como está, lo cumple cualquier cosa, incluso un modelo que no funcione.</p>
+      <p style="margin-top:10px"><b>Debe decir: Precisión@10 ≥ 80 %</b>, que sí exige superar el 77,19 % de la media por película.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ==================== 06 · GUION DE LA CHARLA ==================== -->
+<div class="band">
+<section>
+  <div class="sec-head">
+    <span class="sec-n">06</span>
+    <h2>Guion de la charla</h2>
+    <p>Seis intervenciones, unos 5 minutos. Lo entrecomillado es para decirlo tal cual.</p>
+  </div>
+
+  <div class="script rv">
+    <div class="beat">
+      <div class="beat-h"><span class="beat-n">1</span><h4>Abrir corrigiendo</h4><span class="beat-t">~30 s</span></div>
+      <div class="beat-b">
+        <p class="say">«Antes de nada, nos corregimos en algo que dijimos la vez pasada. Mencionamos el 57,5 % de votos de 4 y 5 estrellas como la variable a mejorar. No lo es: ese porcentaje es un hecho histórico del dataset y ningún modelo lo puede cambiar.»</p>
+        <p class="hint"><b>Por qué abrir así:</b> corregirse uno mismo antes de que te corrijan demuestra que revisasteis el trabajo. Suma, no resta.</p>
+      </div>
+    </div>
+
+    <div class="beat">
+      <div class="beat-h"><span class="beat-n">2</span><h4>Dar la variable correcta</h4><span class="beat-t">~45 s</span></div>
+      <div class="beat-b">
+        <p class="say">«La variable a optimizar es el <b>rating</b>, r de u coma i: la nota de 1 a 5 que un usuario le daría a una película que todavía no ha visto. Son las 21.384.031 celdas vacías de una matriz de 6.040 usuarios por 3.706 películas, que está vacía al 95,53 %.»</p>
+        <p class="say">«Y se optimiza <b>minimizando el error</b>, no maximizando la nota. Predecir cinco estrellas a todo el mundo sería el peor modelo posible.»</p>
+        <p class="hint"><b>Apoyo visual:</b> el bloque 02, la matriz con celdas vacías.</p>
+      </div>
+    </div>
+
+    <div class="beat">
+      <div class="beat-h"><span class="beat-n">3</span><h4>Definir la métrica</h4><span class="beat-t">~60 s</span></div>
+      <div class="beat-b">
+        <p class="say">«La métrica principal es el <b>RMSE</b>: la raíz del promedio de los errores al cuadrado, medida sobre 200.042 calificaciones que el modelo nunca vio. Se lee en estrellas: un RMSE de 0,87 significa que nos equivocamos en 0,87 estrellas de media.»</p>
+        <p class="say">«Usamos RMSE y no MAE porque eleva al cuadrado: confundir un 5 con un 2 pesa nueve veces más que confundir un 5 con un 4. En un recomendador el error grave es poner delante algo que la persona va a detestar.»</p>
+        <p class="hint"><b>Si preguntan por el MAE:</b> se reporta también, pero la decisión se toma con RMSE.</p>
+      </div>
+    </div>
+
+    <div class="beat">
+      <div class="beat-h"><span class="beat-n">4</span><h4>Rescatar el 57,5 %</h4><span class="beat-t">~50 s</span></div>
+      <div class="beat-b">
+        <p class="say">«El 57,5 % sigue siendo importante, pero en otro papel: es el <b>umbral de relevancia</b>. Define qué cuenta como acierto — una recomendación es buena si el usuario le habría puesto 4 o más. Sin esa definición no podemos medir la Precisión@10.»</p>
+        <p class="say">«Y además nos avisó de algo: como más de la mitad de los votos son altos, el suelo está muy arriba. Lo medimos: recomendando <b>al azar</b> ya se acierta el 60,8 %, y por media de película el 77,2 %.»</p>
+        <p class="hint"><b>Este es el momento fuerte.</b> Aquí se ve que no solo corregisteis: medisteis el suelo antes de poner el listón.</p>
+      </div>
+    </div>
+
+    <div class="beat">
+      <div class="beat-h"><span class="beat-n">5</span><h4>Enseñar la escalera</h4><span class="beat-t">~70 s</span></div>
+      <div class="beat-b">
+        <p class="say">«Para saber si el modelo aporta algo construimos cuatro modelos de referencia sobre la misma partición. La media global da 1,1167. Recomendar por popularidad, que es lo que se hace hoy, da <b>0,9765</b>. Y el mejor sin personalizar, media más sesgos, da <b>0,9051</b>.»</p>
+        <p class="say">«Ese 0,9051 es nuestra <b>regla de descarte</b>: si el filtrado colaborativo no baja de ahí, no aporta nada sobre dos medias bien calculadas y lo diremos en el informe.»</p>
+        <p class="hint"><b>Ojo:</b> el informe entregado dice 0,930. Menciona que lo recalculasteis y por qué.</p>
+      </div>
+    </div>
+
+    <div class="beat">
+      <div class="beat-h"><span class="beat-n">6</span><h4>Cerrar con lo que falta</h4><span class="beat-t">~35 s</span></div>
+      <div class="beat-b">
+        <p class="say">«Ya tenemos un modelo entrenado: una factorización matricial de 64 factores, implementada por nosotros. Da <b>RMSE 0,8456</b>, que mejora un 13,4 % la práctica actual y un 6,6 % el baseline de sesgos. Supera el umbral de 0,90 que nos habíamos puesto.»</p>
+        <p class="say">«Y la curva nos dio el criterio de parada: el error baja hasta la época 22 y a partir de ahí <b>vuelve a subir</b> por sobreajuste. Ahí paramos.»</p>
+        <p class="hint"><b>Lo que queda:</b> reproducirlo con <code>scikit-surprise</code> para contrastar, y medir la cobertura de catálogo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ==================== 07 · CHULETA ==================== -->
+<div class="band">
+<section>
+  <div class="sec-head">
+    <span class="sec-n">07</span>
+    <h2>Chuleta</h2>
+    <p>Los números que hay que tener en la cabeza durante la exposición.</p>
+  </div>
+  <div class="g4 rv">
+    <div class="fig"><b>r(u,i)</b><span>la variable a optimizar</span></div>
+    <div class="fig"><b>RMSE</b><span>la métrica principal, en estrellas</span></div>
+    <div class="fig k"><b>57,5 %</b><span>votos 4★ o 5★ → umbral de relevancia</span></div>
+    <div class="fig n"><b>21.384.031</b><span>celdas a predecir (95,53 %)</span></div>
+    <div class="fig"><b>0,9765</b><span>RMSE de la práctica actual</span></div>
+    <div class="fig o"><b>0,9051</b><span>listón real · regla de descarte</span></div>
+    <div class="fig"><b>0,90</b><span>umbral comprometido en el informe</span></div>
+    <div class="fig n"><b>60,83 %</b><span>Precisión@10 recomendando al azar</span></div>
+    <div class="fig"><b>77,19 %</b><span>Precisión@10 por media de película</span></div>
+    <div class="fig o"><b>80,62 %</b><span>Precisión@10 de nuestro modelo</span></div>
+    <div class="fig"><b>≥ 80 %</b><span>objetivo de ranking propuesto</span></div>
+    <div class="fig o"><b>0,8456</b><span>RMSE de nuestro modelo entrenado</span></div>
+    <div class="fig"><b>200.042</b><span>calificaciones de prueba</span></div>
+  </div>
+</section>
+</div>
+
+<footer class="band">
+  <div class="band-in">
+    <span>MovieLens 1M · GroupLens, Universidad de Minnesota · Uso educativo</span>
+    <span>Baselines y Precisión@10 reproducibles con <code>04_modelado/scripts/03a_baselines.py</code></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var targets = document.querySelectorAll('.rv, .sec-head');
+  if (reduce || !('IntersectionObserver' in window)) {
+    targets.forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0 });
+
+  targets.forEach(function(el, i){
+    // escalona los hijos directos de las rejillas
+    var kids = el.matches('.g3, .g4, .script, .vs, .split') ? el.children : [];
+    Array.prototype.forEach.call(kids, function(k, j){
+      k.style.transition = 'opacity .55s cubic-bezier(.2,.7,.3,1) ' + (j*70) + 'ms, transform .55s cubic-bezier(.2,.7,.3,1) ' + (j*70) + 'ms';
+      k.style.opacity = '0';
+      k.style.transform = 'translateY(14px)';
+    });
+    io.observe(el);
+  });
+
+  // al revelarse la rejilla, sus hijos entran escalonados
+  var mo = new MutationObserver(function(muts){
+    muts.forEach(function(m){
+      var el = m.target;
+      if (!el.classList.contains('in')) return;
+      Array.prototype.forEach.call(el.children, function(k){
+        k.style.opacity = '1';
+        k.style.transform = 'none';
+      });
+    });
+  });
+  targets.forEach(function(el){ mo.observe(el, { attributes:true, attributeFilter:['class'] }); });
+})();
+</script>
+
+<script>
+(function(){
+  var mx = document.getElementById('mx');
+  if (!mx) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var COLS = 24, ROWS = 11, N = COLS * ROWS, TGT = 5 * COLS + 13;
+
+  var seed = 20260909;
+  function rnd(){ seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+
+  var frag = document.createDocumentFragment(), target = null;
+  for (var k = 0; k < N; k++){
+    var c = document.createElement('i');
+    var col = k % COLS, row = (k / COLS) | 0;
+    if (!reduce) c.style.transitionDelay = (col * 7 + row * 22) + 'ms';
+    if (k === TGT){
+      c.className = 'e t'; c.textContent = '?';
+      c.setAttribute('aria-label', 'celda sin calificar que el modelo debe predecir');
+      target = c;
+    } else if (rnd() < 0.25){
+      c.className = 'o'; c.textContent = String(1 + ((rnd() * 5) | 0));
+    } else {
+      c.className = 'e'; c.textContent = '?';
+    }
+    frag.appendChild(c);
+  }
+  mx.appendChild(frag);
+
+  function flip(){
+    if (!target) return;
+    target.classList.add('done');
+    target.textContent = '4,2';
+  }
+
+  if (reduce){ mx.classList.add('in'); flip(); return; }
+
+  var io = new IntersectionObserver(function(en){
+    en.forEach(function(e){
+      if (!e.isIntersecting) return;
+      mx.classList.add('in');
+      io.unobserve(mx);
+      setTimeout(flip, 1150);
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0 });
+  io.observe(mx);
+})();
+</script>
