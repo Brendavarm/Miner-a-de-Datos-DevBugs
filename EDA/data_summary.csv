@@ -1,0 +1,5 @@
+archivo,descripcion,filas,columnas,columnas_lista
+movies.csv,Información de películas y géneros,9742,3,"movieId, title, genres"
+ratings.csv,Calificaciones dadas por usuarios,100836,4,"userId, movieId, rating, timestamp"
+tags.csv,Etiquetas asignadas por usuarios,3683,4,"userId, movieId, tag, timestamp"
+links.csv,Enlaces externos de películas,9742,3,"movieId, imdbId, tmdbId"

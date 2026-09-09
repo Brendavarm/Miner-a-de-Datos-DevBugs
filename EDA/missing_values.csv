@@ -1,0 +1,15 @@
+archivo,columna,faltantes,porcentaje_faltante,cadenas_vacias
+movies.csv,movieId,0,0.0,0
+movies.csv,title,0,0.0,0
+movies.csv,genres,0,0.0,0
+ratings.csv,userId,0,0.0,0
+ratings.csv,movieId,0,0.0,0
+ratings.csv,rating,0,0.0,0
+ratings.csv,timestamp,0,0.0,0
+tags.csv,userId,0,0.0,0
+tags.csv,movieId,0,0.0,0
+tags.csv,tag,0,0.0,0
+tags.csv,timestamp,0,0.0,0
+links.csv,movieId,0,0.0,0
+links.csv,imdbId,0,0.0,0
+links.csv,tmdbId,8,0.0821,0

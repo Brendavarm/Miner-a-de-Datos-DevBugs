@@ -1,0 +1,86 @@
+======================================================================
+INFORME: TOP 50 ETIQUETAS MÁS USADAS - MOVIELENS DATASET
+======================================================================
+
+ESTADÍSTICAS GENERALES
+----------------------------------------------------------------------
+Total de aplicaciones de tags:     3,683
+Tags únicos:                       25
+Promedio de usos por tag:          2.50
+Mediana de usos por tag:           1.00
+Desviación estándar:               4.70
+Máximo (tag #1):                   131
+Mínimo:                            1
+
+DISTRIBUCIÓN ACUMULADA
+----------------------------------------------------------------------
+Top  10 tags acumulan:      358 tags (  9.72%)
+Top  20 tags acumulan:      551 tags ( 14.96%)
+Top  50 tags acumulan:      939 tags ( 25.50%)
+Top 100 tags acumulan:    1,366 tags ( 37.09%)
+
+
+TOP 50 ETIQUETAS MÁS USADAS
+----------------------------------------------------------------------
+Rank   Etiqueta                              Frecuencia   Porcentaje
+----------------------------------------------------------------------
+1      in netflix queue                             131      3.5569%
+2      atmospheric                                   41      1.1132%
+3      funny                                         24      0.6516%
+4      superhero                                     24      0.6516%
+5      surreal                                       24      0.6516%
+6      thought-provoking                             24      0.6516%
+7      sci-fi                                        23      0.6245%
+8      disney                                        23      0.6245%
+9      quirky                                        22      0.5973%
+10     religion                                      22      0.5973%
+11     dark comedy                                   21      0.5702%
+12     suspense                                      21      0.5702%
+13     psychology                                    21      0.5702%
+14     twist ending                                  20      0.5430%
+15     visually appealing                            20      0.5430%
+16     comedy                                        19      0.5159%
+17     politics                                      19      0.5159%
+18     crime                                         19      0.5159%
+19     music                                         17      0.4616%
+20     dark                                          16      0.4344%
+21     action                                        16      0.4344%
+22     time travel                                   16      0.4344%
+23     high school                                   16      0.4344%
+24     mental illness                                16      0.4344%
+25     mindfuck                                      15      0.4073%
+26     aliens                                        15      0.4073%
+27     black comedy                                  14      0.3801%
+28     space                                         14      0.3801%
+29     dreamlike                                     14      0.3801%
+30     mafia                                         13      0.3530%
+31     holocaust                                     13      0.3530%
+32     disturbing                                    13      0.3530%
+33     shakespeare                                   13      0.3530%
+34     emotional                                     13      0.3530%
+35     stephen king                                  13      0.3530%
+36     journalism                                    13      0.3530%
+37     heist                                         13      0.3530%
+38     classic                                       12      0.3258%
+39     anime                                         12      0.3258%
+40     satire                                        12      0.3258%
+41     court                                         12      0.3258%
+42     christmas                                     12      0.3258%
+43     animation                                     11      0.2987%
+44     imdb top 250                                  11      0.2987%
+45     comic book                                    11      0.2987%
+46     psychological                                 11      0.2987%
+47     ghosts                                        11      0.2987%
+48     bittersweet                                   11      0.2987%
+49     adolescence                                   11      0.2987%
+50     adultery                                      11      0.2987%
+
+
+ESTADÍSTICAS DESTACADAS PARA INFORME
+----------------------------------------------------------------------
+• La etiqueta más usada es 'in netflix queue' con 131 apariciones
+• El top 10 representa 9.72% de todos los tags
+• El top 50 representa 25.50% de todos los tags
+• Existen 25 etiquetas únicas en el dataset
+• Cada etiqueta se usa en promedio 2.50 veces (mediana: 1.00)
+======================================================================

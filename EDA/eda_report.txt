@@ -1,0 +1,139 @@
+================================================================================
+EDA COMPLETO: MOVIELENS ML-LATEST-SMALL
+================================================================================
+
+1. ¿QUÉ DATOS TENGO?
+--------------------------------------------------------------------------------
+El dataset contiene películas, calificaciones, etiquetas y enlaces externos.
+
+movies.csv: 9,742 filas y 3 columnas
+Columnas: movieId, title, genres
+Tipos: movieId: int64, title: str, genres: str
+
+ratings.csv: 100,836 filas y 4 columnas
+Columnas: userId, movieId, rating, timestamp
+Tipos: userId: int64, movieId: int64, rating: float64, timestamp: int64
+
+tags.csv: 3,683 filas y 4 columnas
+Columnas: userId, movieId, tag, timestamp
+Tipos: userId: int64, movieId: int64, tag: str, timestamp: int64
+
+links.csv: 9,742 filas y 3 columnas
+Columnas: movieId, imdbId, tmdbId
+Tipos: movieId: int64, imdbId: int64, tmdbId: float64
+
+2. ¿HAY DATOS FALTANTES?
+--------------------------------------------------------------------------------
+Se encontraron los siguientes valores faltantes o vacíos:
+  links.tmdbId: 8 faltantes (0.0821%), 0 cadenas vacías
+
+El detalle completo se encuentra en missing_values.csv.
+
+3. ¿EXISTEN VALORES ATÍPICOS?
+--------------------------------------------------------------------------------
+Se utilizó el criterio IQR: valores menores que Q1 - 1.5×IQR o mayores que Q3 + 1.5×IQR.
+  rating_value: 4,181 valores atípicos (4.15%), límite inferior=1.5, límite superior=5.5
+  ratings_per_user: 70 valores atípicos (11.48%), límite inferior=-164.5, límite superior=367.5
+  ratings_per_movie: 1,179 valores atípicos (12.12%), límite inferior=-11.0, límite superior=21.0
+  tags_per_user: 12 valores atípicos (20.69%), límite inferior=-13.875, límite superior=29.125
+  tags_per_movie: 225 valores atípicos (14.31%), límite inferior=-0.5, límite superior=3.5
+  uses_per_tag: 235 valores atípicos (15.93%), límite inferior=-0.5, límite superior=3.5
+  genres_per_movie: 14 valores atípicos (0.14%), límite inferior=-2.0, límite superior=6.0
+
+El detalle completo se encuentra en outliers_iqr.csv.
+
+4. ¿CÓMO SE DISTRIBUYEN LOS DATOS?
+--------------------------------------------------------------------------------
+Aplicaciones totales de tags: 3,683
+Aplicaciones válidas de tags: 3,683
+Etiquetas únicas normalizadas: 1,475
+Promedio de usos por etiqueta: 2.50
+Mediana de usos por etiqueta: 1.00
+Desviación estándar: 4.70
+Mínimo de usos por etiqueta: 1
+Máximo de usos por etiqueta: 131
+Top 10 etiquetas: 358 aplicaciones (9.72%)
+Top 20 etiquetas: 551 aplicaciones (14.96%)
+Top 50 etiquetas: 939 aplicaciones (25.50%)
+Top 100 etiquetas: 1,366 aplicaciones (37.09%)
+Promedio de ratings por usuario: 165.30
+Mediana de ratings por usuario: 70.50
+Promedio de ratings por película: 10.37
+Mediana de ratings por película: 3.00
+Promedio de calificación: 3.50
+Mediana de calificación: 3.50
+
+5. ¿QUÉ RELACIONES EXISTEN ENTRE VARIABLES?
+--------------------------------------------------------------------------------
+Usuarios con ratings: 610
+Usuarios con tags válidos: 58
+Películas con ratings: 9,724
+Películas con tags válidos: 1,572
+
+Top 10 usuarios por cantidad de ratings:
+  414: 2,698
+  599: 2,478
+  474: 2,108
+  448: 1,864
+  274: 1,346
+  610: 1,302
+  68: 1,260
+  380: 1,218
+  606: 1,115
+  288: 1,055
+
+Top 10 películas por cantidad de ratings:
+  356: 329
+  318: 317
+  296: 307
+  593: 279
+  2571: 278
+  260: 251
+  480: 238
+  110: 237
+  589: 224
+  527: 220
+
+Top 10 usuarios por cantidad de tags:
+  474: 1,507
+  567: 432
+  62: 370
+  599: 323
+  477: 280
+  424: 273
+  537: 100
+  125: 48
+  357: 45
+  318: 41
+
+Top 10 películas por cantidad de tags:
+  296: 181
+  2959: 54
+  924: 41
+  293: 35
+  7361: 34
+  1732: 32
+  4878: 29
+  260: 26
+  79132: 26
+  135536: 19
+
+Correlación entre cantidad de ratings y tags por usuario:
+0.3579
+
+Nota: userId y movieId son identificadores; no se interpreta su correlación numérica directa.
+
+Archivos gráficos generados:
+  - distribution_ratings.png
+  - distribution_tag_frequency.png
+  - movie_genres.png
+  - outliers_tag_frequency.png
+  - ratings_by_year.png
+  - relationship_user_activity.png
+  - tags_by_year.png
+  - top_20_tags.png
+  - top_tags.png
+
+Referencia: F. Maxwell Harper y Joseph A. Konstan, 2015.
+MovieLens Datasets: History and Context.
+================================================================================

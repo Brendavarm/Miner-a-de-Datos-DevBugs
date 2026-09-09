@@ -1,0 +1,236 @@
+INFORME DE ANÁLISIS EXPLORATORIO DE DATOS
+DATASET: MOVIELENS ML-LATEST-SMALL
+==========================================================================================
+Este informe responde las cinco preguntas principales del EDA.
+Los valores fueron calculados directamente desde los archivos CSV.
+
+==========================================================================================
+1. ¿QUÉ DATOS TENGO?
+==========================================================================================
+El dataset contiene información de películas, calificaciones, etiquetas y enlaces externos.
+
+Archivo: movies.csv
+  Descripción: Información de películas y géneros
+  Filas: 9,742    
+  Columnas: 3
+  Variables: movieId, title, genres
+
+Archivo: ratings.csv
+  Descripción: Calificaciones dadas por usuarios
+  Filas: 100,836
+  Columnas: 4
+  Variables: userId, movieId, rating, timestamp
+
+Archivo: tags.csv
+  Descripción: Etiquetas asignadas por usuarios
+  Filas: 3,683
+  Columnas: 4
+  Variables: userId, movieId, tag, timestamp
+
+Archivo: links.csv
+  Descripción: Enlaces externos de películas
+  Filas: 9,742
+  Columnas: 3
+  Variables: movieId, imdbId, tmdbId
+
+Interpretación:
+  El conjunto contiene 100,836 calificaciones, 3,683 aplicaciones válidas de etiquetas y 9,742 películas.
+
+==========================================================================================
+2. ¿HAY DATOS FALTANTES?
+==========================================================================================
+Se encontraron los siguientes problemas:
+  - links.csv / tmdbId: 8 faltantes (0.08%) y 0 cadenas vacías.
+
+Archivo detallado generado: missing_values.csv
+
+==========================================================================================
+3. ¿EXISTEN VALORES ATÍPICOS?
+==========================================================================================
+Se utilizó el método del rango intercuartílico (IQR). Un valor se considera atípico si queda fuera de Q1 - 1.5×IQR o Q3 + 1.5×IQR.
+
+Variable: Valor de rating
+  ¿Tiene atípicos?: Sí
+  Q1: 3.00
+  Q3: 4.00
+  IQR: 1.00
+  Límite inferior: 1.50
+  Límite superior: 5.50
+  Cantidad de atípicos: 4,181
+  Porcentaje de atípicos: 4.15%
+
+Variable: Ratings por usuario
+  ¿Tiene atípicos?: Sí
+  Q1: 35.00
+  Q3: 168.00
+  IQR: 133.00
+  Límite inferior: -164.50
+  Límite superior: 367.50
+  Cantidad de atípicos: 70
+  Porcentaje de atípicos: 11.48%
+
+Variable: Ratings por película
+  ¿Tiene atípicos?: Sí
+  Q1: 1.00
+  Q3: 9.00
+  IQR: 8.00
+  Límite inferior: -11.00
+  Límite superior: 21.00
+  Cantidad de atípicos: 1,179
+  Porcentaje de atípicos: 12.12%
+
+Variable: Tags por usuario
+  ¿Tiene atípicos?: Sí
+  Q1: 2.25
+  Q3: 13.00
+  IQR: 10.75
+  Límite inferior: -13.88
+  Límite superior: 29.12
+  Cantidad de atípicos: 12
+  Porcentaje de atípicos: 20.69%
+
+Variable: Tags por película
+  ¿Tiene atípicos?: Sí
+  Q1: 1.00
+  Q3: 2.00
+  IQR: 1.00
+  Límite inferior: -0.50
+  Límite superior: 3.50
+  Cantidad de atípicos: 225
+  Porcentaje de atípicos: 14.31%
+
+Variable: Usos por etiqueta
+  ¿Tiene atípicos?: Sí
+  Q1: 1.00
+  Q3: 2.00
+  IQR: 1.00
+  Límite inferior: -0.50
+  Límite superior: 3.50
+  Cantidad de atípicos: 235
+  Porcentaje de atípicos: 15.93%
+
+Variable: Géneros por película
+  ¿Tiene atípicos?: Sí
+  Q1: 1.00
+  Q3: 3.00
+  IQR: 2.00
+  Límite inferior: -2.00
+  Límite superior: 6.00
+  Cantidad de atípicos: 14
+  Porcentaje de atípicos: 0.14%
+
+Archivo detallado generado: outliers_iqr.csv
+
+==========================================================================================
+4. ¿CÓMO SE DISTRIBUYEN LOS DATOS?
+==========================================================================================
+Distribución de etiquetas:
+  Aplicaciones totales: 3,683
+  Aplicaciones válidas: 3,683
+  Etiquetas únicas: 1,475
+  Promedio de usos por etiqueta: 2.50
+  Mediana de usos por etiqueta: 1.00
+  Desviación estándar: 4.70
+  Menor frecuencia: 1
+  Mayor frecuencia: 131
+  Top 10 etiquetas: 358 usos (9.72% del total)
+  Top 20 etiquetas: 551 usos (14.96% del total)
+  Top 50 etiquetas: 939 usos (25.50% del total)
+  Top 100 etiquetas: 1,366 usos (37.09% del total)
+
+Distribución de calificaciones:
+  Promedio: 3.50
+  Mediana: 3.50
+  Mínima: 0.5
+  Máxima: 5.0
+
+Interpretación: revise los gráficos generados para observar si las distribuciones son uniformes, concentradas o de cola larga.
+
+==========================================================================================
+5. ¿QUÉ RELACIONES EXISTEN ENTRE VARIABLES?
+==========================================================================================
+Se analizaron relaciones mediante agrupaciones por usuario y película.
+
+Cobertura del dataset:
+  Usuarios con ratings: 610
+  Usuarios con tags: 58
+  Películas con ratings: 9,724
+  Películas con tags: 1,572
+
+Usuarios con más ratings:
+   1. userId: 414 | Cantidad: 2,698
+   2. userId: 599 | Cantidad: 2,478
+   3. userId: 474 | Cantidad: 2,108
+   4. userId: 448 | Cantidad: 1,864
+   5. userId: 274 | Cantidad: 1,346
+   6. userId: 610 | Cantidad: 1,302
+   7. userId: 68 | Cantidad: 1,260
+   8. userId: 380 | Cantidad: 1,218
+   9. userId: 606 | Cantidad: 1,115
+  10. userId: 288 | Cantidad: 1,055
+
+Películas con más ratings:
+   1. movieId: 356 | Cantidad: 329
+   2. movieId: 318 | Cantidad: 317
+   3. movieId: 296 | Cantidad: 307
+   4. movieId: 593 | Cantidad: 279
+   5. movieId: 2571 | Cantidad: 278
+   6. movieId: 260 | Cantidad: 251
+   7. movieId: 480 | Cantidad: 238
+   8. movieId: 110 | Cantidad: 237
+   9. movieId: 589 | Cantidad: 224
+  10. movieId: 527 | Cantidad: 220
+
+Usuarios con más tags:
+   1. userId: 474 | Cantidad: 1,507
+   2. userId: 567 | Cantidad: 432
+   3. userId: 62 | Cantidad: 370
+   4. userId: 599 | Cantidad: 323
+   5. userId: 477 | Cantidad: 280
+   6. userId: 424 | Cantidad: 273
+   7. userId: 537 | Cantidad: 100
+   8. userId: 125 | Cantidad: 48
+   9. userId: 357 | Cantidad: 45
+  10. userId: 318 | Cantidad: 41
+
+Películas con más tags:
+   1. movieId: 296 | Cantidad: 181
+   2. movieId: 2959 | Cantidad: 54
+   3. movieId: 924 | Cantidad: 41
+   4. movieId: 293 | Cantidad: 35
+   5. movieId: 7361 | Cantidad: 34
+   6. movieId: 1732 | Cantidad: 32
+   7. movieId: 4878 | Cantidad: 29
+   8. movieId: 260 | Cantidad: 26
+   9. movieId: 79132 | Cantidad: 26
+  10. movieId: 135536 | Cantidad: 19
+
+Correlación entre cantidad de ratings y tags por usuario: 0.3579
+Interpretación: una correlación positiva indica que los usuarios que califican más películas tienden también a crear más etiquetas.
+Nota: userId y movieId son identificadores, por lo que no se debe interpretar su correlación numérica directa.
+
+==========================================================================================
+ARCHIVOS GENERADOS
+==========================================================================================
+Reportes CSV:
+  - data_summary.csv
+  - missing_values.csv
+  - outliers_iqr.csv
+  - user_activity.csv
+  - movie_activity.csv
+
+Gráficos PNG:
+  - distribution_ratings.png
+  - distribution_tag_frequency.png
+  - movie_genres.png
+  - outliers_tag_frequency.png
+  - ratings_by_year.png
+  - relationship_user_activity.png
+  - tags_by_year.png
+  - top_20_tags.png
+  - top_tags.png
+
+Referencia del dataset:
+F. Maxwell Harper y Joseph A. Konstan, 2015.
+The MovieLens Datasets: History and Context.
+==========================================================================================
