@@ -1,0 +1,10 @@
+# Instalar (Windows):     python -m venv .venv  &&  .venv\Scripts\pip install -r requirements.txt
+# Instalar (Linux/Mac):   python3 -m venv .venv &&  .venv/bin/pip install -r requirements.txt
+numpy>=1.26
+pandas>=2.2
+pyarrow>=14
+matplotlib>=3.8
+seaborn>=0.13
+scikit-learn>=1.4
+statsmodels>=0.14
+ipykernel
