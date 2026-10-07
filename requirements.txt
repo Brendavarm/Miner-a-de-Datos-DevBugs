@@ -1,4 +1,5 @@
-# Probado con Python 3.12.
+# Requiere Python 3.12 o superior (hay paquetes para Windows con 3.12, 3.13 y 3.14).
+# Con Python 3.11 o anterior no instala: numpy 2.5 no tiene versiones para esas.
 #
 # Windows (PowerShell):
 #   py -3.12 -m venv .venv
