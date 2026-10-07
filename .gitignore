@@ -1,0 +1,11 @@
+# Entornos virtuales: cada uno crea el suyo con requirements.txt
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
