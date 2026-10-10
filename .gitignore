@@ -14,3 +14,7 @@ __pycache__/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Carpetas que crean los cuadernos del anexo al ejecutarse
+anexo_ml-latest-small/output/
+anexo_ml-latest-small/output_arbol_decision/
