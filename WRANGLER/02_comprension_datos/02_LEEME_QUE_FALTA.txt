@@ -26,8 +26,16 @@ HAY QUE DESCARGAR ESTOS 14 ARCHIVOS A  02_comprension_datos/graficos/ :
 
 
 --------------------------------------------------------------------------------
-AVISO DE CONSISTENCIA  -  RESOLVER ANTES DE ENTREGAR
+AVISO DE CONSISTENCIA  -  RESUELTO (octubre 2026)
 --------------------------------------------------------------------------------
+
+Se confirmo que el EDA con tags se hizo sobre ml-latest-small. Se aplico la
+opcion (b): el proyecto usa solo MovieLens 1M, los tres graficos de tags NO se
+descargan, y el trabajo con ml-latest-small quedo en anexo_ml-latest-small/.
+Solo hay que traer los otros 11 graficos.
+
+Lo que sigue es el analisis original del problema:
+
 
 Tres graficos usan TAGS (etiquetas de usuario):
 

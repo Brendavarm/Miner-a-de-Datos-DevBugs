@@ -1,3 +1,31 @@
-PENDIENTE - Aqui va 03_modelo.py y las metricas de cada modelo entrenado.
-Ver 03_preparacion_datos/NOTA_PARA_EL_MODELADOR.md antes de empezar.
-Objetivo: RMSE <= 0,90 en test (referencia SVD medida: 0,873).
+================================================================================
+04  MODELADO - RECOMENDADOR (regresion del rating, metrica RMSE)      [HECHO]
+================================================================================
+
+Para regenerar todo, desde WRANGLER/:
+
+    ../.venv/bin/python 04_modelado/scripts/00_entrenar_todo.py
+
+  scripts/03a_baselines.py ...... 4 modelos de referencia -> baselines.json
+  scripts/03b_mf_numpy.py ....... factorizacion matricial -> mf_numpy.json
+                                  y modelo_mf.npz
+  scripts/03c_antes_despues.py .. Precision@10 frente a popularidad
+                                  -> antes_despues.json
+  resultados.html ............... panel con la curva y las cifras (necesita
+                                  servidor: python -m http.server)
+  escalera_baselines.html ....... explicacion de la escalera de baselines
+
+Resultados en test (200.042 calificaciones, hold-out 80/20, semilla 42):
+
+      Modelo                            RMSE     MAE
+      Media global                      1,117   0,933
+      Media por usuario                 1,034   0,827
+      Media por pelicula (popularidad)  0,977   0,780   <- practica actual
+      Media + sesgos (mu + bu + bi)     0,905   0,715
+      Factorizacion matricial (k=64)    0,846   0,665   <- -13,4% vs popularidad
+
+      Precision@10: 80,7% del modelo frente a 77,2% de popularidad.
+
+Sin fuga de datos: la epoca de parada y el numero de factores se eligen con
+una validacion (10% del entrenamiento). El test se mide una sola vez.
+Objetivo del proyecto: RMSE <= 0,90 en test -> CUMPLE.

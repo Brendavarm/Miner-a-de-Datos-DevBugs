@@ -34,8 +34,12 @@ print("="*66)
 print("ANTES vs DESPUES  ·  agregado sobre", f"{len(pr):,}", "usuarios")
 print("="*66)
 print(f"{'':28}{'ANTES':>12}{'DESPUES':>12}{'mejora':>12}")
-print(f"{'RMSE (estrellas)':28}{0.9765:>12.4f}{0.8456:>12.4f}{'+13,4%':>12}")
-print(f"{'MAE (estrellas)':28}{0.7800:>12.4f}{0.6648:>12.4f}{'+14,8%':>12}")
+# RMSE y MAE se leen de los JSON para que siempre cuadren con el ultimo entrenamiento
+pop = json.load(open("04_modelado/resultados/baselines.json"))["3. Media por pelicula"]
+mf = json.load(open("04_modelado/resultados/mf_numpy.json"))
+for nombre, clave in [("RMSE (estrellas)", "rmse"), ("MAE (estrellas)", "mae")]:
+    mejora = (pop[clave] - mf[clave]) / pop[clave] * 100
+    print(f"{nombre:28}{pop[clave]:>12.4f}{mf[clave]:>12.4f}{f'+{mejora:.1f}%'.replace('.', ','):>12}")
 print(f"{'Precision@10':28}{pr[:,1].mean()*100:>11.2f}%{pr[:,0].mean()*100:>11.2f}%"
       f"{(pr[:,0].mean()-pr[:,1].mean())*100:>+11.1f} pp")
 

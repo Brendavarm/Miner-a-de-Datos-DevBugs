@@ -343,7 +343,7 @@ footer{
   <div class="f">MAE&nbsp;&nbsp;= (1/|T|) · Σ | r(u,i) − r̂(u,i) | <em>secundaria</em></div>
 
   <h3>Cómo se lee</h3>
-  <p>El RMSE está <b>en la misma unidad que el rating</b>. Un RMSE de 0,873 significa: «de media, el sistema se equivoca en 0,87 estrellas». Sobre un recorrido de 4 puntos (de 1 a 5), es un 21,8 % del rango.</p>
+  <p>El RMSE está <b>en la misma unidad que el rating</b>. Un RMSE de 0,846 significa: «de media, el sistema se equivoca en 0,85 estrellas». Sobre un recorrido de 4 puntos (de 1 a 5), es un 21,2 % del rango.</p>
 
   <h3>Por qué RMSE y no MAE</h3>
   <p>Al elevar al cuadrado, confundir un 5 con un 2 (error 3) pesa <b>nueve veces</b> más que confundir un 5 con un 4 (error 1). En un recomendador eso es lo correcto: el fallo grave no es afinar mal, es poner delante algo que la persona va a detestar. El MAE se reporta porque es más fácil de explicar, pero <b>la decisión se toma con el RMSE</b>.</p>
@@ -371,7 +371,7 @@ footer{
         <tr><td>2</td><td>Media por usuario</td><td class="mono">μ<sub>u</sub></td><td class="n">1,0344</td><td class="w">El nivel de exigencia del usuario</td></tr>
         <tr><td>3</td><td>Media por película</td><td class="mono">μ<sub>i</sub></td><td class="n">0,9765</td><td class="w">La calidad de la película. <b>Es la práctica actual.</b></td></tr>
         <tr class="hi"><td>4</td><td>Media + sesgos</td><td class="mono">μ + b<sub>u</sub> + b<sub>i</sub></td><td class="n">0,9051</td><td class="w">Las dos señales sin contarlas dos veces. <b>El listón real.</b></td></tr>
-        <tr><td>→</td><td style="color:var(--muted)">SVD (sin verificar)</td><td class="mono" style="color:var(--muted)">factores latentes</td><td class="n" style="color:var(--muted)">0,873</td><td class="w" style="color:var(--muted)">Gustos, no niveles. El objetivo.</td></tr>
+        <tr><td>→</td><td>Factorización matricial (k=64)</td><td class="mono">μ + b<sub>u</sub> + b<sub>i</sub> + p<sub>u</sub>·q<sub>i</sub></td><td class="n">0,8460</td><td class="w">Gustos, no niveles. <b>Nuestro modelo, medido.</b></td></tr>
       </tbody>
     </table>
   </div>
@@ -384,8 +384,8 @@ footer{
 
   <div class="box warn">
     <h4>Corrección importante respecto a lo documentado</h4>
-    <p>El documento del objetivo fija <code>0,930</code> para este escalón. Ese número sale de calcular los sesgos <b>por separado</b> (<code>b<sub>u</sub> = μ<sub>u</sub> − μ</code> y <code>b<sub>i</sub> = μ<sub>i</sub> − μ</code>), lo que <b>cuenta dos veces</b> parte de la misma desviación. Verificado: esa variante da 0,9315.</p>
-      <p>La formulación estándar da <b>0,9051</b>. Consecuencia: la regla de descarte está puesta demasiado baja. El listón honesto es 0,9051, y el margen del SVD baja del 6,1 % al <b>3,5 %</b>.</p>
+    <p>La primera versión del documento del objetivo fijaba <code>0,930</code> para este escalón. Ese número sale de calcular los sesgos <b>por separado</b> (<code>b<sub>u</sub> = μ<sub>u</sub> − μ</code> y <code>b<sub>i</sub> = μ<sub>i</sub> − μ</code>), lo que <b>cuenta dos veces</b> parte de la misma desviación. Verificado: esa variante da 0,9315.</p>
+      <p>La formulación estándar da <b>0,9051</b>. Consecuencia: la regla de descarte está puesta demasiado baja. El listón honesto es 0,9051 (los documentos ya lo usan), y nuestro modelo, con 0,8460, lo supera por un <b>6,5 %</b>.</p>
     <p>Los otros tres escalones sí coinciden con lo documentado (1,117 / 1,034 / 0,977).</p>
   </div>
 
@@ -419,13 +419,13 @@ footer{
     <li><b>Escalera de baselines</b> — demuestra que el modelo aporta. Con regla de descarte explícita: si no baja de 0,9051, el filtrado colaborativo no aporta nada sobre dos medias bien calculadas, y hay que escribirlo.</li>
     <li><b>Umbral fijado antes de modelar</b> — RMSE ≤ 0,90 y MAE ≤ 0,70, declarados en el punto 3.1 <i>antes</i> de entrenar. Fijarlo después es acomodar la vara al resultado.</li>
     <li><b>Curva de hiperparámetros</b> — <b>esta es la respuesta literal a «¿cómo sabemos que ya está optimizado?»</b>. Se varía un parámetro y se grafica el error: si al subirlo empeora <i>y</i> al bajarlo también empeora, estás en el fondo del valle. Ese es el criterio de parada. Sin este gráfico solo puedes decir «no probé más configuraciones».</li>
-    <li><b>Validación cruzada 5-fold</b> — demuestra que no fue suerte del split. Se reporta media y desviación: <code>0,873 ± 0,004</code> es fiable; <code>± 0,050</code> no lo es.</li>
-    <li><b>Ausencia de fuga de datos</b> — el test no se toca al entrenar, ni para normalizar, ni para filtrar. Un RMSE bajo con fuga es un número falso, y es lo primero que se revisa.</li>
+    <li><b>Validación cruzada 5-fold</b> — demuestra que no fue suerte del split. Se reporta media y desviación: <code>0,846 ± 0,004</code> es fiable; <code>± 0,050</code> no lo es.</li>
+    <li><b>Ausencia de fuga de datos</b> — el test no se toca al entrenar, ni para normalizar, ni para filtrar, ni para elegir la época de parada (para eso hay una validación). Un RMSE bajo con fuga es un número falso, y es lo primero que se revisa.</li>
   </ol>
 
   <div class="box tint">
     <h4>Ya tienes un ejemplo real de la prueba 3</h4>
-    <p>El barrido de λ en el escalón 4 es exactamente una curva de hiperparámetros: λ=0 → 0,9057; λ=2 → <b>0,9051</b> (mínimo); λ=10 → 0,9058; λ=50 → 0,9164. Sube por los dos lados del mínimo. Sirve de ejemplo antes de tener el del SVD.</p>
+    <p>El barrido de λ en el escalón 4 es exactamente una curva de hiperparámetros: λ=0 → 0,9057; λ=2 → <b>0,9051</b> (mínimo); λ=10 → 0,9058; λ=50 → 0,9164. Sube por los dos lados del mínimo. En el modelo también hay dos, elegidos con la validación: 64 factores frente a 32 (RMSE 0,8549 frente a 0,8581) y la parada en la época 22.</p>
   </div>
 </section>
 
@@ -440,7 +440,7 @@ footer{
     <li>El <b>Netflix Prize (2006–2009)</b> es literalmente este proyecto: predecir ratings de 1 a 5 minimizando RMSE. Netflix pagó un millón de dólares al equipo que bajara un 10 % su algoritmo interno (Cinematch, RMSE 0,9525). Ganó BellKor's Pragmatic Chaos con 0,8567.</li>
     <li><b>MovieLens no es un dataset comercial</b>: lo publica GroupLens, de la Universidad de Minnesota, precisamente para investigación y docencia.</li>
   </ul>
-  <p>Que el problema esté resuelto por otros es lo que lo hace <b>buen ejercicio académico</b>: existe un benchmark público contra el que medirte. Con un problema inventado no sabrías si tu 0,873 está bien o mal.</p>
+  <p>Que el problema esté resuelto por otros es lo que lo hace <b>buen ejercicio académico</b>: existe un benchmark público contra el que medirte. Con un problema inventado no sabrías si tu 0,846 está bien o mal.</p>
 
   <h3>No: Netflix ya no hace esto</h3>
   <div class="scroll">
@@ -455,7 +455,7 @@ footer{
   </div>
 
   <h3>Lo que sí es vuestro</h3>
-  <p>No el algoritmo — el SVD lo publicó Simon Funk en 2006. Lo vuestro es <b>el estudio</b>: la medición sobre estos datos con vuestro split, la comparación honesta contra cuatro baselines, el criterio de descarte declarado de antemano y la traducción a negocio. Y ahora, además, <b>la corrección del baseline mal calculado</b> — eso es método, y es lo que valora un tribunal.</p>
+  <p>No el algoritmo — la factorización matricial que usamos (estilo FunkSVD) la publicó Simon Funk en 2006. Lo vuestro es <b>el estudio</b>: la medición sobre estos datos con vuestro split, la comparación honesta contra cuatro baselines, el criterio de descarte declarado de antemano y la traducción a negocio. Y ahora, además, <b>la corrección del baseline mal calculado</b> — eso es método, y es lo que valora un tribunal.</p>
 
   <div class="box tint">
     <h4>Tres formas de diferenciarlo aún más, sin datos nuevos</h4>
@@ -494,7 +494,7 @@ footer{
     <div class="fig"><b>0,9765</b><span>RMSE de la práctica actual (popularidad)</span></div>
     <div class="fig gold"><b>0,9051</b><span>el listón real a superar</span></div>
     <div class="fig"><b>0,90</b><span>umbral de éxito comprometido</span></div>
-    <div class="fig"><b>0,873</b><span>SVD de referencia — <i>sin verificar</i></span></div>
+    <div class="fig gold"><b>0,8460</b><span>nuestro modelo (factorización matricial)</span></div>
   </div>
 </section>
 
@@ -507,7 +507,7 @@ footer{
       <tbody>
         <tr><td class="w">«Esta es la variable optimizada» señalando el parquet</td><td class="w">Es la variable <b>a</b> optimizar. La optimizada es <code>r̂</code>, y sale en la fase 4</td></tr>
         <tr><td class="w">«El usuario ve la nota que predice el sistema»</td><td class="w">El usuario ve <b>una lista de 10</b>. Nunca ve un rating predicho ni un RMSE</td></tr>
-        <tr><td class="w">«Nuestro RMSE es 0,873, que está muy bien»</td><td class="w">0,873 solo no significa nada. Di <b>«un 10,6 % mejor que la práctica actual»</b></td></tr>
+        <tr><td class="w">«Nuestro RMSE es 0,846, que está muy bien»</td><td class="w">0,846 solo no significa nada. Di <b>«un 13,4 % mejor que la práctica actual»</b></td></tr>
         <tr><td class="w">Usar 0,930 como listón del filtrado colaborativo</td><td class="w">El listón honesto es <b>0,9051</b></td></tr>
         <tr><td class="w">Calcular medias o normalizar usando todo el dataset</td><td class="w">Solo con entrenamiento. Lo contrario es <b>fuga de datos</b></td></tr>
         <tr><td class="w">Hacer <code>M.mean()</code> sobre la matriz dispersa</td><td class="w">Enmascarar los huecos, o usar el parquet donde son <code>NaN</code></td></tr>
@@ -571,17 +571,18 @@ footer{
   <div class="mod-head"><span class="mod-n">10</span><h2>Estado del proyecto</h2></div>
   <ul class="check">
     <li><span class="mk ok">HECHO</span><span><b>01 · Comprensión del negocio</b> — objetivo, tipo de tarea, variable y métrica (3.1, 3.2, 3.3)</span></li>
-    <li><span class="mk pend">FALTA</span><span><b>02 · Comprensión de los datos</b> — los 14 archivos del EDA siguen en Drive, sin descargar. Y hay que resolver los tres gráficos de <i>tags</i>: MovieLens 1M no tiene fichero de tags, así que o vienen de otro dataset o se retiran</span></li>
+    <li><span class="mk pend">FALTA</span><span><b>02 · Comprensión de los datos</b> — los 14 archivos del EDA siguen en Drive, sin descargar. Los tres gráficos de <i>tags</i> se retiran: MovieLens 1M no tiene tags (venían de ml-latest-small, que quedó en <code>anexo_ml-latest-small/</code>)</span></li>
     <li><span class="mk ok">HECHO</span><span><b>03 · Preparación</b> — 1.000.209 filas limpias, 0 nulos, 0 duplicados, 100 % conservado</span></li>
-    <li><span class="mk pend">EN CURSO</span><span><b>04 · Modelado</b> — los 4 baselines ya están medidos. Falta el SVD: el <code>.venv</code> <b>no tiene instalado</b> <code>scikit-surprise</code> ni <code>scikit-learn</code></span></li>
+    <li><span class="mk ok">HECHO</span><span><b>04 · Modelado</b> — 4 baselines y factorización matricial de 64 factores: <b>RMSE 0,8460</b> en test (−13,4 % frente a popularidad). Factores y época de parada elegidos con validación</span></li>
+    <li><span class="mk ok">HECHO</span><span><b>Clasificación</b> — regresión logística (<code>07</code>) y árbol de decisión (<code>08</code>): 72,00 % de exactitud y AUC 0,782 prediciendo si la película gustará</span></li>
     <li><span class="mk pend">FALTA</span><span><b>05 · Evaluación</b> — comparación de RMSE, curva precisión@K, mapa de calor de similitud, Top-N</span></li>
     <li><span class="mk pend">FALTA</span><span><b>06 · Presentación</b> — informe y diapositivas</span></li>
   </ul>
 
   <div class="box warn">
-    <h4>Lo siguiente que desbloquea todo</h4>
-    <div class="f" style="margin:10px 0 0;white-space:normal">./.venv/bin/pip install scikit-surprise scikit-learn</div>
-    <p style="margin-top:12px">Sin eso no se puede entrenar el SVD ni verificar el 0,873, que hoy es un número heredado, no medido por vosotros.</p>
+    <h4>Lo siguiente</h4>
+    <p>Fase 05: los gráficos de evaluación y subir la <b>cobertura del Top-10</b>, que hoy es del 19,0 % frente al 31,9 % del criterio CN-3. Para regenerar las cifras del modelo:</p>
+    <div class="f" style="margin:10px 0 0;white-space:normal">../.venv/bin/python 04_modelado/scripts/00_entrenar_todo.py</div>
   </div>
 </section>
 

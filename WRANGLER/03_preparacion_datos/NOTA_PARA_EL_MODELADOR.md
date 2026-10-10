@@ -1,3 +1,5 @@
+> **Actualización (octubre 2026):** esta nota se escribió antes de modelar. Los scripts que menciona como `03_modelo.py` y `04_evaluacion.py` se hicieron como `04_modelado/scripts/03a_baselines.py`, `03b_mf_numpy.py` y `03c_antes_despues.py` (se ejecutan juntos con `00_entrenar_todo.py`). No se usó scikit-surprise: el modelo es una factorización matricial en numpy, con RMSE 0,846 en test. El script `02_preparacion.py` y los datos originales `ml-1m/` no están en el repositorio.
+
 **Nota para el modelador **  
 Ya terminé la parte de preparación (rol 3). Te dejo todo listo en 03_preparacion_datos/datos/  
    

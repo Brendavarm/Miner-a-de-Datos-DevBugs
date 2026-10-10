@@ -564,7 +564,7 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
       <div class="f f-big">RMSE = √( (1/|T|) · Σ ( r(u,i) − r̂(u,i) )² )<em>castiga los errores grandes</em></div>
       <div class="f">MAE&nbsp; = (1/|T|) · Σ | r(u,i) − r̂(u,i) |<em>secundaria, más fácil de explicar</em></div>
       <p style="color:var(--ink-2);font-size:14.6px;margin-top:14px">
-        <b>Se lee en estrellas.</b> Un RMSE de 0,873 significa que el sistema se equivoca, de media, en 0,87 estrellas. Sobre un recorrido de 4 puntos, un 21,8 % del rango.</p>
+        <b>Se lee en estrellas.</b> Un RMSE de 0,846 significa que el sistema se equivoca, de media, en 0,85 estrellas. Sobre un recorrido de 4 puntos, un 21,2 % del rango.</p>
       <p style="color:var(--ink-2);font-size:14.6px;margin-top:10px">
         <b>Por qué RMSE y no MAE:</b> al elevar al cuadrado, confundir un 5 con un 2 pesa <b>nueve veces</b> más que confundir un 5 con un 4. El fallo grave no es afinar mal: es poner delante algo que la persona va a detestar.</p>
     </div>
@@ -606,12 +606,12 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
       </div>
       <div class="bar" style="--c:var(--si)">
         <div class="bar-l">Factorización matricial<small><b>nuestro modelo, entrenado y medido</b> · 64 factores, parada en la época 22</small></div>
-        <div class="bar-t"><i style="--w:4.9%"></i></div><div class="bar-v">0,8456</div>
+        <div class="bar-t"><i style="--w:5.0%"></i></div><div class="bar-v">0,8460</div>
       </div>
     </div>
     <div class="alert" style="margin-top:18px;box-shadow:none">
       <h3>Corrección respecto al informe entregado</h3>
-      <p>El informe fija <b>0,930</b> para el baseline de sesgos. Ese número sale de calcular <code>b<sub>u</sub></code> y <code>b<sub>i</sub></code> por separado, lo que cuenta dos veces la misma desviación. La formulación estándar da <b>0,9051</b>. Consecuencia: la regla de descarte estaba puesta demasiado baja, y el margen del SVD baja del 6,1 % al <b>3,5 %</b>.</p>
+      <p>El informe fija <b>0,930</b> para el baseline de sesgos. Ese número sale de calcular <code>b<sub>u</sub></code> y <code>b<sub>i</sub></code> por separado, lo que cuenta dos veces la misma desviación. La formulación estándar da <b>0,9051</b>. Consecuencia: la regla de descarte estaba puesta demasiado baja. Los documentos del proyecto ya usan 0,9051, y nuestro modelo lo supera por un <b>6,5 %</b>.</p>
     </div>
   </div>
 </section>
@@ -629,18 +629,18 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
   <div class="delta rv">
     <div class="delta-c">
       <h4>RMSE &mdash; error de predicción</h4>
-      <div class="delta-v"><span class="from">0,9765</span><span class="ar">&rarr;</span><span class="to">0,8456</span></div>
+      <div class="delta-v"><span class="from">0,9765</span><span class="ar">&rarr;</span><span class="to">0,8460</span></div>
       <div class="delta-g">&minus;13,4 % de error &nbsp;<s>· 0,13 estrellas menos de desvío</s></div>
     </div>
     <div class="delta-c">
       <h4>MAE &mdash; desviación media</h4>
-      <div class="delta-v"><span class="from">0,7800</span><span class="ar">&rarr;</span><span class="to">0,6648</span></div>
-      <div class="delta-g">&minus;14,8 % de error</div>
+      <div class="delta-v"><span class="from">0,7800</span><span class="ar">&rarr;</span><span class="to">0,6652</span></div>
+      <div class="delta-g">&minus;14,7 % de error</div>
     </div>
     <div class="delta-c">
       <h4>Precisión@10 &mdash; calidad del ranking</h4>
-      <div class="delta-v"><span class="from">77,19 %</span><span class="ar">&rarr;</span><span class="to">80,62 %</span></div>
-      <div class="delta-g">+3,4 puntos &nbsp;<s>· sobre 4.368 usuarios</s></div>
+      <div class="delta-v"><span class="from">77,19 %</span><span class="ar">&rarr;</span><span class="to">80,71 %</span></div>
+      <div class="delta-g">+3,5 puntos &nbsp;<s>· sobre 4.368 usuarios</s></div>
     </div>
   </div>
 
@@ -668,16 +668,16 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
         <span class="ab-sc">5/10</span>
       </div>
       <div class="ab-hd"><span></span><span>Película recomendada</span><span>Pred.</span><span>Real</span></div>
-      <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Touch of Evil (1958)</span><span class="ab-p">3,94</span><span class="ab-r">3★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">This Is Spinal Tap (1984)</span><span class="ab-p">3,86</span><span class="ab-r">4★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Treasure of the Sierra Madre, The (1948)</span><span class="ab-p">3,78</span><span class="ab-r">3★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Manhattan (1979)</span><span class="ab-p">3,74</span><span class="ab-r">4★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">It Happened One Night (1934)</span><span class="ab-p">3,73</span><span class="ab-r">5★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Who's Afraid of Virginia Woolf? (1966)</span><span class="ab-p">3,7</span><span class="ab-r">3★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Maltese Falcon, The (1941)</span><span class="ab-p">3,67</span><span class="ab-r">4★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Psycho (1960)</span><span class="ab-p">3,62</span><span class="ab-r">3★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Wings of Desire (1987)</span><span class="ab-p">3,6</span><span class="ab-r">4★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">My Life as a Dog (1985)</span><span class="ab-p">3,58</span><span class="ab-r">3★</span></div>
+      <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Touch of Evil (1958)</span><span class="ab-p">3,87</span><span class="ab-r">3★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Treasure of the Sierra Madre, The (1948)</span><span class="ab-p">3,86</span><span class="ab-r">3★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">This Is Spinal Tap (1984)</span><span class="ab-p">3,85</span><span class="ab-r">4★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Manhattan (1979)</span><span class="ab-p">3,76</span><span class="ab-r">4★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">It Happened One Night (1934)</span><span class="ab-p">3,74</span><span class="ab-r">5★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Who's Afraid of Virginia Woolf? (1966)</span><span class="ab-p">3,73</span><span class="ab-r">3★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Maltese Falcon, The (1941)</span><span class="ab-p">3,71</span><span class="ab-r">4★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Psycho (1960)</span><span class="ab-p">3,64</span><span class="ab-r">3★</span></div>
+            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Great Dictator, The (1940)</span><span class="ab-p">3,62</span><span class="ab-r">4★</span></div>
+            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Welcome to the Dollhouse (1995)</span><span class="ab-p">3,62</span><span class="ab-r">3★</span></div>
     </div>
   </div>
 
@@ -688,7 +688,7 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
     </div>
     <div class="alert g">
       <h3>2 · Y aprende su gusto</h3>
-      <p>El «después» cambia de títulos: <i>Touch of Evil</i>, <i>Manhattan</i>, <i>Wings of Desire</i>, <i>Spinal Tap</i>. Cine de autor y clásicos, que es justo lo que este usuario puntúa con 5 estrellas. Eso <b>no lo puede hacer ninguna media</b>.</p>
+      <p>El «después» cambia de títulos: <i>Touch of Evil</i>, <i>Manhattan</i>, <i>The Great Dictator</i>, <i>Spinal Tap</i>. Cine de autor y clásicos, que es justo lo que este usuario puntúa con 5 estrellas. Eso <b>no lo puede hacer ninguna media</b>.</p>
     </div>
     <div class="alert">
       <h3>3 · Sigue fallando la mitad</h3>
@@ -813,9 +813,9 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
     <div class="beat">
       <div class="beat-h"><span class="beat-n">6</span><h4>Cerrar con lo que falta</h4><span class="beat-t">~35 s</span></div>
       <div class="beat-b">
-        <p class="say">«Ya tenemos un modelo entrenado: una factorización matricial de 64 factores, implementada por nosotros. Da <b>RMSE 0,8456</b>, que mejora un 13,4 % la práctica actual y un 6,6 % el baseline de sesgos. Supera el umbral de 0,90 que nos habíamos puesto.»</p>
-        <p class="say">«Y la curva nos dio el criterio de parada: el error baja hasta la época 22 y a partir de ahí <b>vuelve a subir</b> por sobreajuste. Ahí paramos.»</p>
-        <p class="hint"><b>Lo que queda:</b> reproducirlo con <code>scikit-surprise</code> para contrastar, y medir la cobertura de catálogo.</p>
+        <p class="say">«Ya tenemos un modelo entrenado: una factorización matricial de 64 factores, implementada por nosotros. Da <b>RMSE 0,8460</b>, que mejora un 13,4 % la práctica actual y un 6,5 % el baseline de sesgos. Supera el umbral de 0,90 que nos habíamos puesto.»</p>
+        <p class="say">«Y la curva nos dio el criterio de parada: el error en <b>validación</b> baja hasta la época 22 y a partir de ahí <b>vuelve a subir</b> por sobreajuste. Ahí paramos. El test lo medimos una sola vez, al final.»</p>
+        <p class="hint"><b>Lo que queda:</b> validación cruzada de 5 particiones y mejorar la cobertura de catálogo (hoy el Top-10 cubre el 19,0 %; el objetivo es 31,9 %).</p>
       </div>
     </div>
   </div>
@@ -840,9 +840,9 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
     <div class="fig"><b>0,90</b><span>umbral comprometido en el informe</span></div>
     <div class="fig n"><b>60,83 %</b><span>Precisión@10 recomendando al azar</span></div>
     <div class="fig"><b>77,19 %</b><span>Precisión@10 por media de película</span></div>
-    <div class="fig o"><b>80,62 %</b><span>Precisión@10 de nuestro modelo</span></div>
+    <div class="fig o"><b>80,71 %</b><span>Precisión@10 de nuestro modelo</span></div>
     <div class="fig"><b>≥ 80 %</b><span>objetivo de ranking propuesto</span></div>
-    <div class="fig o"><b>0,8456</b><span>RMSE de nuestro modelo entrenado</span></div>
+    <div class="fig o"><b>0,8460</b><span>RMSE de nuestro modelo entrenado</span></div>
     <div class="fig"><b>200.042</b><span>calificaciones de prueba</span></div>
   </div>
 </section>
