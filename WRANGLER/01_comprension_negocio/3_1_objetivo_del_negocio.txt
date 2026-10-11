@@ -92,18 +92,24 @@ Criterios de exito tecnicos, con la linea base medida (hold-out 80/20,
       Media global (3,58)             1,117   0,933   <- suelo, no personaliza
       Media por usuario               1,034   0,827
       Media por pelicula (popularidad) 0,977   0,780   <- practica actual
-      Media + sesgos (mu+bu+bi)       0,930   0,731
-      SVD (referencia medida)         0,873   0,685   <- objetivo a batir o igualar
+      Media + sesgos (mu+bu+bi)       0,905   0,715
+      Factorizacion matricial (k=64)  0,846   0,665   <- modelo entrenado
+
+  (Valores reproducibles con 04_modelado/scripts/00_entrenar_todo.py.
+   La primera version citaba 0,930 para media + sesgos y 0,873 de un SVD
+   con scikit-surprise; se reemplazaron por los que da el codigo.)
 
   CT-1  RMSE <= 0,90 en test  (mejora >= 7,9% sobre popularidad)
   CT-2  MAE  <= 0,70 en test  (mejora >= 10,3% sobre popularidad)
-  CT-3  El modelo debe superar al baseline mu+bu+bi (RMSE 0,930); si no lo
+  CT-3  El modelo debe superar al baseline mu+bu+bi (RMSE 0,905); si no lo
         supera, el filtrado colaborativo no aporta nada y no se justifica.
 
-  Referencia alcanzada con SVD: RMSE 0,873 y MAE 0,685, que supone
-    -21,8% de error frente a la media global,
-    -10,6% frente al ranking por popularidad,
-    - 6,1% frente al baseline de sesgos.
+  Resultado medido con la factorizacion matricial (03b_mf_numpy.py):
+  RMSE 0,846 y MAE 0,665 en test, que supone
+    -24,2% de error frente a la media global,
+    -13,4% frente al ranking por popularidad,
+    - 6,5% frente al baseline de sesgos.
+  Cumple CT-1, CT-2 y CT-3.
 
 
 COMO SE DEFIENDE EN UNA FRASE
@@ -111,8 +117,8 @@ COMO SE DEFIENDE EN UNA FRASE
 
 "El usuario mediano conoce el 2,6% del catalogo y el 68% de las peliculas apenas
 recibe votos; con 1.000.209 calificaciones ya disponibles podemos predecir lo
-que cada usuario puntuaria con un error de 0,685 estrellas, un 10,6% mejor que
-recomendar lo mas popular, que es lo que se hace hoy."
+que cada usuario puntuaria con un error medio de 0,665 estrellas, un 14,7%
+menos que recomendar lo mas popular, que es lo que se hace hoy."
 
 
 NUMEROS FUENTE  (para citar en la diapositiva)

@@ -1,0 +1,26 @@
+================================================================================
+ANEXO - TRABAJO ANTERIOR CON MovieLens ml-latest-small (100.836 calificaciones)
+================================================================================
+
+El proyecto se unifico en MovieLens 1M (1.000.209 calificaciones). Todo lo que
+se entrega ahora esta en WRANGLER/ y en el cuaderno de la raiz
+h3_03_evaluacion1_grupal_proyecto_crisp.ipynb.
+
+Esta carpeta guarda, sin cambios, lo que se hizo antes con el dataset pequeno:
+
+  ml-latest-small/ ..................... datos originales (ratings, movies,
+                                         tags, links)
+  evaluacion_procesual_hito_2.ipynb .... EDA del hito 2
+  script.py ............................ el mismo EDA en script
+  EDA/ ................................. salidas del EDA (csv, png, informe)
+  arbol_decision_movielens.ipynb ....... primera version del arbol de decision
+  evaluacion_movielens.md .............. respuestas de esa primera version
+
+Por que se dejo de usar:
+  - MovieLens 1M es el dataset de la preparacion (WRANGLER/03) y del
+    recomendador; tener dos datasets hacia que los numeros no cuadraran.
+  - ml-latest-small tiene tags, pero 1M no; los graficos de tags no se pueden
+    repetir en 1M.
+
+Los cuadernos y script.py usan rutas relativas (./ml-latest-small), asi que
+siguen funcionando si se abren desde esta carpeta.

@@ -38,7 +38,8 @@ POR QUE REGRESION
    no una etiqueta.
 
 3. Las metricas de evaluacion son RMSE y MAE, que son metricas de regresion.
-   (Referencia medida sobre estos datos con SVD: RMSE 0,873 / MAE 0,685.)
+   (Medido sobre estos datos con factorizacion matricial: RMSE 0,846 /
+   MAE 0,665.)
 
 4. El problema se plantea como rellenar las celdas vacias de una matriz
    usuario x pelicula de 6.040 x 3.706, que esta vacia en un 95,53%.

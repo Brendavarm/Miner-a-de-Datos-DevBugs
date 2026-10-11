@@ -67,11 +67,11 @@ B) LA METRICA PRINCIPAL: RMSE
          ESTRELLAS.
 
   COMO SE LEE EL RESULTADO:
-      El RMSE esta en la MISMA unidad que el rating. Un RMSE de 0,873
-      significa: "de media, el sistema se equivoca en 0,87 estrellas al
+      El RMSE esta en la MISMA unidad que el rating. Un RMSE de 0,846
+      significa: "de media, el sistema se equivoca en 0,85 estrellas al
       predecir lo que un usuario va a puntuar".
       Sobre una escala de 4 puntos de recorrido (de 1 a 5), eso es un
-      21,8% del rango.
+      21,2% del rango.
 
   POR QUE RMSE Y NO OTRA:
       - Es una metrica de REGRESION, coherente con la tarea marcada en 3.2.
@@ -121,19 +121,23 @@ D) VALORES DE REFERENCIA YA MEDIDOS SOBRE ESTOS DATOS
       Media global (3,58)               1,117   0,933    suelo, no personaliza
       Media por usuario                 1,034   0,827    baseline ingenuo
       Media por pelicula (popularidad)  0,977   0,780    LA PRACTICA ACTUAL
-      Media + sesgos (mu + bu + bi)     0,930   0,731    baseline a superar
-      SVD (referencia medida)           0,873   0,685    OBJETIVO
+      Media + sesgos (mu + bu + bi)     0,905   0,715    baseline a superar
+      Factorizacion matricial (k=64)    0,846   0,665    MODELO ENTRENADO
+
+  (Valores reproducibles con 04_modelado/scripts/00_entrenar_todo.py.
+   La primera version citaba 0,930 para media + sesgos y 0,873 de un SVD
+   con scikit-surprise; se reemplazaron por los que da el codigo.)
 
   UMBRAL DE EXITO DEL PROYECTO:
 
       RMSE <= 0,90 en test
              -> mejora minima del 7,9% frente al ranking por popularidad
-             -> y obliga a superar el baseline de sesgos (0,930)
+             -> y obliga a superar el baseline de sesgos (0,905)
 
       MAE  <= 0,70 en test
              -> mejora minima del 10,3% frente a popularidad
 
-      REGLA DE DESCARTE: si el modelo no baja de RMSE 0,930 (el baseline
+      REGLA DE DESCARTE: si el modelo no baja de RMSE 0,905 (el baseline
       mu + bu + bi), el filtrado colaborativo NO aporta valor y no se
       justifica ponerlo en produccion.
 
@@ -169,12 +173,12 @@ F) DE DONDE SALE CADA COSA EN EL EDA
       genre_distribution.png ..... contexto del catalogo
       movies_by_year.png ......... contexto del catalogo
 
-  AVISO DE CONSISTENCIA:
+  AVISO DE CONSISTENCIA  [RESUELTO]:
       Los graficos top_tags.png, ratings_vs_tags.png y top_tagged_movies.png
-      usan TAGS (etiquetas de usuario). MovieLens 1M NO tiene fichero de tags:
-      los tags existen en ml-latest-small y ml-25m. Hay que verificar si el
-      EDA se hizo sobre un dataset distinto al de preparacion (ML-1M) y
-      unificar antes de entregar, o retirar esos tres graficos.
+      usan TAGS (etiquetas de usuario), que MovieLens 1M no tiene: venian de
+      ml-latest-small. El proyecto se unifico en MovieLens 1M, esos tres
+      graficos se retiran y el trabajo con ml-latest-small quedo como
+      referencia en anexo_ml-latest-small/.
 
 G) COMO SABEMOS QUE YA ESTA OPTIMIZADO  (criterio de parada y defensa)
 --------------------------------------------------------------------------------
@@ -196,17 +200,17 @@ G) COMO SABEMOS QUE YA ESTA OPTIMIZADO  (criterio de parada y defensa)
         Media global (3,58) ............ 1,117   si no lo superas, no sirve
         Media por usuario .............. 1,034
         Media por pelicula (popular) ... 0,977   <- LA PRACTICA ACTUAL
-        Media + sesgos (mu+bu+bi) ...... 0,930   <- BASELINE A SUPERAR
-        Modelo propuesto (SVD) ......... 0,873   <- objetivo
+        Media + sesgos (mu+bu+bi) ...... 0,905   <- BASELINE A SUPERAR
+        Factorizacion matricial ........ 0,846   <- modelo entrenado
 
-      REGLA DE DESCARTE: si el modelo NO baja de 0,930, el filtrado
+      REGLA DE DESCARTE: si el modelo NO baja de 0,905, el filtrado
       colaborativo no aporta valor sobre unos simples sesgos, y hay que
       escribirlo en el informe. Un resultado negativo bien argumentado vale
       mas que un numero adornado.
 
       Esto es lo que convierte la cifra en ARGUMENTO: no se dice
-      "0,873 esta bien" (0,873 no significa nada solo), se dice
-      "0,873 es un 10,6% mejor que lo que se hace hoy".
+      "0,846 esta bien" (0,846 no significa nada solo), se dice
+      "0,846 es un 13,4% mejor que lo que se hace hoy".
 
 
   PRUEBA 2 - UMBRAL FIJADO ANTES DE MODELAR
@@ -220,14 +224,15 @@ G) COMO SABEMOS QUE YA ESTA OPTIMIZADO  (criterio de parada y defensa)
   ..............................................................................
       Es la respuesta literal a "como sabemos que YA esta optimizado".
 
-      Se entrena variando un hiperparametro (por ejemplo n_factors del SVD:
-      20, 50, 80, 100, 120, 150, 200) y se grafica el RMSE de validacion.
+      Se entrena variando un hiperparametro (por ejemplo K, el numero de
+      factores: 20, 50, 80, 100, 120, 150, 200) y se grafica el RMSE de
+      validacion. (El grafico es un ejemplo ilustrativo.)
 
         RMSE
         0,90 |  *                             *
         0,89 |      *                     *
         0,88 |          *             *
-        0,87 |              *  *  *              <- minimo en n_factors ~ 100
+        0,87 |              *  *  *              <- minimo en K ~ 100
              +--------------------------------------
                20  50  80 100 120 150 200
 
@@ -238,15 +243,19 @@ G) COMO SABEMOS QUE YA ESTA OPTIMIZADO  (criterio de parada y defensa)
       Sin este grafico no se puede afirmar "esta optimizado";
       solo se puede afirmar "no probe mas configuraciones".
 
-      Parametros a barrer en SVD: n_factors, n_epochs, lr_all, reg_all.
+      Parametros a barrer: K (factores), epocas, lr y reg.
+      Hecho hasta ahora: K=32 frente a K=64, elegido por la validacion
+      (RMSE 0,8581 frente a 0,8549 -> K=64). Las epocas tambien se eligen
+      con la validacion (parada temprana). Falta un barrido mas amplio.
 
 
   PRUEBA 4 - VALIDACION CRUZADA  (demuestra que no fue suerte)
   ..............................................................................
       Validacion cruzada de 5 particiones. Se reporta media Y desviacion:
 
-            RMSE = 0,873 +/- 0,004      <- fiable, estable
-            RMSE = 0,873 +/- 0,050      <- NO fiable, depende del split
+            RMSE = 0,846 +/- 0,004      <- fiable, estable
+            RMSE = 0,846 +/- 0,050      <- NO fiable, depende del split
+      (Ejemplo de como se reporta; la validacion cruzada aun esta pendiente.)
 
       Un unico hold-out 80/20 puede salir bien por casualidad. La CV lo
       descarta.
@@ -254,7 +263,8 @@ G) COMO SABEMOS QUE YA ESTA OPTIMIZADO  (criterio de parada y defensa)
 
   PRUEBA 5 - AUSENCIA DE FUGA DE DATOS  (demuestra que el numero es honesto)
   ..............................................................................
-      - El conjunto de test no se toca al entrenar.
+      - El conjunto de test no se toca al entrenar. La epoca de parada se
+        elige con una validacion (10% del entrenamiento), no con el test.
       - Las medias y normalizaciones se calculan SOLO con entrenamiento.
       - El filtrado por minimo de votos, tambien solo con entrenamiento.
 
@@ -277,13 +287,12 @@ COMO SE DEFIENDE EN LA EXPOSICION  (parrafo listo para leer)
 
   "Fijamos el umbral RMSE <= 0,90 antes de modelar. Construimos cuatro
    modelos de referencia; el mejor sin personalizar, que suma media global
-   mas sesgos de usuario y de pelicula, da 0,930. Nuestro modelo da
-   0,873 +/- 0,004 en validacion cruzada de 5 particiones, un 10,6% mejor
-   que recomendar por popularidad, que es la practica actual. La curva de
-   hiperparametros situa el minimo en n_factors = 100: por encima y por
-   debajo el error empeora, asi que con este metodo no queda margen por
-   explorar. El conjunto de prueba no se uso en ningun momento del
-   entrenamiento."
+   mas sesgos de usuario y de pelicula, da 0,905. Nuestro modelo, una
+   factorizacion matricial de 64 factores, da 0,846 en test: un 13,4%
+   mejor que recomendar por popularidad, que es la practica actual, y un
+   6,5% mejor que los sesgos. El numero de factores y la epoca en la que
+   se para se eligieron con una validacion separada; el conjunto de prueba
+   se uso una sola vez, al final."
 
 
 ================================================================================

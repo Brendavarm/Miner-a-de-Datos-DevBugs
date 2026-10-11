@@ -1,0 +1,20 @@
+# Entornos virtuales: cada uno crea el suyo con requirements.txt
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Carpetas que crean los cuadernos del anexo al ejecutarse
+anexo_ml-latest-small/output/
+anexo_ml-latest-small/output_arbol_decision/

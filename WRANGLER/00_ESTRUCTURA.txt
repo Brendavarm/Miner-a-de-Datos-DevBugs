@@ -17,3 +17,46 @@ explorador como en Google Drive.
                                              METRICA PRINCIPAL (RMSE, formula)
       graficos/ ............................ imagenes de apoyo del punto 3.2
       scripts/ ............................. generar_3_2.py
+
+
+  02_comprension_datos/       FASE 2 - EDA                            [PENDIENTE]
+      02_LEEME_QUE_FALTA.txt ............... graficos del EDA que hay que traer
+                                             de Drive (y cuales no sirven en 1M)
+
+  03_preparacion_datos/       FASE 3 - Limpieza y matriz              [HECHO]
+      datos/ ............................... datos limpios de MovieLens 1M
+                                             (parquet, csv y matriz dispersa)
+      graficos/ ............................ graficos de la preparacion
+      NOTA_PARA_EL_MODELADOR.md ............ como cargar los datos y que cuidar
+      reporte_preparacion.json ............. todas las cifras de la limpieza
+
+  04_modelado/                FASE 4 - Recomendador (RMSE)            [HECHO]
+      scripts/00_entrenar_todo.py .......... baselines + factorizacion matricial
+      resultados/ .......................... metricas en JSON y modelo entrenado
+
+  05_evaluacion/              FASE 5 - Graficos de evaluacion         [PENDIENTE]
+
+  06_presentacion/            FASE 6 - Guia de estudio y slides       [EN CURSO]
+
+
+  MODELOS DE CLASIFICACION (tareas de la materia)
+  Pregunta: "le gustara la pelicula al usuario?"  (rating >= 4 -> Me gusta)
+  Mismo target, mismas 23 variables y misma particion 80/20 (semilla 777).
+
+  07_regresion_logistica/     regresion_logistica.ipynb              [HECHO]
+                              Exactitud test 72,00% - AUC 0,782
+
+  08_arbol_decision/          arbol_decision.ipynb                   [HECHO]
+                              Exactitud test 72,00% - AUC 0,782
+                              (profundidad 8 elegida con validacion)
+
+
+  FUERA DE ESTA CARPETA (raiz del repositorio)
+
+  h3_03_evaluacion1_grupal_proyecto_crisp.ipynb
+      Entregable "Proyecto DM, Fase 3-4": las 10 preguntas de la evaluacion
+      grupal respondidas con codigo, todo sobre MovieLens 1M.
+
+  anexo_ml-latest-small/
+      Trabajo anterior hecho con el dataset de 100.000 calificaciones.
+      Se conserva como referencia; el proyecto ya no lo usa.
