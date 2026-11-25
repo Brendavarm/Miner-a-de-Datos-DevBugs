@@ -32,15 +32,15 @@ def _arg(nombre, defecto, tipo=float):
 SEED   = _arg("seed",   42,    int)
 K      = _arg("k",      64,    int)     # nº de factores latentes
 LR     = _arg("lr",     0.010)          # tasa de aprendizaje
-# k=64/lr=0.010 se eligio por la VALIDACION: RMSE 0,8549 frente a 0,8581 de k=32/lr=0.020
+# Valores iniciales del modelo. La epoca se selecciona con validacion.
 REG    = _arg("reg",    0.045)          # regularizacion
 EPOCHS = _arg("epochs", 45,    int)
 BATCH  = _arg("batch",  4096,  int)
 PACIENCIA = 6   # epocas sin mejorar antes de parar
 VALIDACION = 0.10   # parte del train que se aparta para decidir cuando parar
-LO, HI = 1.0, 5.0
+LO, HI = 0.5, 5.0
 
-df = pd.read_parquet("03_preparacion_datos/datos/datos_limpios.parquet")[
+df = pd.read_csv("../anexo_ml-latest-small/ml-latest-small/ratings.csv")[
         ["userId","movieId","rating"]]
 
 # ---- indices densos ----

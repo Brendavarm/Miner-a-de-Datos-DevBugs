@@ -15,6 +15,10 @@ __pycache__/
 Thumbs.db
 desktop.ini
 
+# Resultados generados por el entrenamiento local
+WRANGLER/04_modelado/resultados/
+
 # Carpetas que crean los cuadernos del anexo al ejecutarse
 anexo_ml-latest-small/output/
 anexo_ml-latest-small/output_arbol_decision/
+anexo_ml-latest-small/output_kmeans/
