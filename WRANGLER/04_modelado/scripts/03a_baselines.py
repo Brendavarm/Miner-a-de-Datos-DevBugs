@@ -12,9 +12,9 @@ os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file_
 import numpy as np, pandas as pd, json, time
 
 SEED, LAMBDA = 42, 2.0          # lambda = 2 es el minimo medido en el barrido
-LO, HI = 1.0, 5.0
+LO, HI = 0.5, 5.0
 
-df = pd.read_parquet("03_preparacion_datos/datos/datos_limpios.parquet")[
+df = pd.read_csv("../anexo_ml-latest-small/ml-latest-small/ratings.csv")[
         ["userId","movieId","rating"]]
 print(f"Cargado: {len(df):,} calificaciones")
 
@@ -27,7 +27,7 @@ te = df.iloc[idx[corte:]].reset_index(drop=True)
 print(f"Entrenamiento: {len(tr):,}   Prueba: {len(te):,}\n")
 
 def metricas(pred, real):
-    pred = np.clip(pred, LO, HI)          # el rating no puede salirse de [1,5]
+    pred = np.clip(pred, LO, HI)          # el rating no puede salirse de [0.5, 5]
     e = real - pred
     return float(np.sqrt((e**2).mean())), float(np.abs(e).mean())
 
@@ -65,10 +65,11 @@ for k,(r,m,d) in res.items():
     print(f"{k:<26}{r:>9.4f}{m:>9.4f}   {d}")
 
 pop = res["3. Media por pelicula"][0]
-print("\nMEJORA DE CADA ESCALON FRENTE A POPULARIDAD (RMSE 0,977 = practica actual):")
+print("\nMEJORA DE CADA ESCALON FRENTE A POPULARIDAD (practica actual):")
 for k,(r,m,d) in res.items():
     print(f"  {k:<26} {(pop-r)/pop*100:+7.2f}%")
 
+os.makedirs("04_modelado/resultados", exist_ok=True)
 json.dump({k: {"rmse": r, "mae": m, "detalle": d} for k,(r,m,d) in res.items()} |
           {"_config": {"seed": SEED, "lambda": LAMBDA,
                        "n_train": len(tr), "n_test": len(te)},

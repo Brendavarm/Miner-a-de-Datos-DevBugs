@@ -9,8 +9,8 @@ d = np.load("04_modelado/resultados/modelo_mf.npz", allow_pickle=True)
 P,Q,bu,bi,mu = d["P"],d["Q"],d["bu"],d["bi"],float(d["mu"])
 uidx = {u:k for k,u in enumerate(d["users"])}; iidx = {i:k for k,i in enumerate(d["items"])}
 
-df = pd.read_parquet("03_preparacion_datos/datos/datos_limpios.parquet")
-mv = pd.read_csv("03_preparacion_datos/datos/mapa_peliculas.csv").set_index("movieId")
+df = pd.read_csv("../anexo_ml-latest-small/ml-latest-small/ratings.csv")
+mv = pd.read_csv("../anexo_ml-latest-small/ml-latest-small/movies.csv").set_index("movieId")
 rng = np.random.default_rng(42); idx = rng.permutation(len(df)); c = int(len(df)*.8)
 tr, te = df.iloc[idx[:c]], df.iloc[idx[c:]]
 nvot = tr.groupby("movieId").size(); mi = tr.groupby("movieId").rating.mean()
@@ -18,7 +18,7 @@ nvot = tr.groupby("movieId").size(); mi = tr.groupby("movieId").rating.mean()
 def pred(u, items):
     ui = uidx[u]; ii = np.array([iidx[i] for i in items])
     p = mu + bu[ui] + bi[ii] + P[ui] @ Q[ii].T
-    return np.clip(p, 1, 5)
+    return np.clip(p, 0.5, 5)
 
 # ═══ 1) AGREGADO ═══
 cnt = te.groupby("userId").size(); ok = set(cnt[cnt>=10].index)
@@ -44,7 +44,7 @@ print(f"{'Precision@10':28}{pr[:,1].mean()*100:>11.2f}%{pr[:,0].mean()*100:>11.2
       f"{(pr[:,0].mean()-pr[:,1].mean())*100:>+11.1f} pp")
 
 # ═══ 2) CASO DE UN USUARIO ═══
-U = 1150
+U = int(cnt.idxmax())
 g = te[te.userId==U]
 it = g.movieId.to_numpy(); real = g.rating.to_numpy()
 pm = pred(U, it)
