@@ -238,7 +238,7 @@ footer{
 <div class="wrap">
 
 <header>
-  <div class="kicker">Minería de datos · Sistema de recomendación · MovieLens 1M</div>
+  <div class="kicker">Minería de datos · Sistema de recomendación · MovieLens ml-latest-small</div>
   <h1>Guía de estudio</h1>
   <p class="lede">Todo lo que hemos aclarado sobre el proyecto, ordenado para leer de corrido: qué se predice, con qué se mide, cómo se demuestra que funciona y qué contestar cuando pregunten.</p>
 </header>
@@ -264,19 +264,10 @@ footer{
 <section class="mod" id="m1">
   <div class="mod-head"><span class="mod-n">01</span><h2>De qué va el proyecto</h2></div>
 
-  <p>La plataforma enseña a los 6.040 usuarios <b>la misma estantería</b>: un ranking ordenado por popularidad. El proyecto consiste en darle a cada uno la suya.</p>
+  <p>El ranking por media de película sirve como referencia común para los 610 usuarios. El proyecto busca ordenar las películas según cada persona.</p>
 
-  <h3>El problema, con un usuario real</h3>
-  <p>El usuario 1150 ha visto 1.302 películas. Sus cinco estrellas son <i>Duck Soup</i> (1933), <i>Roger &amp; Me</i>, <i>Night on Earth</i>: cine clásico, documental, indie europeo. Lo que la plataforma le muestra hoy son <i>American Beauty</i>, <i>Star Wars</i>, <i>Jurassic Park</i>, <i>Matrix</i>.</p>
-
-  <div class="box warn">
-    <h4>Dos fallos simultáneos</h4>
-    <ul>
-      <li><b>Ya vio 7 de esos 8 títulos.</b> Recomendárselos no le sirve de nada.</li>
-      <li><b>Ni siquiera le gustaron:</b> les puso 3,0 de media, por debajo de su propia media (2,61 es su nivel, y esas están en su zona baja).</li>
-    </ul>
-    <p style="margin-top:12px">Le quedan <b>2.404 películas sin ver</b>. Entre ellas están las que le encantarían. Hoy no tiene forma de encontrarlas.</p>
-  </div>
+  <h3>El problema, en los datos actuales</h3>
+  <p>El usuario mediano ha calificado 70,5 películas de un catálogo de 9.742. Las 100 películas más calificadas concentran el 16,1 % de las notas. Un ranking único deja poco espacio para preferencias individuales.</p>
 
   <h3>La cadena completa</h3>
   <div class="f">
@@ -291,8 +282,8 @@ footer{
 
   <h3>Por qué lo paga el negocio</h3>
   <ul>
-    <li><b>Para la persona:</b> deja de perder veinte minutos decidiendo qué ver.</li>
-    <li><b>Para la plataforma:</b> hay <b>177 películas con cero votos</b> y 1.192 por debajo de 50. Eso es catálogo pagado que nadie consume. Recomendar por popularidad lo agrava; personalizar lo rescata.</li>
+    <li><b>Para la persona:</b> recibe un orden de películas ajustado a sus preferencias.</li>
+    <li><b>Para la plataforma:</b> hay <b>18 películas con cero votos</b> y 9.274 por debajo de 50. Es una cola larga; el Top-10 del modelo cubre solo el 3,2 % del catálogo (315 de 9.724 películas).</li>
   </ul>
 </section>
 
@@ -300,21 +291,21 @@ footer{
 <section class="mod" id="m2">
   <div class="mod-head"><span class="mod-n">02</span><h2>La variable a optimizar</h2></div>
 
-  <p>Es una sola, y es la columna <code>rating</code> del fichero <code>datos_limpios.parquet</code>.</p>
+  <p>Es una sola, y es la columna <code>rating</code> de <code>anexo_ml-latest-small/ml-latest-small/ratings.csv</code>.</p>
 
-  <div class="f">r(u,i) ∈ [1, 5] <em>la nota que el usuario u daría a la película i que aún no ha visto</em></div>
+  <div class="f">r(u,i) ∈ [0,5, 5] <em>la nota que el usuario u daría a la película i que aún no ha visto</em></div>
 
   <h3>Dónde está, físicamente</h3>
-  <p>La misma información existe en dos formatos, y esa es la parte que confunde:</p>
+  <p>El CSV está en forma larga; la matriz usuario-película es su representación conceptual:</p>
   <ul>
-    <li><b>Forma larga</b> (<code>datos_limpios.parquet</code>): una fila por calificación. <code>userId</code> es la <i>u</i>, <code>movieId</code> es la <i>i</i>, <code>rating</code> es <i>r(u,i)</i>. Ejemplo real: <code>r(1, 1193) = 5</code>.</li>
-    <li><b>Forma matriz</b> (<code>matriz_usuario_pelicula.npz</code>): 6.040 × 3.706. Aquí <i>r(u,i)</i> es la celda del cruce.</li>
+    <li><b>Forma larga</b> (<code>ratings.csv</code>): una fila por calificación. <code>userId</code> es la <i>u</i>, <code>movieId</code> es la <i>i</i>, <code>rating</code> es <i>r(u,i)</i>. Ejemplo real: <code>r(1, 1) = 4</code>.</li>
+    <li><b>Forma matriz</b> (conceptual): 610 × 9.724. Aquí <i>r(u,i)</i> es la celda del cruce.</li>
   </ul>
 
   <div class="figs">
-    <div class="fig"><b>22.384.240</b><span>celdas de la matriz</span></div>
-    <div class="fig"><b>1.000.209</b><span>observadas · 4,47 %<br>sirven para entrenar</span></div>
-    <div class="fig red"><b>21.384.031</b><span>vacías · 95,53 %<br>hay que predecirlas</span></div>
+    <div class="fig"><b>5.931.640</b><span>celdas de la matriz</span></div>
+    <div class="fig"><b>100.836</b><span>observadas · 1,70 %<br>se dividen en entrenamiento y prueba</span></div>
+    <div class="fig red"><b>5.830.804</b><span>vacías · 98,30 %<br>hay que predecirlas</span></div>
   </div>
 
   <div class="box warn">
@@ -324,12 +315,12 @@ footer{
 
   <div class="box warn">
     <h4>Cuidado con la palabra «optimizada»</h4>
-    <p>El <code>rating</code> observado es <b>la variable <i>a</i> optimizar</b>: la materia prima que ya tienes. La <b>variable optimizada</b> es <code>r̂(u,i)</code>, la salida del modelo, y <b>todavía no existe</b> — sale en la fase 4. Si en la defensa señalas el parquet y dices «esta es la variable optimizada», te corrigen.</p>
+    <p>El <code>rating</code> observado es <b>la variable <i>a</i> optimizar</b>: la materia prima que ya tienes. La <b>variable optimizada</b> es <code>r̂(u,i)</code>, la salida del modelo, y se calcula en la fase 4. Si en la defensa señalas el CSV y dices «esta es la variable optimizada», te corrigen.</p>
   </div>
 
   <div class="box warn">
-    <h4>El 0 de la matriz dispersa no es un cero de estrellas</h4>
-    <p>En el <code>.npz</code>, las celdas vacías se leen como <b>0</b> porque el formato CSR solo guarda lo que tiene valor. Pero la escala <b>empieza en 1</b>: ese 0 significa «no la ha visto». Si promedias sin enmascarar, te sale 0,16 en vez de 3,58. En el <code>.parquet</code> son <code>NaN</code> de verdad y pandas los ignora solo.</p>
+    <h4>Una celda sin nota no es una nota de cero</h4>
+    <p>La escala observada empieza en <b>0,5</b>. Una celda sin registro significa que no hay calificación para ese par; no se debe contar como cero al promediar.</p>
   </div>
 </section>
 
@@ -337,13 +328,13 @@ footer{
 <section class="mod" id="m3">
   <div class="mod-head"><span class="mod-n">03</span><h2>La métrica principal</h2></div>
 
-  <p>Es el <b>RMSE</b>, la raíz del error cuadrático medio. Se mide sobre las 200.042 calificaciones de prueba, después de recortar las predicciones a [1, 5].</p>
+  <p>Es el <b>RMSE</b>, la raíz del error cuadrático medio. Se mide sobre las 20.168 calificaciones de prueba, después de recortar las predicciones a [0,5, 5].</p>
 
   <div class="f">RMSE = √( (1/|T|) · Σ ( r(u,i) − r̂(u,i) )² ) <em>en estrellas</em></div>
   <div class="f">MAE&nbsp;&nbsp;= (1/|T|) · Σ | r(u,i) − r̂(u,i) | <em>secundaria</em></div>
 
   <h3>Cómo se lee</h3>
-  <p>El RMSE está <b>en la misma unidad que el rating</b>. Un RMSE de 0,846 significa: «de media, el sistema se equivoca en 0,85 estrellas». Sobre un recorrido de 4 puntos (de 1 a 5), es un 21,2 % del rango.</p>
+  <p>El RMSE está <b>en la misma unidad que el rating</b>. El modelo obtiene RMSE 0,8478 estrellas. El error absoluto promedio se expresa con el MAE: 0,6482 estrellas.</p>
 
   <h3>Por qué RMSE y no MAE</h3>
   <p>Al elevar al cuadrado, confundir un 5 con un 2 (error 3) pesa <b>nueve veces</b> más que confundir un 5 con un 4 (error 1). En un recomendador eso es lo correcto: el fallo grave no es afinar mal, es poner delante algo que la persona va a detestar. El MAE se reporta porque es más fácil de explicar, pero <b>la decisión se toma con el RMSE</b>.</p>
@@ -351,7 +342,7 @@ footer{
   <div class="box tint">
     <h4>Métricas de apoyo que casi nadie mide</h4>
     <ul>
-      <li><b>Cobertura de catálogo:</b> qué porcentaje de las 3.706 películas aparece en algún Top-10. Un modelo puede tener buen RMSE y recomendar siempre las mismas 50.</li>
+      <li><b>Cobertura de catálogo:</b> qué porcentaje de las 9.742 películas del catálogo aparece en algún Top-10. Un modelo puede tener buen RMSE y recomendar siempre las mismas 50.</li>
       <li><b>Precisión@10:</b> de 10 recomendadas, cuántas tenían de verdad 4 estrellas o más. Mide el <i>ranking</i>, que es lo que el usuario ve.</li>
     </ul>
   </div>
@@ -361,17 +352,17 @@ footer{
 <section class="mod" id="m4">
   <div class="mod-head"><span class="mod-n">04</span><h2>La escalera de baselines</h2></div>
 
-  <p>Cuatro modelos de referencia, cada uno con <b>una pieza de información más</b> que el anterior. Sirven para responder la única pregunta que importa: <i>¿el modelo aporta algo, o lo mismo se consigue con una media?</i></p>
+  <p>Cuatro modelos de referencia con señales distintas. Sirven para responder la única pregunta que importa: <i>¿el modelo aporta algo, o lo mismo se consigue con una media?</i></p>
 
   <div class="scroll">
     <table>
       <thead><tr><th>#</th><th>Modelo</th><th>Fórmula</th><th class="n">RMSE</th><th class="w">Qué añade</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td>Media global</td><td class="mono">μ</td><td class="n">1,1167</td><td class="w">Nada. Es el suelo.</td></tr>
-        <tr><td>2</td><td>Media por usuario</td><td class="mono">μ<sub>u</sub></td><td class="n">1,0344</td><td class="w">El nivel de exigencia del usuario</td></tr>
-        <tr><td>3</td><td>Media por película</td><td class="mono">μ<sub>i</sub></td><td class="n">0,9765</td><td class="w">La calidad de la película. <b>Es la práctica actual.</b></td></tr>
-        <tr class="hi"><td>4</td><td>Media + sesgos</td><td class="mono">μ + b<sub>u</sub> + b<sub>i</sub></td><td class="n">0,9051</td><td class="w">Las dos señales sin contarlas dos veces. <b>El listón real.</b></td></tr>
-        <tr><td>→</td><td>Factorización matricial (k=64)</td><td class="mono">μ + b<sub>u</sub> + b<sub>i</sub> + p<sub>u</sub>·q<sub>i</sub></td><td class="n">0,8460</td><td class="w">Gustos, no niveles. <b>Nuestro modelo, medido.</b></td></tr>
+        <tr><td>1</td><td>Media global</td><td class="mono">μ</td><td class="n">1,0368</td><td class="w">Nada. Es el suelo.</td></tr>
+        <tr><td>2</td><td>Media por usuario</td><td class="mono">μ<sub>u</sub></td><td class="n">0,9367</td><td class="w">El nivel de exigencia del usuario</td></tr>
+        <tr><td>3</td><td>Media por película</td><td class="mono">μ<sub>i</sub></td><td class="n">0,9730</td><td class="w">La media de película: ranking de referencia.</td></tr>
+        <tr class="hi"><td>4</td><td>Media + sesgos</td><td class="mono">μ + b<sub>u</sub> + b<sub>i</sub></td><td class="n">0,8677</td><td class="w">Las dos señales sin contarlas dos veces. <b>El listón real.</b></td></tr>
+        <tr><td>→</td><td>Factorización matricial (k=64)</td><td class="mono">μ + b<sub>u</sub> + b<sub>i</sub> + p<sub>u</sub>·q<sub>i</sub></td><td class="n">0,8478</td><td class="w">Gustos además de sesgos. <b>Nuestro modelo, medido.</b></td></tr>
       </tbody>
     </table>
   </div>
@@ -383,26 +374,9 @@ footer{
   <p>La <b>λ</b> (= 2) evita que una película con un solo voto de 5★ reciba el sesgo máximo: los sesgos calculados con pocos datos se encogen hacia cero.</p>
 
   <div class="box warn">
-    <h4>Corrección importante respecto a lo documentado</h4>
-    <p>La primera versión del documento del objetivo fijaba <code>0,930</code> para este escalón. Ese número sale de calcular los sesgos <b>por separado</b> (<code>b<sub>u</sub> = μ<sub>u</sub> − μ</code> y <code>b<sub>i</sub> = μ<sub>i</sub> − μ</code>), lo que <b>cuenta dos veces</b> parte de la misma desviación. Verificado: esa variante da 0,9315.</p>
-      <p>La formulación estándar da <b>0,9051</b>. Consecuencia: la regla de descarte está puesta demasiado baja. El listón honesto es 0,9051 (los documentos ya lo usan), y nuestro modelo, con 0,8460, lo supera por un <b>6,5 %</b>.</p>
-    <p>Los otros tres escalones sí coinciden con lo documentado (1,117 / 1,034 / 0,977).</p>
+    <h4>El listón medido con 100K</h4>
+    <p>Media más sesgos da <b>0,8677</b> de RMSE; la factorización matricial da <b>0,8478</b> sobre la misma prueba. La mejora frente a los sesgos es del <b>2,3 %</b> (baselines.json y mf_numpy.json).</p>
   </div>
-
-  <h3>El caso que lo explica todo</h3>
-  <p>Usuario 1150 y <i>Forrest Gump</i>. Él le puso <b>1 estrella</b>.</p>
-  <div class="scroll">
-    <table>
-      <thead><tr><th>Escalón</th><th class="n">Predice</th><th class="n">Se equivoca en</th></tr></thead>
-      <tbody>
-        <tr><td>Media global</td><td class="n">3,58</td><td class="n">2,58 ★</td></tr>
-        <tr><td>Media por usuario</td><td class="n">2,61</td><td class="n" style="color:var(--green)">1,61 ★</td></tr>
-        <tr><td>Media por película <i>(popularidad)</i></td><td class="n">4,12</td><td class="n" style="color:var(--red)"><b>3,12 ★</b></td></tr>
-        <tr><td>Media + sesgos</td><td class="n">3,16</td><td class="n">2,16 ★</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p>El usuario es exigente (media 2,61 frente a 3,58) y la película es muy querida (4,12). Recomendar por popularidad le predice 4,12 y él le puso 1: <b>peor que no personalizar nada</b>. Y el escalón 4 tampoco acierta — sabe que él es duro y que la película gusta, pero no sabe que a él <i>ese tipo de película</i> no le va. <b>Eso es exactamente lo que aporta el filtrado colaborativo</b>, y la razón de ser del proyecto.</p>
 </section>
 
 <!-- ============ 5 ============ -->
@@ -411,21 +385,21 @@ footer{
 
   <div class="box key">
     <h4>Punto de partida</h4>
-    <p>«Optimizado» <b>no significa RMSE = 0</b>. Hay ruido irreducible: el mismo usuario, el mismo día, puntúa igual película con 4 o con 5 según el ánimo. En MovieLens 1M el estado del arte ronda 0,84. Optimizado es una <b>demostración por comparación</b>, no un valor absoluto.</p>
+    <p>«Optimizado» <b>no significa RMSE = 0</b>. Hay ruido irreducible: la nota de un usuario puede variar según el contexto. En MovieLens ml-latest-small se compara con los baselines de este mismo dataset. Optimizado es una <b>demostración por comparación</b>, no un valor absoluto.</p>
   </div>
 
   <h3>Las cinco pruebas</h3>
   <ol class="plain">
-    <li><b>Escalera de baselines</b> — demuestra que el modelo aporta. Con regla de descarte explícita: si no baja de 0,9051, el filtrado colaborativo no aporta nada sobre dos medias bien calculadas, y hay que escribirlo.</li>
+    <li><b>Escalera de baselines</b>: demuestra que el modelo aporta. Con regla de descarte explícita: si no baja de 0,8677, el filtrado colaborativo no aporta nada sobre dos medias bien calculadas, y hay que escribirlo.</li>
     <li><b>Umbral fijado antes de modelar</b> — RMSE ≤ 0,90 y MAE ≤ 0,70, declarados en el punto 3.1 <i>antes</i> de entrenar. Fijarlo después es acomodar la vara al resultado.</li>
     <li><b>Curva de hiperparámetros</b> — <b>esta es la respuesta literal a «¿cómo sabemos que ya está optimizado?»</b>. Se varía un parámetro y se grafica el error: si al subirlo empeora <i>y</i> al bajarlo también empeora, estás en el fondo del valle. Ese es el criterio de parada. Sin este gráfico solo puedes decir «no probé más configuraciones».</li>
-    <li><b>Validación cruzada 5-fold</b> — demuestra que no fue suerte del split. Se reporta media y desviación: <code>0,846 ± 0,004</code> es fiable; <code>± 0,050</code> no lo es.</li>
+    <li><b>Validación cruzada 5-fold</b>: pendiente; serviría para estimar la variación entre particiones.</li>
     <li><b>Ausencia de fuga de datos</b> — el test no se toca al entrenar, ni para normalizar, ni para filtrar, ni para elegir la época de parada (para eso hay una validación). Un RMSE bajo con fuga es un número falso, y es lo primero que se revisa.</li>
   </ol>
 
   <div class="box tint">
-    <h4>Ya tienes un ejemplo real de la prueba 3</h4>
-    <p>El barrido de λ en el escalón 4 es exactamente una curva de hiperparámetros: λ=0 → 0,9057; λ=2 → <b>0,9051</b> (mínimo); λ=10 → 0,9058; λ=50 → 0,9164. Sube por los dos lados del mínimo. En el modelo también hay dos, elegidos con la validación: 64 factores frente a 32 (RMSE 0,8549 frente a 0,8581) y la parada en la época 22.</p>
+    <h4>Validación registrada</h4>
+    <p>El historial de <code>mf_numpy.json</code> registra 64 factores y la mejor época de validación 28 (RMSE 0,8578). Falta documentar un barrido más amplio de factores y regularización.</p>
   </div>
 </section>
 
@@ -437,32 +411,32 @@ footer{
 
   <h3>Sí: el problema es el mismo — y eso es una ventaja</h3>
   <ul>
-    <li>El <b>Netflix Prize (2006–2009)</b> es literalmente este proyecto: predecir ratings de 1 a 5 minimizando RMSE. Netflix pagó un millón de dólares al equipo que bajara un 10 % su algoritmo interno (Cinematch, RMSE 0,9525). Ganó BellKor's Pragmatic Chaos con 0,8567.</li>
+    <li>El <b>Netflix Prize (2006–2009)</b> también estudió predicción de ratings minimizando RMSE, pero usó otros datos y otra escala. Netflix pagó un millón de dólares al equipo que bajara un 10 % su algoritmo interno (Cinematch, RMSE 0,9525). Ganó BellKor's Pragmatic Chaos con 0,8567.</li>
     <li><b>MovieLens no es un dataset comercial</b>: lo publica GroupLens, de la Universidad de Minnesota, precisamente para investigación y docencia.</li>
   </ul>
-  <p>Que el problema esté resuelto por otros es lo que lo hace <b>buen ejercicio académico</b>: existe un benchmark público contra el que medirte. Con un problema inventado no sabrías si tu 0,846 está bien o mal.</p>
+  <p>Que el problema esté resuelto por otros es lo que lo hace <b>buen ejercicio académico</b>: existe un benchmark público contra el que medirte. El resultado de 100K se defiende frente a baselines calculados sobre el mismo split.</p>
 
   <h3>No: Netflix ya no hace esto</h3>
   <div class="scroll">
     <table>
       <thead><tr><th></th><th class="w">Netflix / HBO hoy</th><th class="w">Este proyecto</th></tr></thead>
       <tbody>
-        <tr><td>Señal</td><td class="w">Implícita: qué viste, cuántos minutos, dónde abandonaste</td><td class="w">Explícita: la nota de 1 a 5</td></tr>
-        <tr><td>Escala</td><td class="w">Eliminó las 5 estrellas en 2017 — ahora 👍/👎</td><td class="w">1 a 5 estrellas</td></tr>
+        <tr><td>Señal</td><td class="w">Implícita: qué viste, cuántos minutos, dónde abandonaste</td><td class="w">Explícita: la nota de 0,5 a 5</td></tr>
+        <tr><td>Escala</td><td class="w">Eliminó las 5 estrellas en 2017: ahora 👍/👎</td><td class="w">0,5 a 5 estrellas</td></tr>
         <tr><td>Optimiza</td><td class="w">Horas de visionado y retención</td><td class="w">Precisión de la predicción (RMSE)</td></tr>
       </tbody>
     </table>
   </div>
 
   <h3>Lo que sí es vuestro</h3>
-  <p>No el algoritmo — la factorización matricial que usamos (estilo FunkSVD) la publicó Simon Funk en 2006. Lo vuestro es <b>el estudio</b>: la medición sobre estos datos con vuestro split, la comparación honesta contra cuatro baselines, el criterio de descarte declarado de antemano y la traducción a negocio. Y ahora, además, <b>la corrección del baseline mal calculado</b> — eso es método, y es lo que valora un tribunal.</p>
+  <p>No el algoritmo: la factorización matricial que usamos (estilo FunkSVD) la publicó Simon Funk en 2006. Lo vuestro es <b>el estudio</b>: la medición sobre estos datos con vuestro split, la comparación honesta contra cuatro baselines, el criterio de descarte declarado de antemano y la traducción a negocio. La comparación contra baselines de este mismo dataset permite defender la mejora observada.</p>
 
   <div class="box tint">
     <h4>Tres formas de diferenciarlo aún más, sin datos nuevos</h4>
     <ul>
-      <li><b>Cold-start:</b> evaluar aparte los 1.743 usuarios (28,9 %) con menos de 50 vistas. ¿Funciona igual con ellos? Casi seguro que no, y demostrarlo es un hallazgo.</li>
+      <li><b>Cold-start:</b> evaluar aparte los 225 usuarios (36,9 %) con menos de 50 calificaciones. ¿Funciona igual con ellos? Esa comparación puede revelar límites del modelo.</li>
       <li><b>Cobertura de cola larga:</b> casi todo el mundo reporta solo RMSE.</li>
-      <li><b>Sesgo demográfico:</b> tenéis <code>usuarios.csv</code> con sexo, edad y ocupación. ¿Acierta igual con mujeres que con hombres? ¿Con mayores de 50? Es <i>fairness</i>, es actual, y los datos ya están ahí. Esta es la que más despunta.</li>
+      <li><b>Usuarios con poca actividad:</b> evaluar si el error cambia entre usuarios con pocas y muchas calificaciones. Los CSV actuales no contienen datos demográficos.</li>
     </ul>
   </div>
 </section>
@@ -473,28 +447,28 @@ footer{
 
   <h3>El dataset</h3>
   <div class="figs">
-    <div class="fig"><b>1.000.209</b><span>calificaciones</span></div>
-    <div class="fig"><b>6.040</b><span>usuarios</span></div>
-    <div class="fig"><b>3.706</b><span>películas calificadas<br>(catálogo: 3.883)</span></div>
-    <div class="fig"><b>3,58</b><span>media global de rating</span></div>
-    <div class="fig red"><b>95,53 %</b><span>de la matriz está vacía</span></div>
-    <div class="fig"><b>57,5 %</b><span>de los votos son 4★ o 5★</span></div>
+    <div class="fig"><b>100.836</b><span>calificaciones</span></div>
+    <div class="fig"><b>610</b><span>usuarios</span></div>
+    <div class="fig"><b>9.724</b><span>películas calificadas<br>(catálogo: 9.742)</span></div>
+    <div class="fig"><b>3,50</b><span>media global de rating</span></div>
+    <div class="fig red"><b>98,30 %</b><span>de la matriz está vacía</span></div>
+    <div class="fig"><b>48,2 %</b><span>de los votos son 4★ o 5★</span></div>
   </div>
 
   <h3>El problema de negocio</h3>
   <div class="figs">
-    <div class="fig gold"><b>2,6 %</b><span>del catálogo ve el usuario mediano (96 de 3.706)</span></div>
-    <div class="fig gold"><b>18,3 %</b><span>de los votos se los llevan 100 películas (2,7 % del catálogo)</span></div>
-    <div class="fig red"><b>177</b><span>películas con cero votos</span></div>
-    <div class="fig red"><b>1.743</b><span>usuarios con menos de 50 vistas (28,9 %)</span></div>
+    <div class="fig gold"><b>0,72 %</b><span>del catálogo ve el usuario mediano (70,5 de 9.742)</span></div>
+    <div class="fig gold"><b>16,1 %</b><span>de los votos se los llevan 100 películas (1,03 % del catálogo)</span></div>
+    <div class="fig red"><b>18</b><span>películas con cero votos</span></div>
+    <div class="fig red"><b>225</b><span>usuarios con menos de 50 calificaciones (36,9 %)</span></div>
   </div>
 
   <h3>Los resultados</h3>
   <div class="figs">
-    <div class="fig"><b>0,9765</b><span>RMSE de la práctica actual (popularidad)</span></div>
-    <div class="fig gold"><b>0,9051</b><span>el listón real a superar</span></div>
+    <div class="fig"><b>0,9730</b><span>RMSE del ranking de referencia (popularidad)</span></div>
+    <div class="fig gold"><b>0,8677</b><span>el listón real a superar</span></div>
     <div class="fig"><b>0,90</b><span>umbral de éxito comprometido</span></div>
-    <div class="fig gold"><b>0,8460</b><span>nuestro modelo (factorización matricial)</span></div>
+    <div class="fig gold"><b>0,8478</b><span>nuestro modelo (factorización matricial)</span></div>
   </div>
 </section>
 
@@ -505,14 +479,14 @@ footer{
     <table>
       <thead><tr><th class="w">No digas / no hagas</th><th class="w">Lo correcto</th></tr></thead>
       <tbody>
-        <tr><td class="w">«Esta es la variable optimizada» señalando el parquet</td><td class="w">Es la variable <b>a</b> optimizar. La optimizada es <code>r̂</code>, y sale en la fase 4</td></tr>
+        <tr><td class="w">«Esta es la variable optimizada» señalando el CSV</td><td class="w">Es la variable <b>a</b> optimizar. La optimizada es <code>r̂</code>, y sale en la fase 4</td></tr>
         <tr><td class="w">«El usuario ve la nota que predice el sistema»</td><td class="w">El usuario ve <b>una lista de 10</b>. Nunca ve un rating predicho ni un RMSE</td></tr>
-        <tr><td class="w">«Nuestro RMSE es 0,846, que está muy bien»</td><td class="w">0,846 solo no significa nada. Di <b>«un 13,4 % mejor que la práctica actual»</b></td></tr>
-        <tr><td class="w">Usar 0,930 como listón del filtrado colaborativo</td><td class="w">El listón honesto es <b>0,9051</b></td></tr>
+        <tr><td class="w">«Nuestro RMSE es 0,848, que está muy bien»</td><td class="w">0,8478 se interpreta junto a los baselines. Di <b>«un 12,9 % mejor que el ranking de referencia»</b></td></tr>
+        <tr><td class="w">Usar el listón de otro dataset</td><td class="w">El listón honesto es <b>0,8677</b></td></tr>
         <tr><td class="w">Calcular medias o normalizar usando todo el dataset</td><td class="w">Solo con entrenamiento. Lo contrario es <b>fuga de datos</b></td></tr>
-        <tr><td class="w">Hacer <code>M.mean()</code> sobre la matriz dispersa</td><td class="w">Enmascarar los huecos, o usar el parquet donde son <code>NaN</code></td></tr>
+        <tr><td class="w">Hacer <code>M.mean()</code> sobre la matriz dispersa</td><td class="w">Enmascarar los huecos y promediar solo las notas observadas</td></tr>
         <tr><td class="w">Presentar solo el RMSE</td><td class="w">Añadir cobertura de catálogo: mide el criterio de negocio CN-3</td></tr>
-        <tr><td class="w">Mostrar los 6.040 usuarios en el mapa de calor</td><td class="w">Muestra de 100–300. 36 millones de celdas no se ven</td></tr>
+        <tr><td class="w">Mostrar los 610 usuarios en el mapa de calor</td><td class="w">Muestra pequeña: la matriz completa tiene 5.931.640 celdas</td></tr>
       </tbody>
     </table>
   </div>
@@ -525,23 +499,23 @@ footer{
 
   <div class="cards">
     <details class="card"><summary>¿Cuál es la variable a optimizar y por qué esa?</summary>
-      <div class="ans"><p>El <code>rating</code> r(u,i), de 1 a 5. Es la <b>única variable del dataset que expresa preferencia</b> — el resto (género, año, ocupación, sexo) son atributos. Además es numérica, así que conserva el orden: un 5 no es igual que un 4, y esa diferencia es la que permite ordenar el Top-N.</p></div>
+      <div class="ans"><p>El <code>rating</code> r(u,i), de 0,5 a 5. Es la <b>única variable del dataset que expresa preferencia</b>: género y año describen las películas. Además es numérica, así que conserva el orden: un 5 no es igual que un 4, y esa diferencia es la que permite ordenar el Top-N.</p></div>
     </details>
 
     <details class="card"><summary>¿Por qué regresión y no clasificación?</summary>
-      <div class="ans"><p>Porque la salida es un valor continuo en [1,5], no una etiqueta. Se podría binarizar («le gusta / no le gusta» con 4 o más), pero <b>se perdería información</b>: no es lo mismo un 4 que un 5, y esa diferencia importa al ordenar. Por eso se evalúa con RMSE y MAE, que son métricas de regresión.</p></div>
+      <div class="ans"><p>Porque la salida es un valor continuo en [0,5, 5], no una etiqueta. Se podría binarizar («le gusta / no le gusta» con 4 o más), pero <b>se perdería información</b>: no es lo mismo un 4 que un 5, y esa diferencia importa al ordenar. Por eso se evalúa con RMSE y MAE, que son métricas de regresión.</p></div>
     </details>
 
     <details class="card"><summary>¿Por qué RMSE y no MAE?</summary>
       <div class="ans"><p>Porque penaliza al cuadrado: confundir un 5 con un 2 pesa <b>nueve veces</b> más que confundir un 5 con un 4. En un recomendador el error grave es poner delante algo que la persona va a detestar. Además es el estándar de la literatura (fue la métrica del Netflix Prize), lo que hace nuestros resultados comparables. El MAE se reporta porque se explica mejor, pero la decisión se toma con RMSE.</p></div>
     </details>
 
-    <details class="card"><summary>¿Cómo sabéis que ya está optimizado?</summary>
-      <div class="ans"><p>Por la <b>curva de hiperparámetros</b>: al variar el parámetro por encima y por debajo del valor elegido, el error empeora en ambos sentidos. Eso demuestra que estamos en el mínimo y que seguir buscando no mejora. Y además: supera los cuatro baselines, cumple un umbral fijado antes de modelar, y es estable en validación cruzada.</p></div>
+    <details class="card"><summary>¿Cómo evaluáis si el modelo mejora?</summary>
+      <div class="ans"><p>Comparamos el RMSE con los cuatro baselines en la misma prueba y usamos una validación separada para elegir la época. La validación cruzada y un barrido más amplio de hiperparámetros están pendientes.</p></div>
     </details>
 
     <details class="card"><summary>¿Y si el modelo no supera al baseline?</summary>
-      <div class="ans"><p>Entonces <b>lo escribimos en el informe</b>. Si no baja de 0,9051, el filtrado colaborativo no aporta nada sobre dos medias bien calculadas y no se justifica ponerlo en producción. Un resultado negativo bien argumentado vale más que un número adornado.</p></div>
+      <div class="ans"><p>Entonces <b>lo escribimos en el informe</b>. Si no baja de 0,8677, no mejora el baseline de sesgos en esta prueba. Un resultado negativo bien argumentado vale más que un número adornado.</p></div>
     </details>
 
     <details class="card"><summary>¿No es esto lo mismo que hace Netflix?</summary>
@@ -553,15 +527,15 @@ footer{
     </details>
 
     <details class="card"><summary>¿Qué pasa con un usuario o una película nuevos?</summary>
-      <div class="ans"><p>Se cae a la media global μ = 3,5821. Nunca se descarta la fila del test: eso sería medir solo lo fácil. Es el problema del <b>cold-start</b>, y afecta a los 1.743 usuarios con menos de 50 vistas.</p></div>
+      <div class="ans"><p>El baseline usa la media global de entrenamiento (μ ≈ 3,4999) cuando falta historial. Nunca se descarta una fila del test: eso sería medir solo lo fácil. Es el problema del <b>cold-start</b>. Los 225 usuarios con menos de 50 calificaciones son un grupo útil para estudiar el rendimiento con poco historial.</p></div>
     </details>
 
     <details class="card"><summary>¿Por qué un 0 en la matriz no es un cero de estrellas?</summary>
-      <div class="ans"><p>Porque el formato disperso CSR solo guarda las celdas con valor y devuelve 0 para el resto. Pero <b>la escala empieza en 1</b>: ese 0 significa «no la ha visto». Como el 95,53 % son huecos, promediar sin enmascarar da 0,16 en vez de 3,58.</p></div>
+      <div class="ans"><p>Porque el formato disperso CSR solo guarda las celdas con valor y devuelve 0 para el resto. Pero <b>la escala empieza en 0,5</b>: ese 0 significa «no la ha visto». Los huecos no entran en la media de rating.</p></div>
     </details>
 
     <details class="card"><summary>¿Para qué sirve la λ en los sesgos?</summary>
-      <div class="ans"><p>Es regularización. Sin ella, una película con <b>un solo voto de 5★</b> recibe el sesgo máximo y el modelo se fía ciegamente. Al sumar λ al denominador, los sesgos estimados con pocos datos se encogen hacia cero. Con 1.192 películas por debajo de 50 votos, no es un detalle.</p></div>
+      <div class="ans"><p>Es regularización. Sin ella, una película con <b>un solo voto de 5★</b> recibe el sesgo máximo y el modelo se fía ciegamente. Al sumar λ al denominador, los sesgos estimados con pocos datos se encogen hacia cero. Con 9.274 películas calificadas por debajo de 50 votos, no es un detalle.</p></div>
     </details>
   </div>
 </section>
@@ -570,19 +544,19 @@ footer{
 <section class="mod" id="m10">
   <div class="mod-head"><span class="mod-n">10</span><h2>Estado del proyecto</h2></div>
   <ul class="check">
-    <li><span class="mk ok">HECHO</span><span><b>01 · Comprensión del negocio</b> — objetivo, tipo de tarea, variable y métrica (3.1, 3.2, 3.3)</span></li>
-    <li><span class="mk pend">FALTA</span><span><b>02 · Comprensión de los datos</b> — los 14 archivos del EDA siguen en Drive, sin descargar. Los tres gráficos de <i>tags</i> se retiran: MovieLens 1M no tiene tags (venían de ml-latest-small, que quedó en <code>anexo_ml-latest-small/</code>)</span></li>
-    <li><span class="mk ok">HECHO</span><span><b>03 · Preparación</b> — 1.000.209 filas limpias, 0 nulos, 0 duplicados, 100 % conservado</span></li>
-    <li><span class="mk ok">HECHO</span><span><b>04 · Modelado</b> — 4 baselines y factorización matricial de 64 factores: <b>RMSE 0,8460</b> en test (−13,4 % frente a popularidad). Factores y época de parada elegidos con validación</span></li>
-    <li><span class="mk ok">HECHO</span><span><b>Clasificación</b> — regresión logística (<code>07</code>) y árbol de decisión (<code>08</code>): 72,00 % de exactitud y AUC 0,782 prediciendo si la película gustará</span></li>
-    <li><span class="mk pend">FALTA</span><span><b>05 · Evaluación</b> — comparación de RMSE, curva precisión@K, mapa de calor de similitud, Top-N</span></li>
-    <li><span class="mk pend">FALTA</span><span><b>06 · Presentación</b> — informe y diapositivas</span></li>
+    <li><span class="mk ok">HECHO</span><span><b>01 · Comprensión del negocio</b>: objetivo, tipo de tarea, variable y métrica (3.1, 3.2, 3.3)</span></li>
+    <li><span class="mk pend">FALTA</span><span><b>02 · Comprensión de los datos</b>: EDA pendiente de verificar o regenerar con ml-latest-small; <code>tags.csv</code> sí existe (3.683 etiquetas)</span></li>
+    <li><span class="mk ok">HECHO</span><span><b>03 · Preparación</b>: 100.836 filas de origen; 18 sin año de estreno se excluyen según la especificación (100.818 filas)</span></li>
+    <li><span class="mk ok">HECHO</span><span><b>04 · Modelado</b>: 4 baselines y factorización matricial de 64 factores: <b>RMSE 0,8478</b> en test (−12,9 % frente a popularidad). Mejor época de validación: 28; el barrido amplio de factores está pendiente</span></li>
+    <li><span class="mk pend">POR VERIFICAR</span><span><b>Clasificación</b>: regresión logística (<code>07</code>) y árbol de decisión (<code>08</code>). Resultado en prueba: regresión logística con exactitud 71,3 % y AUC 0,785; árbol de profundidad 6 con exactitud 70,9 % y AUC 0,781. La línea base (clase mayoritaria) da 51,8 %.</span></li>
+    <li><span class="mk pend">FALTA</span><span><b>05 · Evaluación</b>: comparación de RMSE, curva precisión@K, mapa de calor de similitud, Top-N</span></li>
+    <li><span class="mk pend">FALTA</span><span><b>06 · Presentación</b>: informe y diapositivas</span></li>
   </ul>
 
   <div class="box warn">
     <h4>Lo siguiente</h4>
-    <p>Fase 05: los gráficos de evaluación y subir la <b>cobertura del Top-10</b>, que hoy es del 19,0 % frente al 31,9 % del criterio CN-3. Para regenerar las cifras del modelo:</p>
-    <div class="f" style="margin:10px 0 0;white-space:normal">../.venv/bin/python 04_modelado/scripts/00_entrenar_todo.py</div>
+    <p>Fase 05: mejorar la cobertura del Top-10 (hoy 3,2 % del catálogo, medida en el cuaderno H3) y completar los gráficos de evaluación. Resultados actuales en <code>04_modelado/resultados/</code>.</p>
+    <div class="f" style="margin:10px 0 0;white-space:normal">WRANGLER/04_modelado/resultados/baselines.json · mf_numpy.json · antes_despues.json</div>
   </div>
 </section>
 
@@ -592,15 +566,15 @@ footer{
   <dl class="gloss">
     <div><dt>r(u,i)</dt><dd>La nota real que el usuario <i>u</i> dio a la película <i>i</i>. Es la columna <code>rating</code>.</dd></div>
     <div><dt>r̂(u,i)</dt><dd>La nota <b>predicha</b> por el modelo. El «gorrito» significa estimado.</dd></div>
-    <div><dt>μ (mu)</dt><dd>Media global de todas las calificaciones de entrenamiento: 3,5821.</dd></div>
+    <div><dt>μ (mu)</dt><dd>Media global de todas las calificaciones de entrenamiento: 3,4999.</dd></div>
     <div><dt>b<sub>u</sub> / b<sub>i</sub></dt><dd>Sesgo del usuario / de la película: cuánto se desvía de la media global.</dd></div>
     <div><dt>λ (lambda)</dt><dd>Regularización. Hace que el modelo desconfíe de lo estimado con pocos datos.</dd></div>
     <div><dt>Baseline</dt><dd>Modelo de referencia deliberadamente simple, contra el que se compara el modelo real.</dd></div>
     <div><dt>Hold-out</dt><dd>Apartar un trozo de datos (aquí el 20 %) que el modelo no ve al entrenar, para medir con él.</dd></div>
     <div><dt>Fuga de datos</dt><dd>Usar sin querer información del test al entrenar. Infla los resultados y los invalida.</dd></div>
     <div><dt>Cold-start</dt><dd>El problema de recomendar a un usuario o una película de los que apenas se sabe nada.</dd></div>
-    <div><dt>Cola larga</dt><dd>La mayoría del catálogo que casi nadie consume. Aquí: 1.192 películas con menos de 50 votos.</dd></div>
-    <div><dt>Dispersión</dt><dd>Porcentaje de la matriz que está vacío. Aquí, 95,53 %.</dd></div>
+    <div><dt>Cola larga</dt><dd>La mayoría del catálogo que casi nadie consume. Aquí: 9.274 películas con menos de 50 votos.</dd></div>
+    <div><dt>Dispersión</dt><dd>Porcentaje de la matriz que está vacío. Aquí, 98,30 %.</dd></div>
     <div><dt>Filtrado colaborativo</dt><dd>Recomendar usando lo que hicieron usuarios parecidos, sin mirar el contenido de la película.</dd></div>
     <div><dt>SVD</dt><dd>Descomposición en factores latentes. Aprende «gustos» en vez de niveles medios.</dd></div>
     <div><dt>Top-N</dt><dd>Las N películas mejor puntuadas por el modelo para un usuario. Es lo que la persona ve.</dd></div>
@@ -608,8 +582,8 @@ footer{
 </section>
 
 <footer>
-  <span>MovieLens 1M · GroupLens, Universidad de Minnesota</span>
-  <span>Baselines reproducibles con <code>04_modelado/scripts/03a_baselines.py</code></span>
+  <span>MovieLens ml-latest-small · GroupLens, Universidad de Minnesota</span>
+  <span>Resultados medidos en <code>WRANGLER/04_modelado/resultados/</code></span>
 </footer>
 
 </div>
