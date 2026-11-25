@@ -1,7 +1,8 @@
 ================================================================================
 3.3  VARIABLE A OPTIMIZAR Y METRICA PRINCIPAL DEL PROYECTO
      Proyecto: Sistema de recomendacion de peliculas por filtrado colaborativo
-     Dataset:  MovieLens 1M (1.000.209 calificaciones, 6.040 usuarios, 3.706 peliculas)
+     Dataset:  MovieLens ml-latest-small (100.836 calificaciones, 610 usuarios,
+               9.724 peliculas calificadas)
 ================================================================================
 
 
@@ -9,35 +10,32 @@ A) LA VARIABLE A OPTIMIZAR
 --------------------------------------------------------------------------------
 
   VARIABLE:   rating  r(u,i)
-  QUE ES:     la calificacion, en estrellas, que el usuario u le daria a la
-              pelicula i que TODAVIA NO HA VISTO.
-  TIPO:       numerica continua en la prediccion, r(u,i) pertenece a [1, 5]
-              (los datos observados son enteros de 1 a 5; el modelo devuelve
-               un valor continuo, por ejemplo 4,23)
+  QUE ES:     la calificacion, en estrellas, que el usuario u daria a la
+              pelicula i para la que aun no hay una nota observada.
+  TIPO:       numerica continua en la prediccion, r(u,i) pertenece a [0,5, 5]
+              (los datos observados avanzan en medias estrellas; el modelo
+               puede devolver un valor continuo, por ejemplo 4,23).
   SENTIDO DE
   LA OPTIMIZACION:  se MINIMIZA el error entre lo predicho y lo real.
                     No se maximiza el rating: predecir "5 a todo el mundo"
-                    seria el peor modelo posible.
+                    no personaliza y puede equivocarse mucho.
 
-  Cuantas veces hay que estimarla:
-      Celdas de la matriz 6.040 x 3.706 ......... 22.384.240
-      Observadas (ya conocidas) ................. 1.000.209  ( 4,47%)
-      A predecir (la variable a optimizar) ...... 21.384.031 (95,53%)
+  Cuantas veces hay que estimarla (matriz de peliculas calificadas):
+      Celdas de la matriz 610 x 9.724 ........... 5.931.640
+      Observadas (ya conocidas) ................. 100.836 ( 1,70%)
+      Sin nota observada ........................ 5.830.804 (98,30%)
 
   Por que esta y no otra:
-      - Es la unica variable del dataset que expresa PREFERENCIA. El resto
-        (genero, anio, ocupacion, sexo) son atributos, no lo que queremos
-        predecir.
-      - Es numerica, asi que conserva el orden: un 5 no es lo mismo que un 4,
-        y esa diferencia es exactamente la que permite ordenar el Top-N.
-      - De ella se deriva todo lo demas: con r(u,i) estimado para todas las
-        celdas vacias se construye el ranking personalizado por usuario.
+      - Es la variable que expresa PREFERENCIA en ratings.csv. El genero y
+        el anio de estreno describen peliculas; no son la nota a predecir.
+      - Es numerica y conserva el orden: un 5 no es lo mismo que un 4.
+      - Con las predicciones se construye el ranking personalizado Top-N.
 
 
 B) LA METRICA PRINCIPAL: RMSE
 --------------------------------------------------------------------------------
 
-  NOMBRE:   RMSE  (Root Mean Squared Error / Raiz del Error Cuadratico Medio)
+  NOMBRE:   RMSE (Root Mean Squared Error / Raiz del Error Cuadratico Medio)
 
   FORMULA:
 
@@ -46,253 +44,156 @@ B) LA METRICA PRINCIPAL: RMSE
         RMSE   =      /   -------  *  SUMA  ( r(u,i) - r_pred(u,i) )^2
                     \/     |T|        (u,i) en T
 
-
         donde:
-          T            = conjunto de prueba (pares usuario-pelicula ocultos
-                         al entrenar).  |T| = 200.042 calificaciones (20%)
-          r(u,i)       = calificacion REAL que dio el usuario  (1 a 5)
-          r_pred(u,i)  = calificacion PREDICHA por el modelo
-          |T|          = numero de predicciones evaluadas
+          T            = pares usuario-pelicula reservados para prueba.
+                         |T| = 20.168 calificaciones (20%).
+          r(u,i)       = calificacion REAL que dio el usuario (0,5 a 5).
+          r_pred(u,i)  = calificacion PREDICHA por el modelo.
 
   COMO SE CALCULA, PASO A PASO:
-      1. Se parte el millon de calificaciones en 80% entrenamiento /
-         20% prueba (200.042 calificaciones de prueba).
-      2. El modelo se entrena SOLO con el 80% y no ve nunca el 20% restante.
-      3. Para cada par (usuario, pelicula) del test se predice r_pred(u,i).
-      4. Se resta la real menos la predicha  -> error.
-      5. Se eleva al cuadrado cada error (penaliza mas los fallos grandes
-         y elimina el signo).
-      6. Se promedian todos los errores al cuadrado.
-      7. Se saca la raiz cuadrada, para volver a la unidad original:
-         ESTRELLAS.
+      1. Se reparten 100.836 calificaciones: 80.668 para entrenamiento y
+         20.168 para prueba (baselines.json).
+      2. El modelo se entrena solo con entrenamiento.
+      3. Para cada par del test se predice r_pred(u,i).
+      4. Se resta la nota real menos la predicha.
+      5. Se eleva al cuadrado cada error.
+      6. Se promedian esos cuadrados y se extrae la raiz.
 
   COMO SE LEE EL RESULTADO:
-      El RMSE esta en la MISMA unidad que el rating. Un RMSE de 0,846
-      significa: "de media, el sistema se equivoca en 0,85 estrellas al
-      predecir lo que un usuario va a puntuar".
-      Sobre una escala de 4 puntos de recorrido (de 1 a 5), eso es un
-      21,2% del rango.
+      El RMSE esta en estrellas. El valor medido del modelo es 0,8478.
+      Es la raiz del error cuadratico medio, no la desviacion absoluta
+      promedio: para eso se usa el MAE (0,6482).
 
   POR QUE RMSE Y NO OTRA:
-      - Es una metrica de REGRESION, coherente con la tarea marcada en 3.2.
-      - Penaliza al cuadrado: confundir un 5 con un 2 (error 3) cuenta
-        9 veces mas que confundir un 5 con un 4 (error 1). En un
-        recomendador eso es lo correcto: el error grave es recomendar
-        algo que el usuario va a odiar.
-      - Es el estandar de la literatura de sistemas de recomendacion
-        (fue la metrica oficial del Netflix Prize), asi que nuestros
-        resultados son comparables con los publicados.
-      - Se expresa en estrellas, asi que se puede explicar al negocio
-        sin traducir nada.
+      - Es una metrica de regresion, coherente con la tarea marcada en 3.2.
+      - Penaliza mas los errores grandes: confundir un 5 con un 2 (error 3)
+        aporta nueve veces mas error cuadratico que confundir un 5 con un 4.
+      - Se expresa en la misma unidad que el rating.
 
 
 C) METRICAS SECUNDARIAS (apoyo, no principal)
 --------------------------------------------------------------------------------
 
-  MAE  (Error Absoluto Medio)
+  MAE (Error Absoluto Medio)
 
                    1
         MAE  =  -------  *  SUMA  | r(u,i) - r_pred(u,i) |
                   |T|      (u,i) en T
 
-        Mismo calculo pero con valor absoluto en vez de cuadrado. No castiga
-        los errores grandes. Se reporta junto al RMSE porque es mas facil de
-        explicar ("nos desviamos 0,68 estrellas de media"), pero la decision
-        del modelo se toma con el RMSE.
+        Mide la desviacion absoluta promedio. El modelo obtiene 0,6482 en
+        prueba (mf_numpy.json).
 
   COBERTURA DE CATALOGO
-        % de peliculas distintas que aparecen en algun Top-10 recomendado,
-        sobre las 3.706. Controla que el modelo no recomiende siempre las
-        mismas: mide el criterio de negocio CN-3.
+        Porcentaje de peliculas distintas que aparecen en algun Top-10
+        recomendado, sobre las 9.742 del catalogo. Aun no esta medido.
 
   PRECISION@10
-        De las 10 peliculas recomendadas a un usuario, cuantas tenian de
-        verdad 4 estrellas o mas. Mide la calidad del RANKING, que es lo que
-        el usuario ve; el RMSE mide la calidad de la PREDICCION.
+        De las 10 peliculas recomendadas por usuario, fraccion con nota
+        observada >= 4 en la prueba. La evaluacion disponible usa 389
+        usuarios: 68,15% para el modelo frente a 64,68% para el ranking
+        por media de pelicula (antes_despues.json).
 
 
 D) VALORES DE REFERENCIA YA MEDIDOS SOBRE ESTOS DATOS
 --------------------------------------------------------------------------------
 
-  (hold-out 80/20, 200.042 calificaciones de prueba)
+  (hold-out 80/20, 20.168 calificaciones de prueba)
 
       Modelo                            RMSE     MAE     Que representa
       --------------------------------  -----   -----    -------------------
-      Media global (3,58)               1,117   0,933    suelo, no personaliza
-      Media por usuario                 1,034   0,827    baseline ingenuo
-      Media por pelicula (popularidad)  0,977   0,780    LA PRACTICA ACTUAL
-      Media + sesgos (mu + bu + bi)     0,905   0,715    baseline a superar
-      Factorizacion matricial (k=64)    0,846   0,665    MODELO ENTRENADO
+      Media global (3,4999)            1,037   0,821    referencia minima
+      Media por usuario                0,937   0,729    escala del usuario
+      Media por pelicula               0,973   0,752    ranking de referencia
+      Media + sesgos (mu + bu + bi)    0,868   0,665    baseline a superar
+      Factorizacion matricial (k=64)   0,848   0,648    modelo entrenado
 
-  (Valores reproducibles con 04_modelado/scripts/00_entrenar_todo.py.
-   La primera version citaba 0,930 para media + sesgos y 0,873 de un SVD
-   con scikit-surprise; se reemplazaron por los que da el codigo.)
+  Origen: 04_modelado/resultados/baselines.json y mf_numpy.json.
+  En este dataset, la media por usuario supera a la media por pelicula.
 
   UMBRAL DE EXITO DEL PROYECTO:
-
-      RMSE <= 0,90 en test
-             -> mejora minima del 7,9% frente al ranking por popularidad
-             -> y obliga a superar el baseline de sesgos (0,905)
-
-      MAE  <= 0,70 en test
-             -> mejora minima del 10,3% frente a popularidad
-
-      REGLA DE DESCARTE: si el modelo no baja de RMSE 0,905 (el baseline
-      mu + bu + bi), el filtrado colaborativo NO aporta valor y no se
-      justifica ponerlo en produccion.
+      RMSE <= 0,90 en test: al menos 7,5% menos que media por pelicula.
+      MAE  <= 0,70 en test: al menos 6,9% menos que media por pelicula.
+      REGLA DE DESCARTE: superar el RMSE 0,868 de media + sesgos.
 
 
 E) CADENA COMPLETA, EN UNA LINEA
 --------------------------------------------------------------------------------
 
-  VARIABLE A OPTIMIZAR         METRICA PRINCIPAL          CRITERIO DE NEGOCIO
-  --------------------         -----------------          -------------------
-  rating r(u,i), 1 a 5   -->   RMSE (en estrellas)  -->   acertar lo que el
-  de las 21.384.031            <= 0,90                    usuario va a
-  celdas vacias                                           puntuar, mejor que
-                                                          recomendar lo popular
+  VARIABLE A OPTIMIZAR       METRICA PRINCIPAL       CRITERIO DE NEGOCIO
+  --------------------       -----------------       -------------------
+  rating r(u,i)         -->  RMSE en estrellas  -->  mejorar el ranking
+  de las celdas             <= 0,90                  por media de pelicula
+  aun sin nota
 
 
 F) DE DONDE SALE CADA COSA EN EL EDA
 --------------------------------------------------------------------------------
 
-  Los graficos del EDA NO contienen la variable a optimizar: son descriptivos
-  y sirven para JUSTIFICAR su eleccion, no para optimizarla.
+  Los graficos del EDA son descriptivos y justifican el planteamiento.
+  Antes de incorporarlos, verificar que usen ml-latest-small: los graficos
+  antiguos de otra version de MovieLens no respaldan estas cifras.
 
-      rating_distribution.png .... la variable objetivo es numerica 1-5 y
-                                   esta sesgada al alza (57,5% son 4 o 5)
-                                   -> justifica regresion y el baseline "3,58"
-      rating_by_genre.png ........ la media no es igual para todos
-      worst_rated_movies.png ..... hay dispersion real de gustos
-      top_movies_popular.png ..... cola larga: el Top-100 (2,7% del catalogo)
-                                   concentra el 18,3% de los votos
-                                   -> justifica la metrica de cobertura
-      top_users_activity.png ..... dispersion 95,53% y usuarios con pocas
-                                   vistas -> justifica el reto del modelo
-      ratings_over_time.png ...... permite un split temporal sin fuga de datos
-      genre_distribution.png ..... contexto del catalogo
-      movies_by_year.png ......... contexto del catalogo
+      rating_distribution.png .... rating entre 0,5 y 5;
+                                   48,2% de notas >= 4.
+      rating_by_genre.png ........ las notas difieren por genero.
+      top_movies_popular.png ..... Top-100 concentra el 16,1% de los votos.
+      top_users_activity.png ..... actividad desigual entre usuarios.
+      ratings_over_time.png ...... periodo mar-1996 a sep-2018.
+      genre_distribution.png ..... contexto del catalogo.
+      movies_by_year.png ......... contexto del catalogo.
+      top_tags.png .............. las etiquetas existen en tags.csv: 3.683.
 
-  AVISO DE CONSISTENCIA  [RESUELTO]:
-      Los graficos top_tags.png, ratings_vs_tags.png y top_tagged_movies.png
-      usan TAGS (etiquetas de usuario), que MovieLens 1M no tiene: venian de
-      ml-latest-small. El proyecto se unifico en MovieLens 1M, esos tres
-      graficos se retiran y el trabajo con ml-latest-small quedo como
-      referencia en anexo_ml-latest-small/.
-
-G) COMO SABEMOS QUE YA ESTA OPTIMIZADO  (criterio de parada y defensa)
+G) COMO SABEMOS QUE YA ESTA OPTIMIZADO
 --------------------------------------------------------------------------------
 
-  ACLARACION PREVIA: "optimizado" NO significa RMSE = 0.
-  Existe ruido irreducible: el mismo usuario, el mismo dia, puntua la misma
-  pelicula con 4 o con 5 segun el animo. Ese error no lo elimina ningun modelo.
-  En MovieLens 1M el estado del arte ronda 0,84; nadie baja de ahi.
-  Por eso "optimizado" no es un valor absoluto, sino una DEMOSTRACION POR
-  COMPARACION frente a alternativas y frente a un umbral fijado de antemano.
+  "Optimizado" se defiende con comparaciones sobre la misma prueba, un
+  umbral previo, validacion separada y ausencia de fuga de datos. No equivale
+  a RMSE = 0 ni demuestra un minimo global de todos los hiperparametros.
 
-  Se justifica con CINCO pruebas. Hay que poder ensenar las cinco.
-
-
-  PRUEBA 1 - ESCALERA DE BASELINES  (demuestra que el modelo APORTA)
+  PRUEBA 1 - ESCALERA DE BASELINES
   ..............................................................................
-      El modelo se compara contra modelos cada vez menos tontos:
+      Media global .................... 1,0368
+      Media por usuario .............. 0,9367
+      Media por pelicula ............. 0,9730
+      Media + sesgos (mu+bu+bi) ...... 0,8677
+      Factorizacion matricial ........ 0,8478
+      El modelo reduce el RMSE un 12,9% frente a media por pelicula y
+      un 2,3% frente a media + sesgos.
 
-        Media global (3,58) ............ 1,117   si no lo superas, no sirve
-        Media por usuario .............. 1,034
-        Media por pelicula (popular) ... 0,977   <- LA PRACTICA ACTUAL
-        Media + sesgos (mu+bu+bi) ...... 0,905   <- BASELINE A SUPERAR
-        Factorizacion matricial ........ 0,846   <- modelo entrenado
-
-      REGLA DE DESCARTE: si el modelo NO baja de 0,905, el filtrado
-      colaborativo no aporta valor sobre unos simples sesgos, y hay que
-      escribirlo en el informe. Un resultado negativo bien argumentado vale
-      mas que un numero adornado.
-
-      Esto es lo que convierte la cifra en ARGUMENTO: no se dice
-      "0,846 esta bien" (0,846 no significa nada solo), se dice
-      "0,846 es un 13,4% mejor que lo que se hace hoy".
-
-
-  PRUEBA 2 - UMBRAL FIJADO ANTES DE MODELAR
+  PRUEBA 2 - UMBRAL
   ..............................................................................
-      RMSE <= 0,90  y  MAE <= 0,70, declarados en el punto 3.1 ANTES de
-      entrenar nada. Fijar el umbral despues de ver los resultados es
-      acomodar la vara al resultado, y se nota.
+      RMSE <= 0,90 y MAE <= 0,70. El modelo cumple ambos en test.
 
-
-  PRUEBA 3 - CURVA DE HIPERPARAMETROS  (EL CRITERIO DE PARADA)
+  PRUEBA 3 - VALIDACION DE HIPERPARAMETROS
   ..............................................................................
-      Es la respuesta literal a "como sabemos que YA esta optimizado".
+      La ejecucion de mf_numpy.json registra 64 factores y la mejor epoca
+      de validacion 28 (RMSE de validacion 0,8578). El historial de epocas
+      permite observar la parada; falta documentar un barrido amplio de K,
+      tasa de aprendizaje y regularizacion antes de afirmar un optimo global.
 
-      Se entrena variando un hiperparametro (por ejemplo K, el numero de
-      factores: 20, 50, 80, 100, 120, 150, 200) y se grafica el RMSE de
-      validacion. (El grafico es un ejemplo ilustrativo.)
-
-        RMSE
-        0,90 |  *                             *
-        0,89 |      *                     *
-        0,88 |          *             *
-        0,87 |              *  *  *              <- minimo en K ~ 100
-             +--------------------------------------
-               20  50  80 100 120 150 200
-
-      Si AL SUBIR el parametro empeora Y AL BAJARLO tambien empeora,
-      se esta en el fondo del valle: seguir buscando ya no mejora.
-      ESE es el criterio de parada.
-
-      Sin este grafico no se puede afirmar "esta optimizado";
-      solo se puede afirmar "no probe mas configuraciones".
-
-      Parametros a barrer: K (factores), epocas, lr y reg.
-      Hecho hasta ahora: K=32 frente a K=64, elegido por la validacion
-      (RMSE 0,8581 frente a 0,8549 -> K=64). Las epocas tambien se eligen
-      con la validacion (parada temprana). Falta un barrido mas amplio.
-
-
-  PRUEBA 4 - VALIDACION CRUZADA  (demuestra que no fue suerte)
+  PRUEBA 4 - VALIDACION CRUZADA
   ..............................................................................
-      Validacion cruzada de 5 particiones. Se reporta media Y desviacion:
+      Pendiente: repetir con varias particiones y reportar media y dispersion.
 
-            RMSE = 0,846 +/- 0,004      <- fiable, estable
-            RMSE = 0,846 +/- 0,050      <- NO fiable, depende del split
-      (Ejemplo de como se reporta; la validacion cruzada aun esta pendiente.)
-
-      Un unico hold-out 80/20 puede salir bien por casualidad. La CV lo
-      descarta.
-
-
-  PRUEBA 5 - AUSENCIA DE FUGA DE DATOS  (demuestra que el numero es honesto)
+  PRUEBA 5 - AUSENCIA DE FUGA DE DATOS
   ..............................................................................
-      - El conjunto de test no se toca al entrenar. La epoca de parada se
-        elige con una validacion (10% del entrenamiento), no con el test.
-      - Las medias y normalizaciones se calculan SOLO con entrenamiento.
-      - El filtrado por minimo de votos, tambien solo con entrenamiento.
+      Las medias y sesgos de los baselines se calculan con entrenamiento.
+      La epoca se elige en validacion y el test se reserva para evaluacion.
 
-      Un RMSE bajo obtenido con fuga es un numero falso. Es lo primero que
-      se revisa al evaluar un trabajo, y resta mucho.
-
-
-  COMPROBACION ADICIONAL DE NEGOCIO (no es RMSE, pero se pide en CN-3)
+  COMPROBACION ADICIONAL DE NEGOCIO
   ..............................................................................
-      Un modelo puede tener buen RMSE y aun asi recomendar siempre las
-      mismas 50 peliculas. Por eso se mide ademas:
-        - Cobertura de catalogo: % de las 3.706 peliculas que aparecen en
-          algun Top-10.  Objetivo CN-3: superar el 31,9%.
-        - Precision@10: de 10 recomendadas, cuantas tenian 4 estrellas o mas.
+      Cobertura de catalogo del Top-10 (cuaderno H3): 3,2% (315 de 9.724);
+      no alcanza la meta de 22,9% (CN-3).
+      Precision@10 en 389 usuarios: 68,15% modelo y 64,68% media de pelicula.
 
 
---------------------------------------------------------------------------------
-COMO SE DEFIENDE EN LA EXPOSICION  (parrafo listo para leer)
+COMO SE DEFIENDE EN LA EXPOSICION
 --------------------------------------------------------------------------------
 
-  "Fijamos el umbral RMSE <= 0,90 antes de modelar. Construimos cuatro
-   modelos de referencia; el mejor sin personalizar, que suma media global
-   mas sesgos de usuario y de pelicula, da 0,905. Nuestro modelo, una
-   factorizacion matricial de 64 factores, da 0,846 en test: un 13,4%
-   mejor que recomendar por popularidad, que es la practica actual, y un
-   6,5% mejor que los sesgos. El numero de factores y la epoca en la que
-   se para se eligieron con una validacion separada; el conjunto de prueba
-   se uso una sola vez, al final."
-
+  "El modelo de 64 factores obtuvo RMSE 0,8478 y MAE 0,6482 en prueba.
+   Reduce el RMSE un 12,9% frente al ranking por media de pelicula y un
+   2,3% frente al baseline de sesgos. La mejor epoca de validacion fue 28.
+   El Top-10 cubre solo el 3,2% del catalogo: falta diversificar.
+   Queda pendiente la validacion cruzada."
 
 ================================================================================

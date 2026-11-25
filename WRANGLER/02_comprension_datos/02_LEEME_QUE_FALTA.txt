@@ -1,82 +1,66 @@
 ================================================================================
-02  COMPRENSION DE LOS DATOS (EDA)  -  QUE FALTA TRAER DE DRIVE
+02  COMPRENSION DE LOS DATOS (EDA)  -  QUE FALTA VERIFICAR
 ================================================================================
 
-Esta carpeta esta vacia a proposito. El EDA lo hizo el rol de Analista y esta
-en Google Drive, en:
+El dataset del proyecto es anexo_ml-latest-small/ml-latest-small/:
+ratings.csv, movies.csv y tags.csv. Antes de incorporar graficos antiguos del
+EDA, hay que comprobar que fueron calculados con esta misma version de datos.
+El contenido de Google Drive no se verifico aqui.
 
-    Entregables listos > Analista / EDA
+GRAFICOS CITADOS EN EL EDA (pendientes de cotejar o regenerar con 100K):
 
-HAY QUE DESCARGAR ESTOS 14 ARCHIVOS A  02_comprension_datos/graficos/ :
-
-    explicacion_graficas.pdf      (este va en la raiz de 02_, no en graficos/)
+    explicacion_graficas.pdf      (en la raiz de 02_, si se incorpora)
     genre_distribution.png
     movies_by_year.png
     rating_by_genre.png
     rating_distribution.png
     ratings_over_month.png
     ratings_over_time.png
-    ratings_vs_tags.png           <-- ver AVISO
+    ratings_vs_tags.png
     top_movies_popular.png
     top_rated_movies.png
-    top_tagged_movies.png         <-- ver AVISO
-    top_tags.png                  <-- ver AVISO
+    top_tagged_movies.png
+    top_tags.png
     top_users_activity.png
     worst_rated_movies.png
 
 
 --------------------------------------------------------------------------------
-AVISO DE CONSISTENCIA  -  RESUELTO (octubre 2026)
+AVISO DE CONSISTENCIA  (25/11/2026)
 --------------------------------------------------------------------------------
 
-Se confirmo que el EDA con tags se hizo sobre ml-latest-small. Se aplico la
-opcion (b): el proyecto usa solo MovieLens 1M, los tres graficos de tags NO se
-descargan, y el trabajo con ml-latest-small quedo en anexo_ml-latest-small/.
-Solo hay que traer los otros 11 graficos.
-
-Lo que sigue es el analisis original del problema:
-
-
-Tres graficos usan TAGS (etiquetas de usuario):
+ml-latest-small SI incluye tags.csv: 3.683 etiquetas. Los tres graficos
+relacionados con tags pueden formar parte del EDA si se regeneran o se verifica
+que usan estos mismos datos:
 
     top_tags.png
     ratings_vs_tags.png
     top_tagged_movies.png
 
-MovieLens 1M NO TIENE fichero de tags. Solo trae:
-    ratings.dat  /  movies.dat  /  users.dat
-
-Los tags existen en ml-latest-small y ml-25m, que son datasets DISTINTOS.
-
-Esto significa que el EDA se hizo probablemente sobre otro dataset que el de la
-preparacion (que si es ML-1M: 1.000.209 ratings, 6.040 usuarios, 3.706 pelis).
-
-DOS SALIDAS POSIBLES:
-  a) Rehacer esos tres graficos sobre ML-1M -> no se puede, no hay tags.
-  b) Retirar esos tres graficos del entregable y dejar los otros 11, que si
-     son compatibles con ML-1M.
-
-Recomendado: opcion (b), y confirmar con quien hizo el EDA sobre que fichero
-trabajo. Si el docente cruza los numeros y no cuadran, resta bastante.
+Los graficos existentes de otro dataset no deben acompañarse de cifras 100K
+sin comprobacion. Los CSV actuales contienen 100.836 calificaciones de 610
+usuarios para 9.724 peliculas calificadas (catalogo: 9.742). El rating va
+de 0,5 a 5 en medias estrellas; 48,2% de las notas son 4 o mas.
 
 
 --------------------------------------------------------------------------------
 PARA QUE SIRVE CADA GRAFICO EN EL INFORME
 --------------------------------------------------------------------------------
 
-  rating_distribution.png .... la variable objetivo es numerica 1-5 y esta
-                               sesgada al alza (57,5% son 4 o 5)
-                               -> justifica REGRESION y el baseline "3,58"
-  top_movies_popular.png ..... cola larga: Top-100 (2,7% del catalogo) =
-                               18,3% de los votos -> justifica CN-3 (cobertura)
-  top_users_activity.png ..... dispersion del 95,53% -> el reto del modelo
-  rating_by_genre.png ........ los gustos no son iguales -> hay que personalizar
-  worst_rated_movies.png ..... dispersion real de las medias por pelicula
-  ratings_over_time.png ...... permite split temporal sin fuga de datos
-  ratings_over_month.png ..... estacionalidad de la actividad
+  rating_distribution.png .... distribucion de 0,5 a 5 y umbral >= 4
+                               (48,2%): variable numerica y relevancia
+  top_movies_popular.png ..... Top-100 = 16,1% de las notas: cola larga
+  top_users_activity.png ..... actividad desigual entre usuarios
+  rating_by_genre.png ........ diferencias entre generos
+  worst_rated_movies.png ..... dispersion de notas por pelicula
+  ratings_over_time.png ...... periodo mar-1996 a sep-2018 (UTC)
+  ratings_over_month.png ..... actividad por mes
   genre_distribution.png ..... contexto del catalogo
   movies_by_year.png ......... contexto del catalogo
-  top_rated_movies.png ....... cuidado: peliculas con pocos votos inflan la
-                               media -> justifica filtrar por minimo de votos
+  top_rated_movies.png ....... revisar numero de votos junto a la media
+  top_tags.png .............. etiquetas frecuentes en tags.csv
+  ratings_vs_tags.png ....... relacion de etiquetas con calificaciones
+  top_tagged_movies.png ...... peliculas mas etiquetadas
 
 ================================================================================
+PENDIENTE - Verificar o regenerar el EDA con ml-latest-small.

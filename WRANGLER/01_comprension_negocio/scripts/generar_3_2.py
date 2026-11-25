@@ -8,7 +8,6 @@ Genera dos imágenes resumidas para la presentación:
   1. Qué tarea es y por qué se descartan las demás.
   2. Qué predice exactamente el modelo (la salida es un número, no una etiqueta).
 """
-import json
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -17,8 +16,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
 
-SALIDA = Path("comprension_negocio")
-DATOS = next(Path(".").glob("datos_procesados*/datos_procesados"))
+RAIZ = Path(__file__).resolve().parents[3]
+SALIDA = RAIZ / "WRANGLER/01_comprension_negocio/graficos"
+DATOS = RAIZ / "anexo_ml-latest-small/ml-latest-small/ratings.csv"
 
 C_SUP, C_TINTA, C_T2, C_SUAVE = "#fcfcfb", "#0b0b0b", "#52514e", "#898781"
 C_EJE, C_GRILLA = "#c3c2b7", "#e1e0d9"
@@ -36,13 +36,13 @@ def grafico_tipo_de_tarea():
     """Checklist visual: qué se marca y por qué se descarta el resto."""
     opciones = [
         ("Clasificación Supervisada", "no",
-         "Predeciría una etiqueta ('le gusta' / 'no le gusta').\nNosotros predecimos la nota exacta, que da más información."),
+         "Predeciría una etiqueta ('le gusta' / 'no le gusta').\nAquí predecimos la nota; clasificar es una tarea complementaria."),
         ("Regresión / Predicción Numérica", "si",
-         "La salida es un número de 1 a 5 estrellas.\nSe evalúa con RMSE y MAE, métricas de regresión."),
+         "La salida es un número de 0,5 a 5 estrellas.\nSe evalúa con RMSE y MAE, métricas de regresión."),
         ("Agrupamiento / Clustering", "aux",
-         "Se usa como APOYO: agrupar usuarios parecidos para\nformar vecindarios. Es un medio, no el objetivo."),
+         "Puede apoyar: agrupar usuarios parecidos para\nformar vecindarios. Es un medio, no el objetivo."),
         ("Reglas de Asociación", "no",
-         "Sería 'quien vio A también vio B'. Solo usa si vio o no\nla película, y desperdicia la nota de 1 a 5."),
+         "Sería 'quien vio A también vio B'. Solo usa si vio o no\nla película, y desperdicia la nota de 0,5 a 5."),
         ("Detección de Anomalías", "no",
          "Serviría para detectar votos falsos, pero no es\nel objetivo del proyecto."),
         ("Otra: Sistemas de Recomendación\n(Filtrado Colaborativo)", "si",
@@ -83,7 +83,7 @@ def grafico_tipo_de_tarea():
     ax.set_title("3.2  Tipo de Tarea de Minería de Datos", fontsize=17,
                  fontweight="bold", color=C_TINTA, loc="left", pad=32)
     ax.text(0, 1.005,
-            "Sistema de recomendación de películas por filtrado colaborativo (MovieLens 1M)",
+            "Sistema de recomendación de películas por filtrado colaborativo (MovieLens ml-latest-small)",
             transform=ax.transAxes, fontsize=11, color=C_T2, va="bottom")
     fig.tight_layout()
     fig.savefig(SALIDA / "3_2_tipo_de_tarea.png")
@@ -97,9 +97,9 @@ def grafico_que_predice():
     Panel izquierdo: la celda vacía que hay que rellenar.
     Panel derecho: la variable objetivo real, con su rango y su media.
     """
-    rep = json.loads((DATOS / "reporte_preparacion.json").read_text(encoding="utf-8"))
-    dist = rep["inspeccion"]["distribucion"]
-    media = rep["inspeccion"]["rating_media"]
+    ratings = pd.read_csv(DATOS)
+    dist = ratings.rating.value_counts().sort_index()
+    media = ratings.rating.mean()
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.4, 5.6),
                                    gridspec_kw={"width_ratios": [1.15, 1]})
@@ -141,28 +141,28 @@ def grafico_que_predice():
                  arrowprops=dict(arrowstyle="-|>", color=C_AUX, linewidth=2.2))
     ax1.text(9.45, 1.86, "4,2 ★", fontsize=17, fontweight="bold", color=C_AUX, va="center")
     ax1.text(5.0, 0.55, "El modelo rellena los huecos: dice qué nota daría cada usuario\n"
-             "a una película que todavía no ha visto.",
+             "a una película que todavía no ha calificado.",
              ha="center", fontsize=10.5, color=C_T2, linespacing=1.4)
     ax1.set_title("Qué predice el modelo", fontsize=13.5, fontweight="bold",
                   color=C_TINTA, loc="left", pad=14)
 
     # ---- Panel derecho: la variable objetivo es numérica -------------------
-    valores = [float(k) for k in dist]
-    conteos = [dist[k] for k in dist]
+    valores = dist.index.to_list()
+    conteos = dist.to_list()
     total = sum(conteos)
-    ax2.bar(valores, conteos, width=0.66, color=C_SI, zorder=3, linewidth=0)
+    ax2.bar(valores, conteos, width=0.4, color=C_SI, zorder=3, linewidth=0)
     for v, c in zip(valores, conteos):
         ax2.text(v, c, f"{100*c/total:.0f}%", ha="center", va="bottom",
-                 fontsize=9.5, color=C_T2)
+                 fontsize=8, color=C_T2)
     ax2.axvline(media, color=C_AUX, linestyle="--", linewidth=1.8, zorder=4)
     ax2.text(media - 0.08, ax2.get_ylim()[1] * 0.98, f"media {media:.2f} ",
              ha="right", va="top", fontsize=10.5, fontweight="bold", color=C_AUX)
 
     ax2.set_title("La variable objetivo es un número", fontsize=13.5,
                   fontweight="bold", color=C_TINTA, loc="left", pad=14)
-    ax2.set_xlabel("Calificación (1 a 5 estrellas)", fontsize=10.5, color=C_T2)
+    ax2.set_xlabel("Calificación (0,5 a 5 estrellas)", fontsize=10.5, color=C_T2)
     ax2.set_ylabel("Nº de calificaciones", fontsize=10.5, color=C_T2)
-    ax2.set_xticks(valores)
+    ax2.set_xticks(valores, [str(v).replace(".0", "").replace(".", ",") for v in valores], rotation=45)
     ax2.yaxis.set_major_formatter(plt.FuncFormatter(
         lambda x, p: f"{x/1000:.0f}k" if x else "0"))
     for lado in ["top", "right"]:

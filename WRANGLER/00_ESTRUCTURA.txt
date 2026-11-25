@@ -1,12 +1,18 @@
-ESTRUCTURA DEL PROYECTO — MOVIELENS ML-LATEST-SMALL
+ESTRUCTURA DEL PROYECTO: MOVIELENS ML-LATEST-SMALL (100.836 CALIFICACIONES)
 
-Los datos originales y cuadernos de 100K se encuentran en anexo_ml-latest-small/.
+Todo el proyecto usa los datos de anexo_ml-latest-small/ml-latest-small/.
 El recomendador se ejecuta con 04_modelado/scripts/00_entrenar_todo.py desde
-la raíz del repositorio. Las métricas nuevas se consultan en
-04_modelado/resultados.html.
+la raíz del repositorio. Las métricas se consultan en 04_modelado/resultados.html.
 
 Carpetas de WRANGLER:
-  03_preparacion_datos/    ubicación de los datos y del entrenamiento actual
-  04_modelado/            recomendador, scripts y panel de resultados
-  01, 02, 05 y 06        entregables y material de la etapa anterior
-  07 y 08                 cuadernos de clasificación de la etapa de 1M
+  01_comprension_negocio/  objetivo, tipo de tarea y métrica principal
+  02_comprension_datos/    pendientes de la comprensión de datos
+  03_preparacion_datos/    nota sobre los datos que usa el modelado
+  04_modelado/             recomendador, scripts y panel de resultados
+  05_evaluacion/           pendiente
+  06_presentacion/         guía de estudio y material para exponer
+  07_regresion_logistica/  clasificación «Me gusta» con regresión logística
+  08_arbol_decision/       clasificación «Me gusta» con árbol de decisión
+
+Hasta el commit 856ab7ad el proyecto usaba MovieLens 1M.
+Ese historial queda en git; los archivos actuales ya no dependen de 1M.

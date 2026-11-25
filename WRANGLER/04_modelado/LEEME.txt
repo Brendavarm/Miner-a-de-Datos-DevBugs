@@ -9,4 +9,4 @@ Desde la raíz del repositorio:
 
 Los scripts generan los resultados en 04_modelado/resultados/.
 resultados.html lee las nuevas métricas mediante un servidor HTTP local.
-escalera_baselines.html contiene la comparación histórica de MovieLens 1M.
+escalera_baselines.html explica la escalera de modelos de referencia con ml-latest-small.

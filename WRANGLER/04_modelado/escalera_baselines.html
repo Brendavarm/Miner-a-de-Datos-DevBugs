@@ -294,16 +294,16 @@ footer code{font-size:12px;color:var(--ink-2)}
 <div class="wrap">
 
 <header>
-  <div class="eyebrow">Fase 4 · Modelado · MovieLens 1M</div>
+  <div class="eyebrow">Fase 4 · Modelado · MovieLens ml-latest-small</div>
   <h1>La escalera de baselines</h1>
-  <p class="lede">Cuatro modelos de referencia, cada uno con <strong>una sola pieza de información más</strong> que el anterior. Sirven para responder la única pregunta que importa al evaluar: <strong>¿el modelo aporta algo, o el mismo resultado se consigue con una media?</strong></p>
+  <p class="lede">Cuatro modelos de referencia con señales cada vez más completas. Sirven para responder la única pregunta que importa al evaluar: <strong>¿el modelo aporta algo, o el mismo resultado se consigue con una media?</strong></p>
   <dl class="specs">
-    <div class="spec"><dt>Calificaciones</dt><dd>1.000.209</dd></div>
-    <div class="spec"><dt>Entrenamiento</dt><dd>800.167</dd></div>
-    <div class="spec"><dt>Prueba</dt><dd>200.042</dd></div>
+    <div class="spec"><dt>Calificaciones</dt><dd>100.836</dd></div>
+    <div class="spec"><dt>Entrenamiento</dt><dd>80.668</dd></div>
+    <div class="spec"><dt>Prueba</dt><dd>20.168</dd></div>
     <div class="spec"><dt>Semilla</dt><dd>42</dd></div>
-    <div class="spec"><dt>Escala</dt><dd>1 – 5 ★</dd></div>
-    <div class="spec"><dt>Media global μ</dt><dd>3,5821</dd></div>
+    <div class="spec"><dt>Escala</dt><dd>0,5 – 5 ★</dd></div>
+    <div class="spec"><dt>Media de entrenamiento μ</dt><dd>3,4999</dd></div>
   </dl>
 </header>
 
@@ -313,10 +313,10 @@ footer code{font-size:12px;color:var(--ink-2)}
   <div class="note">
     <h4><span class="dot"></span>Reglas del experimento</h4>
     <ul>
-      <li><b>Partición 80 / 20</b> — 800.167 calificaciones para estimar, 200.042 reservadas para medir.</li>
+      <li><b>Partición 80 / 20</b>: 80.668 calificaciones para estimar, 20.168 reservadas para medir.</li>
       <li><b>El test no se toca jamás.</b> Todas las medias y sesgos se calculan <em>solo</em> con entrenamiento. Calcular la media de un usuario incluyendo notas del test es fuga de datos, e infla el resultado.</li>
       <li><b>Semilla fija (42).</b> Sin ella los números no se reproducen y no se pueden defender.</li>
-      <li><b>Recorte a [1, 5].</b> Las fórmulas pueden devolver 5,4 o 0,7; un rating no puede. Se recorta antes de medir el error.</li>
+      <li><b>Recorte a [0,5, 5].</b> Las fórmulas pueden devolver valores fuera de la escala observada. Se recorta antes de medir el error.</li>
       <li><b>Caso desconocido → se cae a μ.</b> Si en el test aparece una película sin votos en entrenamiento, se predice la media global. Nunca se descarta la fila: eso sería medir solo lo fácil.</li>
     </ul>
   </div>
@@ -324,7 +324,7 @@ footer code{font-size:12px;color:var(--ink-2)}
 
 <section>
   <h2>Los cuatro escalones</h2>
-  <p class="sub">El orden no es decorativo: cada peldaño añade exactamente un tipo de información, y la bajada del error dice cuánto valía esa información.</p>
+  <p class="sub">Cada referencia usa una señal distinta. En estos datos, la media por usuario tiene menor RMSE que la media por película; la combinación de sesgos mejora ambas.</p>
 
   <!-- 1 -->
   <article class="rung" style="--step:var(--e1)">
@@ -332,7 +332,7 @@ footer code{font-size:12px;color:var(--ink-2)}
     <div class="rung-body">
       <div class="rung-head"><h3>Media global</h3><span class="tag">El suelo</span></div>
       <p class="rung-what">Predice el mismo número para todo el mundo y para toda película: la media de todas las calificaciones del entrenamiento. No mira quién eres ni qué película es.</p>
-      <p class="adds">Información que usa: <b>ninguna</b>. Es la referencia mínima — cualquier modelo que no la supere está roto.</p>
+      <p class="adds">Información que usa: <b>ninguna</b>. Es la referencia mínima: todo modelo candidato debe superarla.</p>
 
       <div class="formula">
         <div class="eq">
@@ -340,7 +340,7 @@ footer code{font-size:12px;color:var(--ink-2)}
           <span class="frac"><span class="num">1</span><span class="den">|R|</span></span>
           <span class="sum"><span class="lim">&nbsp;</span><span class="big">∑</span><span class="lim">(u,i) ∈ R</span></span>
           <span>r(u,i)</span>
-          <span style="color:var(--muted);padding-left:14px">= 3,5821</span>
+          <span style="color:var(--muted);padding-left:14px">= 3,4999</span>
         </div>
         <div class="eq" style="margin-top:16px">
           <span>r̂(u,i) = μ</span>
@@ -348,14 +348,14 @@ footer code{font-size:12px;color:var(--ink-2)}
         </div>
         <div class="where">
           <span><b>R</b> = calificaciones de entrenamiento</span>
-          <span><b>|R|</b> = 800.167</span>
+          <span><b>|R|</b> = 80.668</span>
           <span><b>r̂</b> = valor predicho</span>
         </div>
       </div>
 
       <div class="score">
-        <div class="score-n"><small>RMSE</small>1,1167</div>
-        <div class="score-mae">MAE 0,9328</div>
+        <div class="score-n"><small>RMSE</small>1,0368</div>
+        <div class="score-mae">MAE 0,8213</div>
         <div class="track"><i style="width:90.5%"></i></div>
       </div>
     </div>
@@ -367,7 +367,7 @@ footer code{font-size:12px;color:var(--ink-2)}
     <div class="rung-body">
       <div class="rung-head"><h3>Media por usuario</h3><span class="tag">Quién califica</span></div>
       <p class="rung-what">A cada usuario se le predice su propia media histórica. Reconoce que hay gente exigente y gente generosa, pero le da la misma nota a todas las películas.</p>
-      <p class="adds">Añade: <b>el nivel de exigencia del usuario</b>. Baja el error un 7,4 % — o sea, saber <em>quién</em> puntúa vale bastante.</p>
+      <p class="adds">Añade: <b>el nivel de exigencia del usuario</b>. Baja el error un 9,7 %; o sea, saber <em>quién</em> puntúa vale bastante.</p>
 
       <div class="formula">
         <div class="eq">
@@ -378,15 +378,15 @@ footer code{font-size:12px;color:var(--ink-2)}
         </div>
         <div class="where">
           <span><b>I<sub>u</sub></b> = películas que u calificó en entrenamiento</span>
-          <span><b>6.040</b> medias, una por usuario</span>
+          <span><b>610</b> medias, una por usuario</span>
           <span>usuario sin historial → <b>μ</b></span>
         </div>
       </div>
 
       <div class="score">
-        <div class="score-n"><small>RMSE</small>1,0344</div>
-        <div class="score-mae">MAE 0,8273</div>
-        <div class="track"><i style="width:67.0%"></i></div>
+        <div class="score-n"><small>RMSE</small>0,9367</div>
+        <div class="score-mae">MAE 0,7287</div>
+        <div class="track"><i style="width:45%"></i></div>
       </div>
     </div>
   </article>
@@ -395,9 +395,9 @@ footer code{font-size:12px;color:var(--ink-2)}
   <article class="rung" style="--step:var(--e3)">
     <div class="rung-n">3</div>
     <div class="rung-body">
-      <div class="rung-head"><h3>Media por película</h3><span class="tag">La práctica actual</span></div>
-      <p class="rung-what">A cada película se le predice su nota media. Es, literalmente, <em>recomendar por popularidad</em>: el mismo ranking para los 6.040 usuarios. <strong>Este es el rival a batir</strong>, porque es lo que la plataforma hace hoy.</p>
-      <p class="adds">Añade: <b>la calidad de la película</b>. Y resulta que importa más que el usuario — saber <em>qué</em> se puntúa vale más que saber <em>quién</em> puntúa.</p>
+      <div class="rung-head"><h3>Media por película</h3><span class="tag">Ranking de referencia</span></div>
+      <p class="rung-what">A cada película se le predice su nota media. Es, literalmente, <em>recomendar por popularidad</em>: el mismo ranking para los 610 usuarios. <strong>Este es el ranking de referencia</strong>.</p>
+      <p class="adds">Añade: <b>la calidad de la película</b>. En esta prueba, su RMSE es mayor que el de la media por usuario.</p>
 
       <div class="formula">
         <div class="eq">
@@ -408,15 +408,15 @@ footer code{font-size:12px;color:var(--ink-2)}
         </div>
         <div class="where">
           <span><b>U<sub>i</sub></b> = usuarios que calificaron i en entrenamiento</span>
-          <span><b>3.669</b> medias, una por película</span>
+          <span><b>9.022</b> medias de películas presentes en entrenamiento</span>
           <span>película sin votos → <b>μ</b></span>
         </div>
       </div>
 
       <div class="score">
-        <div class="score-n"><small>RMSE</small>0,9765</div>
-        <div class="score-mae">MAE 0,7800</div>
-        <div class="track"><i style="width:50.4%"></i></div>
+        <div class="score-n"><small>RMSE</small>0,9730</div>
+        <div class="score-mae">MAE 0,7520</div>
+        <div class="track"><i style="width:61%"></i></div>
       </div>
     </div>
   </article>
@@ -426,8 +426,8 @@ footer code{font-size:12px;color:var(--ink-2)}
     <div class="rung-n">4</div>
     <div class="rung-body">
       <div class="rung-head"><h3>Media + sesgos</h3><span class="tag">El listón real</span></div>
-      <p class="rung-what">Junta las dos cosas anteriores, pero sin sumarlas ingenuamente. Primero calcula cuánto se desvía cada <em>película</em> de la media global; después, sobre lo que queda sin explicar, cuánto se desvía cada <em>usuario</em>. El orden importa.</p>
-      <p class="adds">Añade: <b>las dos señales a la vez, sin contarlas dos veces</b>. Es el modelo más fuerte que existe sin personalizar de verdad — y por tanto el listón que el filtrado colaborativo tiene que superar para justificarse.</p>
+      <p class="rung-what">Junta las dos cosas anteriores, pero sin sumarlas ingenuamente. Primero calcula cuánto se desvía cada <em>película</em> de la media global; después, sobre lo que queda sin explicar, cuánto se desvía cada <em>usuario</em>. El orden de cálculo importa.</p>
+      <p class="adds">Añade: <b>las dos señales a la vez, sin contarlas dos veces</b>. Es el baseline combinado de este experimento y, por tanto, el listón que el filtrado colaborativo tiene que superar para justificarse.</p>
 
       <div class="formula">
         <div class="eq">
@@ -465,13 +465,13 @@ footer code{font-size:12px;color:var(--ink-2)}
 
       <div class="note" style="margin-bottom:18px;box-shadow:none">
         <h4><span class="dot"></span>Qué pinta ahí la λ</h4>
-        <p>Sin λ, una película con <b>un solo voto de 5★</b> recibe el sesgo máximo y el modelo se fía ciegamente de ella. Al sumar λ al denominador, los sesgos calculados con pocos datos se encogen hacia cero: el modelo desconfía de lo que ha visto poco. Con 1.192 películas por debajo de 50 votos, aquí eso no es un detalle.</p>
+        <p>Sin λ, una película con <b>un solo voto de 5★</b> recibe el sesgo máximo y el modelo se fía ciegamente de ella. Al sumar λ al denominador, los sesgos calculados con pocos datos se encogen hacia cero: el modelo desconfía de lo que ha visto poco. Con 9.274 películas calificadas por debajo de 50 votos, aquí eso no es un detalle.</p>
       </div>
 
       <div class="score">
-        <div class="score-n"><small>RMSE</small>0,9051</div>
-        <div class="score-mae">MAE 0,7150</div>
-        <div class="track"><i style="width:30.0%"></i></div>
+        <div class="score-n"><small>RMSE</small>0,8677</div>
+        <div class="score-mae">MAE 0,6647</div>
+        <div class="track"><i style="width:14%"></i></div>
       </div>
     </div>
   </article>
@@ -481,109 +481,62 @@ footer code{font-size:12px;color:var(--ink-2)}
     <div class="rung-n" style="background:transparent;color:var(--e5)">→</div>
     <div class="rung-body">
       <div class="rung-head"><h3>Factorización matricial — el modelo entrenado</h3><span class="tag" style="background:transparent;border:1px solid var(--line);color:var(--muted)">Medido</span></div>
-      <p class="rung-what">Ya no usa medias: descompone la matriz en 64 factores latentes y aprende <em>gustos</em>, no niveles. Es el escalón que justifica el proyecto. Implementado en numpy (<code>03b_mf_numpy.py</code>); el número de factores y la época de parada se eligen con una validación, y el test se mide una sola vez.</p>
+      <p class="rung-what">Añade factores a los sesgos: descompone la matriz en 64 factores latentes y aprende <em>gustos</em>, no niveles. Es el escalón que justifica el proyecto. Implementado en numpy (<code>03b_mf_numpy.py</code>); el número de factores y la época de parada se eligen con una validación, y el test se mide una sola vez.</p>
       <div class="score">
-        <div class="score-n"><small>RMSE</small>0,8460</div>
-        <div class="score-mae">MAE 0,6652 · −13,4 % frente a popularidad</div>
-        <div class="track"><i style="width:13.1%"></i></div>
+        <div class="score-n"><small>RMSE</small>0,8478</div>
+        <div class="score-mae">MAE 0,6482 · −12,9 % en RMSE frente a media por película</div>
+        <div class="track"><i style="width:5%"></i></div>
       </div>
     </div>
   </article>
 </section>
 
 <section>
-  <h2>Los cuatro, sobre un caso real</h2>
-  <p class="sub">Un solo par (usuario, película) del conjunto de prueba enseña mejor que cualquier explicación por qué hacen falta los cuatro escalones.</p>
-
-  <div class="case">
-    <div class="case-top">
-      <div><dt>Usuario</dt><dd>1150 <span style="color:var(--muted);font-weight:400">· 1.042 pelis vistas</span></dd></div>
-      <div><dt>Película</dt><dd>Forrest Gump (1994) <span style="color:var(--muted);font-weight:400">· 1.758 votos</span></dd></div>
-      <div><dt>Nota real que puso</dt><dd class="stars">★<span style="color:var(--line)">★★★★</span> <span style="font-family:var(--mono);font-size:1rem;color:var(--ink)">1,0</span></dd></div>
-    </div>
-
-    <div class="scroll" style="box-shadow:none;border-radius:6px">
-      <table>
-        <thead>
-          <tr><th>Escalón</th><th>Cómo lo calcula</th><th style="text-align:right">Predice</th><th style="text-align:right">Se equivoca en</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="name">1 · Media global</td>
-            <td class="num" style="color:var(--muted)">μ = 3,5821</td>
-            <td class="num" style="text-align:right">3,58</td>
-            <td class="num" style="text-align:right;color:var(--e2)">2,58 ★</td>
-          </tr>
-          <tr>
-            <td class="name">2 · Media por usuario</td>
-            <td class="num" style="color:var(--muted)">μ<sub>u</sub> = 2,6104</td>
-            <td class="num" style="text-align:right">2,61</td>
-            <td class="num" style="text-align:right;color:var(--e4)"><b>1,61 ★</b></td>
-          </tr>
-          <tr class="hl">
-            <td class="name">3 · Media por película <span class="chip" style="background:var(--e1);color:#fff">peor</span></td>
-            <td class="num" style="color:var(--muted)">μ<sub>i</sub> = 4,1166</td>
-            <td class="num" style="text-align:right">4,12</td>
-            <td class="num" style="text-align:right;color:var(--e1)"><b>3,12 ★</b></td>
-          </tr>
-          <tr>
-            <td class="name">4 · Media + sesgos</td>
-            <td class="num" style="color:var(--muted)">3,5821 − 0,9606 + 0,5339</td>
-            <td class="num" style="text-align:right">3,16</td>
-            <td class="num" style="text-align:right;color:var(--e2)">2,16 ★</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="note warn" style="margin-top:20px;box-shadow:none">
-      <h4><span class="dot"></span>Lo que revela este caso</h4>
-      <p>El usuario 1150 es <b>muy exigente</b>: su media es 2,61 frente al 3,58 global. Forrest Gump es <b>muy querida</b>: 4,12 de media. Recomendar por popularidad le predice 4,12 y él le puso <b>1</b> — un error de más de 3 estrellas, <em>peor que no personalizar nada</em>.</p>
-      <p>Aquí el escalón 4 tampoco acierta (3,16), y esa es justamente la lección: <b>sumar medias no basta</b>. Sabe que este usuario es duro y que esta película gusta, pero no sabe que a él <em>este tipo de película</em> no le va. Eso — el gusto, no el nivel — es lo único que el filtrado colaborativo aporta, y es la razón de ser del proyecto.</p>
-    </div>
-  </div>
+  <h2>Cómo leer la comparación</h2>
+  <p class="sub">Cada escalón se mide en las mismas 20.168 notas reservadas para prueba. El modelo de factores añade una señal que el baseline de sesgos no captura.</p>
+  <div class="note warn"><h4><span class="dot"></span>Un caso individual requiere volver a calcularlo</h4><p>El ejemplo anterior pertenecía a otro dataset. Aquí se muestran solo resultados agregados verificados en <code>baselines.json</code> y <code>mf_numpy.json</code>.</p></div>
 </section>
 
 <section>
   <h2>Resultados medidos</h2>
-  <p class="sub">Calculado sobre las 200.042 calificaciones de prueba con <code>03a_baselines.py</code>. La columna de la derecha es la que se lleva a la defensa.</p>
+  <p class="sub">Calculado sobre las 20.168 calificaciones de prueba con <code>03a_baselines.py</code>. La columna de la derecha es la que se lleva a la defensa.</p>
   <div class="scroll">
     <table>
       <thead>
         <tr>
           <th>Modelo</th><th style="text-align:right">RMSE</th><th style="text-align:right">MAE</th>
-          <th style="text-align:right">vs. popularidad</th><th>Qué demuestra superarlo</th>
+          <th style="text-align:right">vs. media por película</th><th>Qué aporta</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="name">1 · Media global</td>
-          <td class="num" style="text-align:right">1,1167</td><td class="num" style="text-align:right">0,9328</td>
-          <td class="num" style="text-align:right;color:var(--e1)">−14,4 %</td>
-          <td style="white-space:normal;color:var(--muted)">Que el modelo hace algo</td>
+          <td class="num" style="text-align:right">1,0368</td><td class="num" style="text-align:right">0,8213</td>
+          <td class="num" style="text-align:right;color:var(--e1)">−6,6 %</td>
+          <td style="white-space:normal;color:var(--muted)">Referencia mínima</td>
         </tr>
         <tr>
           <td class="name">2 · Media por usuario</td>
-          <td class="num" style="text-align:right">1,0344</td><td class="num" style="text-align:right">0,8273</td>
-          <td class="num" style="text-align:right;color:var(--e1)">−5,9 %</td>
-          <td style="white-space:normal;color:var(--muted)">Que usa información de la película</td>
+          <td class="num" style="text-align:right">0,9367</td><td class="num" style="text-align:right">0,7287</td>
+          <td class="num" style="text-align:right;color:var(--e1)">+3,7 %</td>
+          <td style="white-space:normal;color:var(--muted)">Que añade una señal de usuario</td>
         </tr>
         <tr>
-          <td class="name">3 · Media por película <span class="chip" style="background:var(--accent-soft);color:var(--accent)">práctica actual</span></td>
-          <td class="num" style="text-align:right">0,9765</td><td class="num" style="text-align:right">0,7800</td>
+          <td class="name">3 · Media por película <span class="chip" style="background:var(--accent-soft);color:var(--accent)">ranking de referencia</span></td>
+          <td class="num" style="text-align:right">0,9730</td><td class="num" style="text-align:right">0,7520</td>
           <td class="num" style="text-align:right;color:var(--muted)">—</td>
-          <td style="white-space:normal;color:var(--muted)">Que gana a lo que se hace hoy</td>
+          <td style="white-space:normal;color:var(--muted)">Ranking común de referencia</td>
         </tr>
         <tr class="hl">
           <td class="name">4 · Media + sesgos (λ=2)</td>
-          <td class="num" style="text-align:right">0,9051</td><td class="num" style="text-align:right">0,7150</td>
-          <td class="num" style="text-align:right;color:var(--e4)">+7,3 %</td>
+          <td class="num" style="text-align:right">0,8677</td><td class="num" style="text-align:right">0,6647</td>
+          <td class="num" style="text-align:right;color:var(--e4)">+10,8 %</td>
           <td style="white-space:normal"><b>Que el filtrado colaborativo aporta algo</b></td>
         </tr>
         <tr>
           <td class="name">→ Factorización matricial (k=64)</td>
-          <td class="num" style="text-align:right">0,8460</td><td class="num" style="text-align:right">0,6652</td>
-          <td class="num" style="text-align:right;color:var(--e5)">+13,4 %</td>
+          <td class="num" style="text-align:right">0,8478</td><td class="num" style="text-align:right">0,6482</td>
+          <td class="num" style="text-align:right;color:var(--e5)">+12,9 %</td>
           <td style="white-space:normal">Que personalizar con gustos mejora a los sesgos. Cumple el objetivo RMSE ≤ 0,90</td>
         </tr>
       </tbody>
@@ -592,22 +545,14 @@ footer code{font-size:12px;color:var(--ink-2)}
 </section>
 
 <section>
-  <h2>Un hallazgo que cambia el listón</h2>
-  <p class="sub">Al reproducir el escalón 4 apareció una diferencia con el valor documentado en el objetivo del proyecto.</p>
-  <div class="note warn">
-    <h4><span class="dot"></span>El baseline de sesgos no es 0,930 — es 0,905</h4>
-    <p>La primera versión del documento de comprensión del negocio fijaba <code>RMSE 0,930</code> para <code>μ+b<sub>u</sub>+b<sub>i</sub></code>. Ese número sale de calcular los dos sesgos <b>por separado</b>, cada uno como desviación de la media global:</p>
-    <div class="formula" style="margin:14px 0">
-      <div class="eq"><span style="color:var(--e1)">b<sub>u</sub> = μ<sub>u</sub> − μ&nbsp;&nbsp;&nbsp;y&nbsp;&nbsp;&nbsp;b<sub>i</sub> = μ<sub>i</sub> − μ</span><span style="color:var(--muted);padding-left:16px">→ RMSE 0,9315</span></div>
-    </div>
-    <p>Eso <b>cuenta dos veces</b> parte de la misma desviación. La formulación estándar calcula <code>b<sub>i</sub></code> primero y <code>b<sub>u</sub></code> sobre el residuo que queda, y da <code>0,9057</code>; con λ=2, <code>0,9051</code>.</p>
-    <p><b>Consecuencia práctica:</b> con 0,930 la regla de descarte («si no bajas de ese valor, el filtrado colaborativo no aporta») quedaba demasiado baja. El listón honesto es <b>0,9051</b>, y es el que ya usan los documentos del proyecto. La factorización matricial lo supera con un margen real del <b>6,5 %</b> (0,8460) — ese es el número que hay que defender.</p>
-  </div>
+  <h2>El listón medido con estos datos</h2>
+  <p class="sub">La media más sesgos obtiene RMSE 0,8677 en prueba; la factorización matricial obtiene 0,8478.</p>
+  <div class="note warn"><h4><span class="dot"></span>Regla de descarte</h4><p>El modelo de factores reduce el RMSE un 2,3 % frente a los sesgos. Los valores salen de <code>baselines.json</code> y <code>mf_numpy.json</code>, generados con ml-latest-small.</p></div>
 </section>
 
 <section>
   <h2>Con qué se miden</h2>
-  <p class="sub">Las dos métricas se calculan sobre el mismo conjunto de prueba, después de recortar las predicciones a [1, 5].</p>
+  <p class="sub">Las dos métricas se calculan sobre el mismo conjunto de prueba, después de recortar las predicciones a [0,5, 5].</p>
   <div class="formula">
     <div class="eq">
       <span>RMSE =</span>
@@ -629,7 +574,7 @@ footer code{font-size:12px;color:var(--ink-2)}
       <span style="color:var(--muted);padding-left:16px">error medio, sin castigo extra</span>
     </div>
     <div class="where">
-      <span><b>T</b> = conjunto de prueba, <b>|T|</b> = 200.042</span>
+      <span><b>T</b> = conjunto de prueba, <b>|T|</b> = 20.168</span>
       <span>ambas se leen <b>en estrellas</b></span>
       <span>la decisión se toma con <b>RMSE</b></span>
     </div>
@@ -640,15 +585,15 @@ footer code{font-size:12px;color:var(--ink-2)}
 <section>
   <h2>Cómo se defiende</h2>
   <blockquote class="quote">
-    <p>«Fijamos el umbral <b>RMSE ≤ 0,90</b> antes de modelar. Construimos cuatro modelos de referencia sobre la misma partición 80/20, con semilla fija y sin tocar el conjunto de prueba. La media global da 1,1167; recomendar por popularidad, que es la práctica actual, da <b>0,9765</b>; y el mejor modelo sin personalizar —media más sesgos de usuario y de película— da <b>0,9051</b>.</p>
-    <p>Ese 0,9051 es nuestro criterio de descarte: si el filtrado colaborativo no baja de ahí, no aporta nada sobre dos medias bien calculadas y no se justifica ponerlo en producción.»</p>
+    <p>«Fijamos el umbral <b>RMSE ≤ 0,90</b> antes de modelar. Construimos cuatro modelos de referencia sobre la misma partición 80/20, con semilla fija y sin tocar el conjunto de prueba. La media global da 1,0368; recomendar por popularidad, que es el ranking de referencia, da <b>0,9730</b>; y el mejor modelo sin personalizar :media más sesgos de usuario y de película: da <b>0,8677</b>.</p>
+    <p>Ese 0,8677 es nuestro criterio de descarte: si el filtrado colaborativo no baja de ahí, no aporta nada sobre dos medias bien calculadas y no se justifica ponerlo en producción.»</p>
     <cite>Punto 3.3 · Métrica principal del proyecto</cite>
   </blockquote>
 </section>
 
 <footer>
-  <span>Reproducible con <code>./.venv/bin/python 04_modelado/scripts/03a_baselines.py</code></span>
-  <span>MovieLens 1M · GroupLens, Universidad de Minnesota</span>
+  <span>Resultados: <code>WRANGLER/04_modelado/resultados/baselines.json</code> y <code>mf_numpy.json</code></span>
+  <span>MovieLens ml-latest-small · GroupLens, Universidad de Minnesota</span>
 </footer>
 
 </div>

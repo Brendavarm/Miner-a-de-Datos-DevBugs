@@ -18,7 +18,7 @@
   --si-soft:#e4edf7;
   --no:#ab3527;        /* lo que no es */
   --no-soft:#fae9e6;
-  --key:#8f5f06;       /* el 57,5% */
+  --key:#8f5f06;       /* el 48,2% */
   --key-soft:#fbf0dc;
   --ok:#1f6b4e;
 
@@ -446,10 +446,10 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
       <h1>Variable a optimizar <em>y</em> métrica principal</h1>
     </div>
     <div class="top-meta">
-      <div>calificaciones<b>1.000.209</b></div>
-      <div>usuarios<b>6.040</b></div>
-      <div>películas<b>3.706</b></div>
-      <div>matriz vacía<b>95,53 %</b></div>
+      <div>calificaciones<b>100.836</b></div>
+      <div>usuarios<b>610</b></div>
+      <div>películas<b>9.724</b></div>
+      <div>matriz vacía<b>98,30 %</b></div>
     </div>
   </div>
 </div>
@@ -465,10 +465,10 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
   <div class="vs rv">
     <div class="bad">
       <div class="vs-tag"><span>✕</span>No es la variable a optimizar</div>
-      <p class="vs-big">57,5 % de votos 4★ y 5★</p>
-      <p class="vs-sub">575.281 de 1.000.209 calificaciones</p>
+      <p class="vs-big">48,2 % de votos con nota ≥ 4★</p>
+      <p class="vs-sub">48.580 de 100.836 calificaciones</p>
       <ul>
-        <li><b>No se puede mejorar.</b> Es un hecho histórico: la gente ya votó así entre 2000 y 2003. Ningún modelo lo cambia.</li>
+        <li><b>No se puede mejorar.</b> Resume las notas observadas entre 1996 y 2018. Ningún modelo lo cambia.</li>
         <li><b>No es una variable, es un estadístico.</b> Resume la distribución; no es un valor que el modelo prediga celda a celda.</li>
         <li><b>Subirlo no sería bueno.</b> Significaría conseguir que la gente puntúe más alto, no recomendar mejor.</li>
       </ul>
@@ -476,18 +476,18 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
     <div class="good">
       <div class="vs-tag"><span>✓</span>Esto sí</div>
       <p class="vs-big">rating &nbsp;r(u,i)</p>
-      <p class="vs-sub">21.384.031 celdas vacías por predecir · métrica: RMSE</p>
+      <p class="vs-sub">5.830.804 celdas vacías por predecir · métrica: RMSE</p>
       <ul>
-        <li><b>Es una variable real:</b> la columna <code>rating</code> del dataset, numérica, de 1 a 5 estrellas.</li>
+        <li><b>Es una variable real:</b> la columna <code>rating</code> del CSV, numérica, de 0,5 a 5 estrellas.</li>
         <li><b>Sí se optimiza:</b> minimizando el error entre lo predicho y lo real, medido en estrellas.</li>
-        <li><b>Tiene umbral comprobable:</b> RMSE ≤ 0,90 sobre 200.042 calificaciones de prueba.</li>
+        <li><b>Tiene umbral comprobable:</b> RMSE ≤ 0,90 sobre 20.168 calificaciones de prueba.</li>
       </ul>
     </div>
   </div>
 
   <div class="alert k rv" style="margin-top:16px">
-    <h3>El 57,5 % no se tira — cambia de papel</h3>
-    <p>Pasa de ser «la variable a mejorar» a ser el <b>umbral de relevancia</b>: es lo que define qué cuenta como acierto. Sin esa definición no se puede medir Precisión@10, que es el criterio de ranking del proyecto. Ver bloque <b>04</b>.</p>
+    <h3>El 48,2 %: contexto del umbral de relevancia</h3>
+    <p>Resume la proporción de notas que cumplen el <b>umbral de relevancia</b> (rating ≥ 4). El umbral define qué cuenta como acierto. Sin esa definición no se puede medir Precisión@10. Ver bloque <b>05</b>.</p>
   </div>
 </section>
 </div>
@@ -502,8 +502,8 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
   </div>
 
   <div class="var-hero rv">
-    <div class="var-eq">r&#770;(u,i) &#8712; [1, 5]</div>
-    <p class="var-say">La nota que el usuario <b>u</b> le daría a la película <b>i</b> <b>que todavía no ha visto</b>. Es la columna <code>rating</code> del dataset, y hay que estimarla 21.384.031 veces.</p>
+    <div class="var-eq">r&#770;(u,i) &#8712; [0,5, 5]</div>
+    <p class="var-say">La nota que el usuario <b>u</b> le daría a la película <b>i</b> <b>que todavía no ha calificado</b>. Es la columna <code>rating</code> de ratings.csv, y hay que estimarla 5.830.804 veces.</p>
     <div class="var-dir"><b>Minimizar</b><span>el error, no la nota</span></div>
   </div>
 
@@ -511,16 +511,16 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
     <div class="card">
       <h3>La matriz usuario &times; película &mdash; dónde vive la variable</h3>
       <div class="mx-wrap">
-        <div class="mx-y">6.040 usuarios</div>
+        <div class="mx-y">610 usuarios</div>
         <div class="mx" id="mx"></div>
-        <div class="mx-x">3.706 películas</div>
+        <div class="mx-x">9.724 películas</div>
       </div>
       <div class="mx-leg">
-        <div><s style="background:var(--si-soft)"></s>Con nota &mdash; sirven para entrenar &nbsp;<b>1.000.209 · 4,47 %</b></div>
-        <div><s style="background:var(--no-soft)"></s>Vacías &mdash; hay que predecirlas &nbsp;<b>21.384.031 · 95,53 %</b></div>
+        <div><s style="background:var(--si-soft)"></s>Con nota &mdash; disponibles para dividir &nbsp;<b>100.836 · 1,70 %</b></div>
+        <div><s style="background:var(--no-soft)"></s>Vacías &mdash; hay que predecirlas &nbsp;<b>5.830.804 · 98,30 %</b></div>
         <div><s style="background:var(--key-soft);outline:1.5px solid var(--key)"></s>Una celda cualquiera &mdash; lo que hace el modelo</div>
       </div>
-      <p class="mx-note">Esquema: se dibuja 1 de cada 4 celdas ocupada para que se lea. La densidad real es del 4,47 % &mdash; de cada 22 celdas, solo 1 tiene nota.</p>
+      <p class="mx-note">Esquema: se dibuja 1 de cada 4 celdas ocupada para que se lea. La densidad real es del 1,70 % &mdash; de cada 59 celdas, aproximadamente 1 tiene nota.</p>
     </div>
 
     <div class="var-col">
@@ -528,10 +528,10 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
         <h3>Ficha técnica</h3>
         <dl class="spec-rows">
           <div><dt>Nombre</dt><dd class="mono">rating &middot; r(u,i)</dd></div>
-          <div><dt>Tipo</dt><dd>Numérica. Discreta en los datos (1&ndash;5 enteros), <b>continua en la predicción</b> (p. ej. 4,23)</dd></div>
-          <div><dt>Rango</dt><dd class="mono">[1, 5] estrellas</dd></div>
-          <div><dt>Fichero</dt><dd class="mono">datos_limpios.parquet</dd></div>
-          <div><dt>Columna</dt><dd class="mono">'rating' (3.ª)</dd></div>
+          <div><dt>Tipo</dt><dd>Numérica. Discreta en los datos (0,5&ndash;5 en medias estrellas), <b>continua en la predicción</b> (p. ej. 4,23)</dd></div>
+          <div><dt>Rango</dt><dd class="mono">[0,5, 5] estrellas</dd></div>
+          <div><dt>Fichero</dt><dd class="mono">ratings.csv</dd></div>
+          <div><dt>Columna</dt><dd class="mono">'rating' (columna de ratings.csv)</dd></div>
           <div><dt>Unidad</dt><dd>La celda (u, i): un par usuario&ndash;película</dd></div>
           <div><dt>Métrica</dt><dd>RMSE, en estrellas &nbsp;<span style="color:var(--muted)">&rarr; bloque 03</span></dd></div>
         </dl>
@@ -542,7 +542,7 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
       </div>
       <div class="alert">
         <h3>Variable <i>a</i> optimizar &ne; variable optimizada</h3>
-        <p>El <code>rating</code> observado es la materia prima que ya tenemos. La variable <b>optimizada</b> es <code>r&#770;(u,i)</code>, la salida del modelo, y todavía no existe: sale en la Fase&nbsp;4.</p>
+        <p>El <code>rating</code> observado es la materia prima. La salida estimada es <code>r&#770;(u,i)</code>, que calcula el modelo de la Fase&nbsp;4.</p>
       </div>
     </div>
   </div>
@@ -555,7 +555,7 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
   <div class="sec-head">
     <span class="sec-n">03</span>
     <h2>La métrica principal</h2>
-    <p>RMSE, medido en estrellas sobre las 200.042 calificaciones de prueba.</p>
+    <p>RMSE, medido en estrellas sobre las 20.168 calificaciones de prueba.</p>
   </div>
 
   <div class="split rv">
@@ -564,7 +564,7 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
       <div class="f f-big">RMSE = √( (1/|T|) · Σ ( r(u,i) − r̂(u,i) )² )<em>castiga los errores grandes</em></div>
       <div class="f">MAE&nbsp; = (1/|T|) · Σ | r(u,i) − r̂(u,i) |<em>secundaria, más fácil de explicar</em></div>
       <p style="color:var(--ink-2);font-size:14.6px;margin-top:14px">
-        <b>Se lee en estrellas.</b> Un RMSE de 0,846 significa que el sistema se equivoca, de media, en 0,85 estrellas. Sobre un recorrido de 4 puntos, un 21,2 % del rango.</p>
+        <b>Se lee en estrellas.</b> El modelo obtiene RMSE 0,8478 estrellas. El desvío absoluto promedio es el MAE: 0,6482 estrellas.</p>
       <p style="color:var(--ink-2);font-size:14.6px;margin-top:10px">
         <b>Por qué RMSE y no MAE:</b> al elevar al cuadrado, confundir un 5 con un 2 pesa <b>nueve veces</b> más que confundir un 5 con un 4. El fallo grave no es afinar mal: es poner delante algo que la persona va a detestar.</p>
     </div>
@@ -572,9 +572,9 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
     <div class="card">
       <h3>Cómo se calcula, paso a paso</h3>
       <ul style="counter-reset:s;list-style:none;padding:0">
-        <li style="display:flex;gap:11px"><span class="mono" style="color:var(--si);font-weight:700">1</span><span>Partir en <b>80 % entrenamiento / 20 % prueba</b> (800.167 / 200.042), con semilla fija 42.</span></li>
+        <li style="display:flex;gap:11px"><span class="mono" style="color:var(--si);font-weight:700">1</span><span>Partir en <b>80 % entrenamiento / 20 % prueba</b> (80.668 / 20.168), con semilla fija 42.</span></li>
         <li style="display:flex;gap:11px"><span class="mono" style="color:var(--si);font-weight:700">2</span><span>Entrenar <b>solo</b> con el 80 %. El test no se toca nunca.</span></li>
-        <li style="display:flex;gap:11px"><span class="mono" style="color:var(--si);font-weight:700">3</span><span>Predecir <code>r̂</code> para cada par del test y <b>recortar a [1, 5]</b>.</span></li>
+        <li style="display:flex;gap:11px"><span class="mono" style="color:var(--si);font-weight:700">3</span><span>Predecir <code>r̂</code> para cada par del test y <b>recortar a [0,5, 5]</b>.</span></li>
         <li style="display:flex;gap:11px"><span class="mono" style="color:var(--si);font-weight:700">4</span><span>Restar real − predicho, <b>elevar al cuadrado</b>, promediar.</span></li>
         <li style="display:flex;gap:11px"><span class="mono" style="color:var(--si);font-weight:700">5</span><span>Raíz cuadrada, para volver a <b>estrellas</b>.</span></li>
       </ul>
@@ -589,29 +589,29 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
     <h3>Contra qué se compara — la escalera de baselines <span style="color:var(--ok);font-weight:600;letter-spacing:0;text-transform:none">· todos medidos por nosotros</span></h3>
     <div class="bars">
       <div class="bar" style="--c:var(--no)">
-        <div class="bar-l">Media global<small>predice 3,58 a todo el mundo</small></div>
-        <div class="bar-t"><i style="--w:89.6%"></i></div><div class="bar-v">1,1167</div>
+        <div class="bar-l">Media global<small>predice 3,4999 a todo el mundo</small></div>
+        <div class="bar-t"><i style="--w:89.6%"></i></div><div class="bar-v">1,0368</div>
       </div>
       <div class="bar" style="--c:var(--no)">
         <div class="bar-l">Media por usuario<small>reconoce quién es exigente</small></div>
-        <div class="bar-t"><i style="--w:63.9%"></i></div><div class="bar-v">1,0344</div>
+        <div class="bar-t"><i style="--w:45%"></i></div><div class="bar-v">0,9367</div>
       </div>
       <div class="bar" style="--c:var(--key)">
-        <div class="bar-l">Media por película<small>= recomendar por popularidad · <b>la práctica actual</b></small></div>
-        <div class="bar-t"><i style="--w:45.8%"></i></div><div class="bar-v">0,9765</div>
+        <div class="bar-l">Media por película<small>= recomendar por popularidad · <b>el ranking de referencia</b></small></div>
+        <div class="bar-t"><i style="--w:61%"></i></div><div class="bar-v">0,9730</div>
       </div>
       <div class="bar" style="--c:var(--ok)">
         <div class="bar-l">Media + sesgos<small>μ + b<sub>u</sub> + b<sub>i</sub> · <b>el listón real a superar</b></small></div>
-        <div class="bar-t"><i style="--w:23.5%"></i></div><div class="bar-v">0,9051</div>
+        <div class="bar-t"><i style="--w:14%"></i></div><div class="bar-v">0,8677</div>
       </div>
       <div class="bar" style="--c:var(--si)">
-        <div class="bar-l">Factorización matricial<small><b>nuestro modelo, entrenado y medido</b> · 64 factores, parada en la época 22</small></div>
-        <div class="bar-t"><i style="--w:5.0%"></i></div><div class="bar-v">0,8460</div>
+        <div class="bar-l">Factorización matricial<small><b>nuestro modelo, entrenado y medido</b> · 64 factores, mejor época de validación 28</small></div>
+        <div class="bar-t"><i style="--w:5.0%"></i></div><div class="bar-v">0,8478</div>
       </div>
     </div>
     <div class="alert" style="margin-top:18px;box-shadow:none">
-      <h3>Corrección respecto al informe entregado</h3>
-      <p>El informe fija <b>0,930</b> para el baseline de sesgos. Ese número sale de calcular <code>b<sub>u</sub></code> y <code>b<sub>i</sub></code> por separado, lo que cuenta dos veces la misma desviación. La formulación estándar da <b>0,9051</b>. Consecuencia: la regla de descarte estaba puesta demasiado baja. Los documentos del proyecto ya usan 0,9051, y nuestro modelo lo supera por un <b>6,5 %</b>.</p>
+      <h3>Listón medido con 100K</h3>
+      <p>Con ml-latest-small, media más sesgos da <b>0,8677</b> y el modelo de factores da <b>0,8478</b> en RMSE. La mejora medida es del <b>2,3 %</b> (baselines.json y mf_numpy.json).</p>
     </div>
   </div>
 </section>
@@ -623,134 +623,53 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
   <div class="sec-head">
     <span class="sec-n">04</span>
     <h2>Antes y después de optimizar</h2>
-    <p>Resultados reales, medidos por nosotros sobre las 200.042 calificaciones de prueba.</p>
+    <p>Resultados agregados de la prueba 100K y la evaluación Top-10.</p>
   </div>
-
   <div class="delta rv">
     <div class="delta-c">
-      <h4>RMSE &mdash; error de predicción</h4>
-      <div class="delta-v"><span class="from">0,9765</span><span class="ar">&rarr;</span><span class="to">0,8460</span></div>
-      <div class="delta-g">&minus;13,4 % de error &nbsp;<s>· 0,13 estrellas menos de desvío</s></div>
+      <h4>RMSE, error cuadrático</h4>
+      <div class="delta-v"><span class="from">0,9730</span><span class="ar">&rarr;</span><span class="to">0,8478</span></div>
+      <div class="delta-g">12,9 % menos que la media por película</div>
     </div>
     <div class="delta-c">
-      <h4>MAE &mdash; desviación media</h4>
-      <div class="delta-v"><span class="from">0,7800</span><span class="ar">&rarr;</span><span class="to">0,6652</span></div>
-      <div class="delta-g">&minus;14,7 % de error</div>
+      <h4>MAE, desvío absoluto</h4>
+      <div class="delta-v"><span class="from">0,7520</span><span class="ar">&rarr;</span><span class="to">0,6482</span></div>
+      <div class="delta-g">13,8 % menos</div>
     </div>
     <div class="delta-c">
-      <h4>Precisión@10 &mdash; calidad del ranking</h4>
-      <div class="delta-v"><span class="from">77,19 %</span><span class="ar">&rarr;</span><span class="to">80,71 %</span></div>
-      <div class="delta-g">+3,5 puntos &nbsp;<s>· sobre 4.368 usuarios</s></div>
+      <h4>Precisión@10, calidad del ranking</h4>
+      <div class="delta-v"><span class="from">64,68 %</span><span class="ar">&rarr;</span><span class="to">68,15 %</span></div>
+      <div class="delta-g">+3,47 puntos en 389 usuarios evaluados</div>
     </div>
   </div>
-
-  <div class="ab rv">
-    <div class="ab-col old">
-      <div class="ab-h">
-        <b>Antes<small>Top-10 por popularidad &mdash; la práctica actual</small></b>
-        <span class="ab-sc">3/10</span>
-      </div>
-      <div class="ab-hd"><span></span><span>Película recomendada</span><span>Pred.</span><span>Real</span></div>
-      <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Shawshank Redemption, The (1994)</span><span class="ab-p">4,56</span><span class="ab-r">2★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Schindler's List (1993)</span><span class="ab-p">4,51</span><span class="ab-r">2★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Maltese Falcon, The (1941)</span><span class="ab-p">4,39</span><span class="ab-r">4★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Bridge on the River Kwai, The (1957)</span><span class="ab-p">4,38</span><span class="ab-r">3★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Treasure of the Sierra Madre, The (1948)</span><span class="ab-p">4,33</span><span class="ab-r">3★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Life Is Beautiful (1997)</span><span class="ab-p">4,33</span><span class="ab-r">3★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Pulp Fiction (1994)</span><span class="ab-p">4,3</span><span class="ab-r">3★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">It Happened One Night (1934)</span><span class="ab-p">4,28</span><span class="ab-r">5★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Killing Fields, The (1984)</span><span class="ab-p">4,26</span><span class="ab-r">3★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Thin Blue Line, The (1988)</span><span class="ab-p">4,24</span><span class="ab-r">5★</span></div>
-    </div>
-    <div class="ab-col new">
-      <div class="ab-h">
-        <b>Después<small>Top-10 del modelo entrenado</small></b>
-        <span class="ab-sc">5/10</span>
-      </div>
-      <div class="ab-hd"><span></span><span>Película recomendada</span><span>Pred.</span><span>Real</span></div>
-      <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Touch of Evil (1958)</span><span class="ab-p">3,87</span><span class="ab-r">3★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Treasure of the Sierra Madre, The (1948)</span><span class="ab-p">3,86</span><span class="ab-r">3★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">This Is Spinal Tap (1984)</span><span class="ab-p">3,85</span><span class="ab-r">4★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Manhattan (1979)</span><span class="ab-p">3,76</span><span class="ab-r">4★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">It Happened One Night (1934)</span><span class="ab-p">3,74</span><span class="ab-r">5★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Who's Afraid of Virginia Woolf? (1966)</span><span class="ab-p">3,73</span><span class="ab-r">3★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Maltese Falcon, The (1941)</span><span class="ab-p">3,71</span><span class="ab-r">4★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Psycho (1960)</span><span class="ab-p">3,64</span><span class="ab-r">3★</span></div>
-            <div class="ab-row hit"><s class="ab-mk">✓</s><span class="ab-t">Great Dictator, The (1940)</span><span class="ab-p">3,62</span><span class="ab-r">4★</span></div>
-            <div class="ab-row"><s class="ab-mk">✕</s><span class="ab-t">Welcome to the Dollhouse (1995)</span><span class="ab-p">3,62</span><span class="ab-r">3★</span></div>
-    </div>
-  </div>
-
-  <div class="g3 rv" style="margin-top:16px">
-    <div class="alert g">
-      <h3>1 · El modelo aprende su escala</h3>
-      <p>El usuario 1150 puntúa bajo: su media es <b>2,61</b> frente al 3,58 global. La popularidad le predice 4,3&ndash;4,6 y él pone 2 y 3. El modelo predice <b>3,6&ndash;3,9</b>: sabe que es exigente y baja sus estimaciones.</p>
-    </div>
-    <div class="alert g">
-      <h3>2 · Y aprende su gusto</h3>
-      <p>El «después» cambia de títulos: <i>Touch of Evil</i>, <i>Manhattan</i>, <i>The Great Dictator</i>, <i>Spinal Tap</i>. Cine de autor y clásicos, que es justo lo que este usuario puntúa con 5 estrellas. Eso <b>no lo puede hacer ninguna media</b>.</p>
-    </div>
-    <div class="alert">
-      <h3>3 · Sigue fallando la mitad</h3>
-      <p>5 de 10 no es un triunfo: acierta 2 más que la popularidad. Es una <b>mejora medible, no magia</b>. Decirlo así en la defensa vale más que exagerar el resultado.</p>
-    </div>
+  <div class="alert rv" style="margin-top:16px">
+    <h3>Cómo se obtuvieron</h3>
+    <p>RMSE y MAE: <code>baselines.json</code> y <code>mf_numpy.json</code>. Precisión@10: <code>antes_despues.json</code>, sobre 389 usuarios con al menos 10 notas en prueba. La cobertura de catálogo aún no está medida.</p>
   </div>
 </section>
 </div>
 
-<!-- ==================== 05 · EL 57,5 % ==================== -->
+<!-- ==================== 05 · EL 48,2 % ==================== -->
 <div class="band">
 <section>
   <div class="sec-head">
     <span class="sec-n">05</span>
-    <h2>Para qué sirve el 57,5 %</h2>
-    <p>No es la variable a optimizar, pero es un dato crítico del proyecto. Aquí está su papel real.</p>
+    <h2>Para qué sirve el 48,2 %</h2>
+    <p>Es una descripción de las notas observadas y da contexto al umbral de relevancia.</p>
   </div>
-
   <div class="g3 rv">
     <div class="card" style="border-left:4px solid var(--key)">
       <h3>Qué es exactamente</h3>
-      <div class="f" style="font-size:15px;white-space:normal">575.281 / 1.000.209 = <b style="color:var(--key)">57,52 %</b></div>
-      <p>El 34,89 % son 4★ y el 22,63 % son 5★. La gente califica <b>lo que elige ver</b>, así que casi todo lo que puntúa le gusta.</p>
+      <div class="f" style="font-size:15px;white-space:normal">48.580 / 100.836 = <b style="color:var(--key)">48,18 %</b></div>
+      <p>Son las calificaciones de 4, 4,5 o 5 estrellas. Una nota de 3,5 queda fuera.</p>
     </div>
     <div class="card" style="border-left:4px solid var(--key)">
-      <h3>Su papel: umbral de relevancia</h3>
-      <p>Define qué cuenta como <b>acierto</b>: una recomendación es buena si el usuario le habría puesto <b>4 o más</b>. Sin esta definición, Precisión@10 no se puede calcular.</p>
+      <h3>Umbral de relevancia</h3>
+      <p>Una recomendación se considera relevante si su nota observada es <b>4 o más</b>. Así se define Precisión@10.</p>
     </div>
     <div class="card" style="border-left:4px solid var(--key)">
-      <h3>Y avisa de un peligro</h3>
-      <p>Como más de la mitad de los votos son altos, <b>el suelo del ranking está altísimo</b>. Cualquier objetivo de precisión por debajo del 60 % lo cumple hasta un modelo roto.</p>
-    </div>
-  </div>
-
-  <div class="split rv" style="margin-top:16px">
-    <div class="card">
-      <h3>Precisión@10 medida sobre el test <span style="letter-spacing:0;text-transform:none;font-weight:400">· 4.368 usuarios con ≥ 10 calificaciones</span></h3>
-      <div class="bars">
-        <div class="bar" style="--c:var(--no)">
-          <div class="bar-l">Recomendar al azar<small>el suelo absoluto</small></div>
-          <div class="bar-t"><i style="--w:60.83%"></i></div><div class="bar-v">60,83 %</div>
-        </div>
-        <div class="bar" style="--c:var(--key)">
-          <div class="bar-l">Por popularidad<small>las más votadas</small></div>
-          <div class="bar-t"><i style="--w:71.70%"></i></div><div class="bar-v">71,70 %</div>
-        </div>
-        <div class="bar" style="--c:var(--ok)">
-          <div class="bar-l">Por media de la película<small><b>el listón real del ranking</b></small></div>
-          <div class="bar-t"><i style="--w:77.19%"></i></div><div class="bar-v">77,19 %</div>
-        </div>
-        <div class="bar" style="--c:var(--si)">
-          <div class="bar-l">Objetivo propuesto<small>lo que hay que comprometer</small></div>
-          <div class="bar-t"><i style="--w:80%"></i></div><div class="bar-v">≥ 80 %</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="alert">
-      <h3>Error grave en el informe entregado</h3>
-      <p>La sección 5.2 dice: <i>«alcanzar un nivel de predicción superior al <b>9.0 %</b>»</i>.</p>
-      <p style="margin-top:10px">Ese objetivo está <b>51 puntos por debajo del azar</b>. Recomendando aleatoriamente ya se acierta el 60,83 %. Tal como está, lo cumple cualquier cosa, incluso un modelo que no funcione.</p>
-      <p style="margin-top:10px"><b>Debe decir: Precisión@10 ≥ 80 %</b>, que sí exige superar el 77,19 % de la media por película.</p>
+      <h3>Comparación medida</h3>
+      <p>Sobre 389 usuarios, el modelo logra <b>68,15 %</b> de Precisión@10 frente al <b>64,68 %</b> del ranking por media de película.</p>
     </div>
   </div>
 </section>
@@ -762,62 +681,15 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
   <div class="sec-head">
     <span class="sec-n">06</span>
     <h2>Guion de la charla</h2>
-    <p>Seis intervenciones, unos 5 minutos. Lo entrecomillado es para decirlo tal cual.</p>
+    <p>Seis intervenciones breves. Lo entrecomillado es para decirlo tal cual.</p>
   </div>
-
   <div class="script rv">
-    <div class="beat">
-      <div class="beat-h"><span class="beat-n">1</span><h4>Abrir corrigiendo</h4><span class="beat-t">~30 s</span></div>
-      <div class="beat-b">
-        <p class="say">«Antes de nada, nos corregimos en algo que dijimos la vez pasada. Mencionamos el 57,5 % de votos de 4 y 5 estrellas como la variable a mejorar. No lo es: ese porcentaje es un hecho histórico del dataset y ningún modelo lo puede cambiar.»</p>
-        <p class="hint"><b>Por qué abrir así:</b> corregirse uno mismo antes de que te corrijan demuestra que revisasteis el trabajo. Suma, no resta.</p>
-      </div>
-    </div>
-
-    <div class="beat">
-      <div class="beat-h"><span class="beat-n">2</span><h4>Dar la variable correcta</h4><span class="beat-t">~45 s</span></div>
-      <div class="beat-b">
-        <p class="say">«La variable a optimizar es el <b>rating</b>, r de u coma i: la nota de 1 a 5 que un usuario le daría a una película que todavía no ha visto. Son las 21.384.031 celdas vacías de una matriz de 6.040 usuarios por 3.706 películas, que está vacía al 95,53 %.»</p>
-        <p class="say">«Y se optimiza <b>minimizando el error</b>, no maximizando la nota. Predecir cinco estrellas a todo el mundo sería el peor modelo posible.»</p>
-        <p class="hint"><b>Apoyo visual:</b> el bloque 02, la matriz con celdas vacías.</p>
-      </div>
-    </div>
-
-    <div class="beat">
-      <div class="beat-h"><span class="beat-n">3</span><h4>Definir la métrica</h4><span class="beat-t">~60 s</span></div>
-      <div class="beat-b">
-        <p class="say">«La métrica principal es el <b>RMSE</b>: la raíz del promedio de los errores al cuadrado, medida sobre 200.042 calificaciones que el modelo nunca vio. Se lee en estrellas: un RMSE de 0,87 significa que nos equivocamos en 0,87 estrellas de media.»</p>
-        <p class="say">«Usamos RMSE y no MAE porque eleva al cuadrado: confundir un 5 con un 2 pesa nueve veces más que confundir un 5 con un 4. En un recomendador el error grave es poner delante algo que la persona va a detestar.»</p>
-        <p class="hint"><b>Si preguntan por el MAE:</b> se reporta también, pero la decisión se toma con RMSE.</p>
-      </div>
-    </div>
-
-    <div class="beat">
-      <div class="beat-h"><span class="beat-n">4</span><h4>Rescatar el 57,5 %</h4><span class="beat-t">~50 s</span></div>
-      <div class="beat-b">
-        <p class="say">«El 57,5 % sigue siendo importante, pero en otro papel: es el <b>umbral de relevancia</b>. Define qué cuenta como acierto — una recomendación es buena si el usuario le habría puesto 4 o más. Sin esa definición no podemos medir la Precisión@10.»</p>
-        <p class="say">«Y además nos avisó de algo: como más de la mitad de los votos son altos, el suelo está muy arriba. Lo medimos: recomendando <b>al azar</b> ya se acierta el 60,8 %, y por media de película el 77,2 %.»</p>
-        <p class="hint"><b>Este es el momento fuerte.</b> Aquí se ve que no solo corregisteis: medisteis el suelo antes de poner el listón.</p>
-      </div>
-    </div>
-
-    <div class="beat">
-      <div class="beat-h"><span class="beat-n">5</span><h4>Enseñar la escalera</h4><span class="beat-t">~70 s</span></div>
-      <div class="beat-b">
-        <p class="say">«Para saber si el modelo aporta algo construimos cuatro modelos de referencia sobre la misma partición. La media global da 1,1167. Recomendar por popularidad, que es lo que se hace hoy, da <b>0,9765</b>. Y el mejor sin personalizar, media más sesgos, da <b>0,9051</b>.»</p>
-        <p class="say">«Ese 0,9051 es nuestra <b>regla de descarte</b>: si el filtrado colaborativo no baja de ahí, no aporta nada sobre dos medias bien calculadas y lo diremos en el informe.»</p>
-        <p class="hint"><b>Ojo:</b> el informe entregado dice 0,930. Menciona que lo recalculasteis y por qué.</p>
-      </div>
-    </div>
-
-    <div class="beat">
-      <div class="beat-h"><span class="beat-n">6</span><h4>Cerrar con lo que falta</h4><span class="beat-t">~35 s</span></div>
-      <div class="beat-b">
-        <p class="say">«Ya tenemos un modelo entrenado: una factorización matricial de 64 factores, implementada por nosotros. Da <b>RMSE 0,8460</b>, que mejora un 13,4 % la práctica actual y un 6,5 % el baseline de sesgos. Supera el umbral de 0,90 que nos habíamos puesto.»</p>
-        <p class="say">«Y la curva nos dio el criterio de parada: el error en <b>validación</b> baja hasta la época 22 y a partir de ahí <b>vuelve a subir</b> por sobreajuste. Ahí paramos. El test lo medimos una sola vez, al final.»</p>
-        <p class="hint"><b>Lo que queda:</b> validación cruzada de 5 particiones y mejorar la cobertura de catálogo (hoy el Top-10 cubre el 19,0 %; el objetivo es 31,9 %).</p>
-      </div>
-    </div>
+    <div class="beat"><div class="beat-h"><span class="beat-n">1</span><h4>Plantear el problema</h4></div><div class="beat-b"><p class="say">«Tenemos 100.836 calificaciones de 610 usuarios. Queremos ordenar películas para cada persona en vez de repetir el mismo ranking.»</p></div></div>
+    <div class="beat"><div class="beat-h"><span class="beat-n">2</span><h4>Dar la variable correcta</h4></div><div class="beat-b"><p class="say">«La variable es el rating: la nota entre 0,5 y 5 que estimamos para un par usuario-película sin calificación. La matriz de 610 por 9.724 tiene 5.830.804 celdas sin nota.»</p></div></div>
+    <div class="beat"><div class="beat-h"><span class="beat-n">3</span><h4>Definir la métrica</h4></div><div class="beat-b"><p class="say">«Evaluamos con RMSE en 20.168 calificaciones reservadas. El modelo obtiene 0,8478; su MAE, el desvío absoluto promedio, es 0,6482 estrellas.»</p></div></div>
+    <div class="beat"><div class="beat-h"><span class="beat-n">4</span><h4>Explicar relevancia</h4></div><div class="beat-b"><p class="say">«Definimos Me gusta como rating de 4 o más. El 48,18 % de las notas observadas cumple ese umbral; una nota de 3,5 no cuenta.»</p></div></div>
+    <div class="beat"><div class="beat-h"><span class="beat-n">5</span><h4>Enseñar la escalera</h4></div><div class="beat-b"><p class="say">«La media por película obtiene RMSE 0,9730 y media más sesgos 0,8677. El modelo de factores baja a 0,8478: mejora un 12,9 % al ranking por película y un 2,3 % a los sesgos.»</p></div></div>
+    <div class="beat"><div class="beat-h"><span class="beat-n">6</span><h4>Cerrar con lo pendiente</h4></div><div class="beat-b"><p class="say">«En Precisión@10 pasamos de 64,68 % a 68,15 % sobre 389 usuarios. Aún hay que medir la cobertura de catálogo y repetir la validación con otras particiones.»</p></div></div>
   </div>
 </section>
 </div>
@@ -825,33 +697,28 @@ footer .band-in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-b
 <!-- ==================== 07 · CHULETA ==================== -->
 <div class="band">
 <section>
-  <div class="sec-head">
-    <span class="sec-n">07</span>
-    <h2>Chuleta</h2>
-    <p>Los números que hay que tener en la cabeza durante la exposición.</p>
-  </div>
+  <div class="sec-head"><span class="sec-n">07</span><h2>Chuleta</h2><p>Los números que hay que tener en la cabeza durante la exposición.</p></div>
   <div class="g4 rv">
     <div class="fig"><b>r(u,i)</b><span>la variable a optimizar</span></div>
     <div class="fig"><b>RMSE</b><span>la métrica principal, en estrellas</span></div>
-    <div class="fig k"><b>57,5 %</b><span>votos 4★ o 5★ → umbral de relevancia</span></div>
-    <div class="fig n"><b>21.384.031</b><span>celdas a predecir (95,53 %)</span></div>
-    <div class="fig"><b>0,9765</b><span>RMSE de la práctica actual</span></div>
-    <div class="fig o"><b>0,9051</b><span>listón real · regla de descarte</span></div>
-    <div class="fig"><b>0,90</b><span>umbral comprometido en el informe</span></div>
-    <div class="fig n"><b>60,83 %</b><span>Precisión@10 recomendando al azar</span></div>
-    <div class="fig"><b>77,19 %</b><span>Precisión@10 por media de película</span></div>
-    <div class="fig o"><b>80,71 %</b><span>Precisión@10 de nuestro modelo</span></div>
-    <div class="fig"><b>≥ 80 %</b><span>objetivo de ranking propuesto</span></div>
-    <div class="fig o"><b>0,8460</b><span>RMSE de nuestro modelo entrenado</span></div>
-    <div class="fig"><b>200.042</b><span>calificaciones de prueba</span></div>
+    <div class="fig k"><b>48,18 %</b><span>notas de 4★ o más</span></div>
+    <div class="fig n"><b>5.830.804</b><span>celdas sin nota (98,30 %)</span></div>
+    <div class="fig"><b>0,9730</b><span>RMSE de la media por película</span></div>
+    <div class="fig o"><b>0,8677</b><span>baseline de sesgos</span></div>
+    <div class="fig"><b>0,90</b><span>umbral RMSE del proyecto</span></div>
+    <div class="fig"><b>64,68 %</b><span>Precisión@10 del ranking de referencia</span></div>
+    <div class="fig o"><b>68,15 %</b><span>Precisión@10 del modelo</span></div>
+    <div class="fig o"><b>0,8478</b><span>RMSE del modelo entrenado</span></div>
+    <div class="fig"><b>20.168</b><span>calificaciones de prueba</span></div>
+    <div class="fig"><b>28</b><span>mejor época de validación</span></div>
   </div>
 </section>
 </div>
 
 <footer class="band">
   <div class="band-in">
-    <span>MovieLens 1M · GroupLens, Universidad de Minnesota · Uso educativo</span>
-    <span>Baselines y Precisión@10 reproducibles con <code>04_modelado/scripts/03a_baselines.py</code></span>
+    <span>MovieLens ml-latest-small · GroupLens, Universidad de Minnesota · Uso educativo</span>
+    <span>Resultados en <code>WRANGLER/04_modelado/resultados/</code></span>
   </div>
 </footer>
 
