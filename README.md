@@ -12,6 +12,7 @@ La fuente del proyecto es [MovieLens ml-latest-small](anexo_ml-latest-small/ml-l
 |---|---|
 | Análisis exploratorio del Hito 2 | [Cuaderno de EDA](anexo_ml-latest-small/evaluacion_procesual_hito_2.ipynb) |
 | Evaluación grupal CRISP-DM (H3) | [Cuaderno grupal](h3_03_evaluacion1_grupal_proyecto_crisp.ipynb) |
+| Respuestas a las 10 preguntas | [Cuaderno de respuestas](eval_respuestas_10_preguntas.ipynb) |
 | Clasificación con regresión logística | [Cuaderno de regresión](WRANGLER/07_regresion_logistica/regresion_logistica.ipynb) |
 | Clasificación con árbol de decisión | [Cuaderno del árbol](WRANGLER/08_arbol_decision/arbol_decision.ipynb) · [Versión del anexo](anexo_ml-latest-small/arbol_decision_movielens.ipynb) |
 | Segmentación con K-means | [Cuaderno del Hito 4](anexo_ml-latest-small/h4_1_kmeans_movielens.ipynb) |
